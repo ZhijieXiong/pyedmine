@@ -1,4 +1,5 @@
 import torch
+import os
 from edmine.utils.parse import q2c_from_q_table, c2q_from_q_table
 from edmine.utils.use_torch import parse_q_table
 
@@ -34,6 +35,14 @@ def config_sequential_kt_dataset(local_params, global_params):
             "device": global_params["device"],
         },
     }
+
+def config_cd_dataset(local_params, global_params, global_objects):
+    setting_dir = global_objects["file_manager"].get_setting_dir(local_params["setting_name"])
+    data_statics_path = os.path.join(setting_dir, f"{local_params['dataset_name']}_statics.txt")
+    with open(data_statics_path, "r") as f:
+        s = f.readline()
+        local_params["num_user"] = int(s.split(":")[1].strip())
+    config_sequential_kt_dataset(local_params, global_params)
 
 
 def config_kg4ex_dataset(local_params, global_params):

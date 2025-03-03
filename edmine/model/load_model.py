@@ -6,12 +6,16 @@ from edmine.utils.data_io import read_json
 from edmine.model.sequential_kt_model.DKT import DKT
 from edmine.model.sequential_kt_model.DKT_KG4EX import DKT_KG4EX
 from edmine.model.sequential_kt_model.qDKT import qDKT
+from edmine.model.cognitive_diagnosis_model.NCD import NCD
+from edmine.model.exercise_recommendation_model.KG4EX import KG4EX
 
 
 model_table = {
     "DKT": DKT,
     "DKT_KG4EX": DKT_KG4EX,
-    "qDKT": qDKT
+    "qDKT": qDKT,
+    "NCD": NCD,
+    "KG4EX": KG4EX
 }
 
 

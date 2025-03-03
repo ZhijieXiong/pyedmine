@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from edmine.model.exercise_recommendation_model.ExerciseRecommendationModel import ExerciseRecommendationModel
+from edmine.model.ExerciseRecommendationModel import ExerciseRecommendationModel
 
 
 class DLExerciseRecommendationModel(ExerciseRecommendationModel):

@@ -106,7 +106,7 @@ def split_cd_dataset(data, n_fold, test_radio, seed=0):
     num_train_valid = len(dataset_train_valid)
     num_fold = (num_train_valid // n_fold) + 1
     dataset_folds = [dataset_train_valid[num_fold * fold: num_fold * (fold + 1)] for fold in range(n_fold)]
-    result = ([], [], dataset_test)
+    result = ([], [], dataset_test, i)
     for i in range(n_fold):
         fold_valid = i
         result[1].append(dataset_folds[fold_valid])
@@ -123,23 +123,23 @@ def n_fold_split(dataset_name, data, setting, file_manager, write_func, task_nam
     n_fold = setting["n_fold"]
     test_radio = setting["test_radio"]
     setting_name = setting["name"]
+    setting_dir = file_manager.get_setting_dir(setting_name)
 
     assert n_fold > 1, "n_fold must > 1"
 
     if task_name == "kt":
         datasets_train, datasets_valid, dataset_test = split_kt_dataset(data, n_fold, test_radio)
     elif task_name == "cd":
-        datasets_train, datasets_valid, dataset_test = split_cd_dataset(data, n_fold, test_radio)
+        datasets_train, datasets_valid, dataset_test, num_user = split_cd_dataset(data, n_fold, test_radio)
+        with open(os.path.join(setting_dir, f"{dataset_name}_statics.txt"), "w") as f:
+            f.write(f"num of user: {num_user}\n")
     else:
         raise NotImplementedError(f"n fold split for `{task_name}` is not implemented")
     names_train = [f"{dataset_name}_train_fold_{fold}.txt" for fold in range(n_fold)]
     names_valid = [f"{dataset_name}_valid_fold_{fold}.txt" for fold in range(n_fold)]
-
-    setting_dir = file_manager.get_setting_dir(setting_name)
     for fold in range(n_fold):
         write_func(datasets_train[fold], os.path.join(setting_dir, names_train[fold]))
         write_func(datasets_valid[fold], os.path.join(setting_dir, names_valid[fold]))
-
     write_func(dataset_test, os.path.join(setting_dir, f"{dataset_name}_test.txt"))
 
     # 用于调参的数据集
