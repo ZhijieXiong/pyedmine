@@ -3,12 +3,12 @@ from hyperopt import fmin, tpe, hp
 from torch.utils.data import DataLoader
 
 from set_params.congnitive_diagnosis_params import setup_common_args
-from config.ncd import config_ncd
+from config.mirt import config_mirt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
 from edmine.dataset.CognitiveDiagnosisDataset import BasicCognitiveDiagnosisDataset
-from edmine.model.cognitive_diagnosis_model.NCD import NCD
+from edmine.model.cognitive_diagnosis_model.MIRT import MIRT
 from edmine.trainer.DLCognitiveDiagnosisTrainer import DLCognitiveDiagnosisTrainer
 
 
@@ -36,10 +36,7 @@ if __name__ == "__main__":
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--dropout", type=float, default=0.1)
-    parser.add_argument("--num_predict_layer", type=int, default=2)
-    parser.add_argument("--dim_predict_mid", type=int, default=64)
-    parser.add_argument("--activate_type", type=str, default="sigmoid")
+    parser.add_argument("--a_range", type=float, default=1)
 
     def objective(parameters):
         global current_best_performance
@@ -55,7 +52,7 @@ if __name__ == "__main__":
             params[param_name] = parameters[param_name]
 
         set_seed(params["seed"])
-        global_params, global_objects = config_ncd(params)
+        global_params, global_objects = config_mirt(params)
 
         dataset_train = BasicCognitiveDiagnosisDataset(global_params["datasets_config"]["train"], global_objects)
         dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
@@ -67,7 +64,7 @@ if __name__ == "__main__":
             "valid_loader": dataloader_valid
         }
         global_objects["models"] = {
-            "NCD": NCD(global_params, global_objects).to(global_params["device"])
+            "MIRT": MIRT(global_params, global_objects).to(global_params["device"])
         }
         trainer = DLCognitiveDiagnosisTrainer(global_params, global_objects)
         trainer.train()
