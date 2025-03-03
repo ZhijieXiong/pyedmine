@@ -1,0 +1,97 @@
+search DKT params in assist2009
+current best params (performance is 0.7470635457203398):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 128, dropout: 0.3, weight_decay: 0.0001
+
+search DKT params in assist2009-full
+current best params (performance is 0.8226729855619425):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 256, dropout: 0.3, weight_decay: 1e-05
+current best params (performance is 0.8240116049566152):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 128, dropout: 0.2, weight_decay: 0
+current best params (performance is 0.8262318077863038):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dropout: 0.1, weight_decay: 1e-05
+current best params (performance is 0.8280926928741865):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 128, dropout: 0.1, weight_decay: 0
+
+search DKT params in assist2015
+current best params (performance is 0.7193685741628117):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 64, dropout: 0.3, weight_decay: 0.0001
+current best params (performance is 0.7209567920380413):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 64, dropout: 0.1, weight_decay: 1e-05
+
+search DKT params in assist2017
+current best params (performance is 0.7104273256881487):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 64, dropout: 0.3, weight_decay: 0.0001
+current best params (performance is 0.7194351438650111):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 128, dropout: 0.3, weight_decay: 1e-05
+current best params (performance is 0.7219202181444162):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 256, dropout: 0.1, weight_decay: 0
+
+search DKT params in statics2011
+current best params (performance is 0.7044571281523417):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 128, dropout: 0.2, weight_decay: 0.0001
+current best params (performance is 0.7063510285562782):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 128, dropout: 0.3, weight_decay: 0.0001
+current best params (performance is 0.7073908732201064):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 256, dropout: 0.1, weight_decay: 0
+
+search DKT params in slepemapy-anatomy
+current best params (performance is 0.67262680970545):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 256, dropout: 0.1, weight_decay: 0.0001
+current best params (performance is 0.6751629429622374):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 128, dropout: 0.2, weight_decay: 1e-05
+
+search DKT params in edi2020-task34
+current best params (performance is 0.7474470795051895):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dropout: 0.3, weight_decay: 0
+current best params (performance is 0.749129712546599):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 128, dropout: 0.3, weight_decay: 1e-05
+current best params (performance is 0.7501729515954954):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 128, dropout: 0.3, weight_decay: 1e-05
+current best params (performance is 0.751624091183916):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 256, dropout: 0.1, weight_decay: 0
+
+search DKT params in poj
+current best params (performance is 0.6526859441459189):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 128, dropout: 0.1, weight_decay: 0
+current best params (performance is 0.6558185181917418):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 128, dropout: 0.2, weight_decay: 1e-05
+
+
+
+
+search qDKT params in assist2009
+current best params (performance is 0.7514168792493698):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dim_question: 64, dropout: 0.2, weight_decay: 0
+current best params (performance is 0.7529244188163241):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dim_question: 64, dropout: 0.1, weight_decay: 0
+
+search qDKT params in assist2009-full
+current best params (performance is 0.8388910821682314):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 256, dim_question: 64, dropout: 0.1, weight_decay: 0.0001
+current best params (performance is 0.8466501628000735):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dim_question: 64, dropout: 0.1, weight_decay: 1e-05
+
+search qDKT params in assist2017
+current best params (performance is 0.7790158311806024):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 128, dim_question: 64, dropout: 0.2, weight_decay: 1e-05
+current best params (performance is 0.7893236891577438):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 128, dim_question: 64, dropout: 0.2, weight_decay: 0.0001
+current best params (performance is 0.7913799529702381):
+    dim_concept: 128, dim_correctness: 64, dim_latent: 64, dim_question: 64, dropout: 0.1, weight_decay: 0.0001
+
+search qDKT params in statics2011
+current best params (performance is 0.8007652833013614):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 128, dim_question: 64, dropout: 0.2, weight_decay: 1e-05
+current best params (performance is 0.8120634944400256):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dim_question: 128, dropout: 0.2, weight_decay: 1e-05
+current best params (performance is 0.8153284549041626):
+    dim_concept: 64, dim_correctness: 128, dim_latent: 64, dim_question: 128, dropout: 0.2, weight_decay: 0
+current best params (performance is 0.8183418799419829):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 64, dim_question: 128, dropout: 0.2, weight_decay: 0
+
+search qDKT params in edi2020-task34
+current best params (performance is 0.7855795220039319):
+    dim_concept: 128, dim_correctness: 128, dim_latent: 128, dim_question: 128, dropout: 0.3, weight_decay: 1e-05
+current best params (performance is 0.786699004752184):
+    dim_concept: 64, dim_correctness: 64, dim_latent: 64, dim_question: 64, dropout: 0.2, weight_decay: 1e-05
+
