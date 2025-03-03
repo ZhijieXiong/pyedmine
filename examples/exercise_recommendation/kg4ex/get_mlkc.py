@@ -12,8 +12,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 数据配置
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
-    parser.add_argument("--dataset_name", type=str, default="statics2011")
-    parser.add_argument("--user_data_file_name", type=str, default="statics2011_user_data.txt")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
+    parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
     # 加载KT模型
     parser.add_argument("--model_dir_name", type=str, help="绝对路径",
                         default=r"qDKT@@pykt_setting@@statics2011_train_fold_0@@seed_0@@2025-03-02@14-48-19")

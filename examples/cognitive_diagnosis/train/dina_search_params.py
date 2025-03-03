@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        "batch_size": [256, 512, 1024],
+        "train_batch_size": [256, 512, 1024],
         "learning_rate": [0.0001, 0.001],
         "weight_decay": [0.0001, 0.00001, 0],
         "max_slip": [0.3, 0.4, 0.5],
@@ -97,11 +97,11 @@ if __name__ == "__main__":
     if num > 100:
         max_evals = 20 + int(num * 0.2)
     elif num > 50:
-        max_evals = 10 + int(num * 0.2)
+        max_evals = 15 + int(num * 0.2)
     elif num > 20:
-        max_evals = 5 + int(num * 0.2)
+        max_evals = 10 + int(num * 0.2)
     elif num > 10:
-        max_evals = int(num * 0.2)
+        max_evals = 5 + int(num * 0.2)
     else:
         max_evals = num
     current_best_performance = 0

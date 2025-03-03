@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--weight_decay", type=float, default=0.0001)
+    parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
     # scheduler配置
     parser.add_argument("--enable_scheduler", type=str2bool, default=False)
@@ -36,18 +36,18 @@ if __name__ == "__main__":
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--dim_concept", type=int, default=64)
-    parser.add_argument("--dim_question", type=int, default=64)
-    parser.add_argument("--dim_correctness", type=int, default=128)
-    parser.add_argument("--dim_latent", type=int, default=256)
+    parser.add_argument("--dim_concept", type=int, default=128)
+    parser.add_argument("--dim_question", type=int, default=128)
+    parser.add_argument("--dim_correctness", type=int, default=64)
+    parser.add_argument("--dim_latent", type=int, default=64)
     parser.add_argument("--rnn_type", type=str, default="gru")
     parser.add_argument("--num_rnn_layer", type=int, default=1)
-    parser.add_argument("--dropout", type=float, default=0.1)
+    parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--num_predict_layer", type=int, default=1)
     parser.add_argument("--dim_predict_mid", type=int, default=64)
     parser.add_argument("--activate_type", type=str, default="sigmoid")
     # 模型保存
-    parser.add_argument("--save_model", type=str2bool, default=True)
+    parser.add_argument("--save_model", type=str2bool, default=False)
     # wandb
     parser.add_argument("--use_wandb", type=str2bool, default=False)
 

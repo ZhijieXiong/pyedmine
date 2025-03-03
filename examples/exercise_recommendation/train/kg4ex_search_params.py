@@ -123,11 +123,11 @@ if __name__ == "__main__":
     if num > 100:
         max_evals = 20 + int(num * 0.2)
     elif num > 50:
-        max_evals = 10 + int(num * 0.2)
+        max_evals = 15 + int(num * 0.2)
     elif num > 20:
-        max_evals = 5 + int(num * 0.2)
+        max_evals = 10 + int(num * 0.2)
     elif num > 10:
-        max_evals = 3 + int(num * 0.2)
+        max_evals = 5 + int(num * 0.2)
     else:
         max_evals = num
     current_best_performance = 0
