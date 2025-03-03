@@ -27,4 +27,4 @@ if __name__ == "__main__":
     dataset_truncated = truncate2multi_seq(read_kt_file(file_manager.get_preprocessed_path(params["dataset_name"])),
                                            setting["min_seq_len"],
                                            setting["max_seq_len"],)
-    n_fold_split(params["dataset_name"], dataset_truncated, setting, file_manager, write_kt_file)
+    n_fold_split(params["dataset_name"], dataset_truncated, setting, file_manager, write_kt_file, "kt")

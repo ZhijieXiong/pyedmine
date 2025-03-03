@@ -14,8 +14,8 @@ if __name__ == "__main__":
 
     # device配置
     parser.add_argument("--kt_setting_name", type=str, default="pykt_setting")
-    parser.add_argument("--kt_test_file_name", type=str, default="slepemapy-anatomy_test.txt")
-    parser.add_argument("--dataset_name", type=str, default="slepemapy-anatomy")
+    parser.add_argument("--kt_test_file_name", type=str, default="assist2009_test.txt")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
     args = parser.parse_args()
     params = vars(args)
 

@@ -2,7 +2,7 @@ import random
 import os
 
 
-def kt_select_test_data1(data, test_radio, user_id_remap=False):
+def kt_select_test_data(data, test_radio, user_id_remap=False):
     if user_id_remap:
         for i, item in enumerate(data):
             item["user_id"] = i
@@ -40,7 +40,7 @@ def kt_select_test_data1(data, test_radio, user_id_remap=False):
     return train_valid_data, test_data
 
 
-def split(data, n_fold, test_radio, seed=0):
+def split_kt_dataset(data, n_fold, test_radio, seed=0):
     """
     选一部分数据做测试集，剩余数据用n折交叉划分为训练集和验证集
     :param test_radio:
@@ -50,12 +50,9 @@ def split(data, n_fold, test_radio, seed=0):
     :return: ([train_fold_0, ..., train_fold_n], [valid_fold_0, ..., valid_fold_n], test)
     """
     random.seed(seed)
-    random.shuffle(data)
-    num_all = len(data)
-    num_train_valid = int(num_all * (1 - test_radio))
+    dataset_train_valid, dataset_test = kt_select_test_data(data, test_radio, user_id_remap=True)
+    num_train_valid = len(dataset_train_valid)
     num_fold = (num_train_valid // n_fold) + 1
-
-    dataset_train_valid, dataset_test = kt_select_test_data1(data, test_radio, user_id_remap=True)
     dataset_folds = [dataset_train_valid[num_fold * fold: num_fold * (fold + 1)] for fold in range(n_fold)]
     result = ([], [], dataset_test)
     for i in range(n_fold):
@@ -70,14 +67,71 @@ def split(data, n_fold, test_radio, seed=0):
     return result
 
 
-def n_fold_split(dataset_name, data, setting, file_manager, write_func):
+def split_cd_dataset(data, n_fold, test_radio, seed=0):
+    """
+    对每个学生的数据选一部分做测试集，剩余数据用n折交叉划分为训练集和验证集
+    :param test_radio:
+    :param data:
+    :param n_fold:
+    :param seed:
+    :return: ([train_fold_0, ..., train_fold_n], [valid_fold_0, ..., valid_fold_n], test)
+    """
+    random.seed(seed)
+    dataset_train_valid = []
+    dataset_test = []
+    i = 0
+    for user_data in data:
+        num_intercation = user_data["num_interaction"]
+        if num_intercation < 10:
+            continue
+
+        interaction_data = user_data["all_interaction_data"]
+        for interaction in interaction_data:
+            interaction["user_id"] = i
+        
+        interaction_data1 = interaction_data[:int(num_intercation/2)]
+        random.shuffle(interaction_data1)
+        num1 = len(interaction_data1)
+        dataset_test.extend(interaction_data1[:int(num1 * test_radio)])
+        dataset_train_valid.extend(interaction_data1[int(num1 * test_radio):])
+
+        interaction_data2 = interaction_data[int(num_intercation/2):]
+        random.shuffle(interaction_data2)
+        num2 = len(interaction_data2)
+        dataset_test.extend(interaction_data2[:int(num2 * test_radio)])
+        dataset_train_valid.extend(interaction_data2[int(num2 * test_radio):])
+
+        i += 1
+
+    num_train_valid = len(dataset_train_valid)
+    num_fold = (num_train_valid // n_fold) + 1
+    dataset_folds = [dataset_train_valid[num_fold * fold: num_fold * (fold + 1)] for fold in range(n_fold)]
+    result = ([], [], dataset_test)
+    for i in range(n_fold):
+        fold_valid = i
+        result[1].append(dataset_folds[fold_valid])
+        folds_train = set(range(n_fold)) - {fold_valid}
+        data_train = []
+        for fold in folds_train:
+            data_train += dataset_folds[fold]
+        result[0].append(data_train)
+
+    return result
+
+
+def n_fold_split(dataset_name, data, setting, file_manager, write_func, task_name="kt"):
     n_fold = setting["n_fold"]
     test_radio = setting["test_radio"]
     setting_name = setting["name"]
 
     assert n_fold > 1, "n_fold must > 1"
 
-    datasets_train, datasets_valid, dataset_test = split(data, n_fold, test_radio)
+    if task_name == "kt":
+        datasets_train, datasets_valid, dataset_test = split_kt_dataset(data, n_fold, test_radio)
+    elif task_name == "cd":
+        datasets_train, datasets_valid, dataset_test = split_cd_dataset(data, n_fold, test_radio)
+    else:
+        raise NotImplementedError(f"n fold split for `{task_name}` is not implemented")
     names_train = [f"{dataset_name}_train_fold_{fold}.txt" for fold in range(n_fold)]
     names_valid = [f"{dataset_name}_valid_fold_{fold}.txt" for fold in range(n_fold)]
 
@@ -88,11 +142,14 @@ def n_fold_split(dataset_name, data, setting, file_manager, write_func):
 
     write_func(dataset_test, os.path.join(setting_dir, f"{dataset_name}_test.txt"))
 
-    # 用于调参，如果数据集非常大，只用部分数据调参
-    dataset_train_valid = datasets_train[0] + datasets_valid[0]
-    random.shuffle(dataset_train_valid)
-    dataset_train_valid = dataset_train_valid[:20000]
-    valid_radio = 0.2
-    num_train = int(len(dataset_train_valid) * (1 - valid_radio))
-    write_func(dataset_train_valid[:num_train], os.path.join(setting_dir, f"{dataset_name}_train.txt"))
-    write_func(dataset_train_valid[num_train:], os.path.join(setting_dir, f"{dataset_name}_valid.txt"))
+    # 用于调参的数据集
+    train4tuning = []
+    valid4tuning = []
+    for n in range(n_fold):
+        random.shuffle(datasets_valid[n])
+        num_valid = int(len(datasets_valid[n]) * 0.3)
+        valid4tuning.extend(datasets_valid[n][:num_valid])
+        train4tuning.extend(datasets_valid[n][num_valid:])
+
+    write_func(train4tuning, os.path.join(setting_dir, f"{dataset_name}_train.txt"))
+    write_func(valid4tuning, os.path.join(setting_dir, f"{dataset_name}_valid.txt"))

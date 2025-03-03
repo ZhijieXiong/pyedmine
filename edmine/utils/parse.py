@@ -150,3 +150,25 @@ def str_dict2params(str_dict):
         else:
             params[k] = str_dict2params(v)
     return params
+
+
+def kt_data2cd_data(kt_data, useful_keys={"use_time_seq": "use_time"}):
+    data4cd = []
+    for item_data in kt_data:
+        user_data = {
+            "user_id": item_data["user_id"],
+            "num_interaction": item_data["seq_len"],
+            "all_interaction_data": []
+        }
+        for i in range(item_data["seq_len"]):
+            interaction_data = {
+                "question_id": item_data["question_seq"][i],
+                "correctness": item_data["correctness_seq"][i]
+            }
+            for kt_key, cd_key in useful_keys.items():
+                if kt_key in item_data:
+                    interaction_data[cd_key] = item_data[kt_key][i]
+            user_data["all_interaction_data"].append(interaction_data)
+        data4cd.append(user_data)
+
+    return data4cd

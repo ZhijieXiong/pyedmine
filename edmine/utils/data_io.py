@@ -239,3 +239,34 @@ def read_id_map_kg4ex(file_path):
             id_, ele = line.strip().split('\t')
             id_map[ele] = int(id_)
     return id_map
+
+
+def write_cd_file(data, data_path):
+    id_keys = data[0].keys()
+    with open(data_path, "w") as f:
+        first_line = ",".join(id_keys) + "\n"
+        f.write(first_line)
+        for interaction_data in data:
+            line_str = ""
+            for k in id_keys:
+                line_str += str(interaction_data[k]) + ","
+            f.write(line_str[:-1] + "\n")
+
+
+def read_cd_file(data_path):
+    assert os.path.exists(data_path), f"{data_path} not exist"
+    with open(data_path, "r") as f:
+        all_lines = f.readlines()
+        first_line = all_lines[0].strip()
+        id_keys_str = first_line.strip()
+        id_keys = id_keys_str.split(",")
+        all_lines = all_lines[1:]
+        data = []
+        for i, line_str in enumerate(all_lines):
+            interaction_data = {}
+            line_content = list(map(int, line_str.strip().split(",")))
+            for id_key, v in zip(id_keys, line_content):
+                interaction_data[id_key] = v
+            data.append(interaction_data)
+
+    return data
