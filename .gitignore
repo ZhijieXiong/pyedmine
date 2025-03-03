@@ -6,6 +6,6 @@ __pycache__/
 *$py.class
 *.DS_Store
 **/.DS_Store
-**/wandb/
-**/script/
+wandb/
+script/
 
