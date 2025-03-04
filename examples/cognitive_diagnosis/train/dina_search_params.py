@@ -36,9 +36,9 @@ if __name__ == "__main__":
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--max_slip", type=float, default=0.4)
-    parser.add_argument("--max_guess", type=float, default=0.4)
-    parser.add_argument("--max_step", type=int, default=1000)
+    parser.add_argument("--max_slip", type=float, default=0.3)
+    parser.add_argument("--max_guess", type=float, default=0.3)
+    parser.add_argument("--max_step", type=int, default=500)
     parser.add_argument("--use_ste", type=str2bool, default=True)
 
     def objective(parameters):
@@ -81,11 +81,13 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        "train_batch_size": [256, 512, 1024],
+        # 一阶段
+        "train_batch_size": [512, 1024, 2048],
         "learning_rate": [0.0001, 0.001],
         "weight_decay": [0.0001, 0.00001, 0],
-        "max_slip": [0.3, 0.4, 0.5],
-        "max_guess": [0.3, 0.4, 0.5]
+        # 二阶段
+        # "max_slip": [0.2, 0.3, 0.4],
+        # "max_guess": [0.2, 0.3, 0.4]
     }
     space = {
         param_name: hp.choice(param_name, param_space)

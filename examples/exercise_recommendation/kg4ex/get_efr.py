@@ -15,8 +15,8 @@ if __name__ == "__main__":
     parser.add_argument("--theta", type=float, default=0.2)
     # 数据配置
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
-    parser.add_argument("--dataset_name", type=str, default="assist2012")
-    parser.add_argument("--user_data_file_name", type=str, default="assist2012_user_data.txt")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
+    parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
     args = parser.parse_args()
     params = vars(args)
 

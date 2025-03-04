@@ -5,8 +5,15 @@ from edmine.utils.parse import str2bool
 
 def setup_common_args():
     parser = argparse.ArgumentParser(description="习题推荐模型的公共配置")
+    # 数据集相关
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
-    parser.add_argument("--dataset_name", type=str, default="statics2011")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
+    parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
+    parser.add_argument("--train_file_name", type=str, default="assist2009_train_triples_dkt_0.2.txt")
+    parser.add_argument("--valid_file_name", type=str, default="assist2009_valid_triples_dkt_0.2.txt")
+    parser.add_argument("--valid_mlkc_file_name", type=str, default="assist2009_dkt_mlkc_valid.txt")
+    parser.add_argument("--valid_pkc_file_name", type=str, default="assist2009_pkc_valid.txt")
+    parser.add_argument("--valid_efr_file_name", type=str, default="assist2009_efr_0.2_valid.txt")
     # 优化器相关参数选择
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--weight_decay", type=float, default=0)

@@ -16,13 +16,6 @@ from edmine.trainer.ExerciseRecommendationTrainer import ExerciseRecommendationT
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args()], description="KG4EX的配置", add_help=False)
-    # 数据集相关
-    parser.add_argument("--user_data_file_name", type=str, default="statics2011_user_data.txt")
-    parser.add_argument("--train_file_name", type=str, default="statics2011_train_triples_dkt_0.2.txt")
-    parser.add_argument("--valid_file_name", type=str, default="statics2011_valid_triples_dkt_0.2.txt")
-    parser.add_argument("--valid_mlkc_file_name", type=str, default="statics2011_dkt_mlkc_valid.txt")
-    parser.add_argument("--valid_pkc_file_name", type=str, default="statics2011_pkc_valid.txt")
-    parser.add_argument("--valid_efr_file_name", type=str, default="statics2011_efr_0.2_valid.txt")
     # 评价指标选择
     parser.add_argument("--top_ns", type=str, default="[5,10]")
     parser.add_argument("--main_metric", type=str, default="KG4EX_ACC")
@@ -30,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--multi_metrics", type=str, default="[('KG4EX_ACC', 1, 1), ('KG4EX_NOV', 1, 1), ('OFFLINE_ACC', 1, 1)]")
     # 学习率
     parser.add_argument("--train_batch_size", type=int, default=1024)
-    parser.add_argument("--evaluate_batch_size", type=int, default=16, 
+    parser.add_argument("--evaluate_batch_size", type=int, default=1, 
                         help="如果习题数量非常大的话，推理非常占显存，设置小点，如static2011有1223道习题，batch size为16时，推理显存约16G")
     parser.add_argument("--learning_rate", type=float, default=0.0001)
     # 学习率衰减

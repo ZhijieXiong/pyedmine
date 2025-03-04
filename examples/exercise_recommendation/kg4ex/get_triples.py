@@ -13,11 +13,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
-    parser.add_argument("--kt_model_name", type=str, default="qdkt", choices=("dkt", "qdkt"))
+    parser.add_argument("--kt_model_name", type=str, default="dkt")
     parser.add_argument("--efr_theta", type=float, default=0.2)
     parser.add_argument("--delta1", type=float, default=0.7)
     parser.add_argument("--delta2", type=float, default=0.7)
-    parser.add_argument("--top_n", type=int, default=10)
+    parser.add_argument("--top_n", type=int, default=20)
     args = parser.parse_args()
     params = vars(args)
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # 存储entities
     num_user = len(mlkc_train)
     num_question, num_concept = Q_table.shape[0], Q_table.shape[1]
-    with open(os.path.join(setting_dir, f"{dataset_name}_entities.dict"), "w") as fs:
+    with open(os.path.join(setting_dir, f"{dataset_name}_entities_kg4ex.dict"), "w") as fs:
         for i, user_id in enumerate(train_user_ids):
             fs.write(f"{i}\tuid{user_id}\n")
         for i in range(num_concept):

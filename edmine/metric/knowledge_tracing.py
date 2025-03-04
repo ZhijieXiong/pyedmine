@@ -1,3 +1,5 @@
+import warnings
+import math
 import numpy as np
 
 from sklearn.metrics import roc_auc_score, mean_squared_error, accuracy_score, mean_absolute_error
@@ -8,10 +10,11 @@ def root_mean_squared_error(y_true, y_pred):
 
 
 def get_kt_metric(y_true, y_score):
-    try:
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
         AUC = roc_auc_score(y_true, y_score)
-    except ValueError:
-        AUC = -1.
+        if math.isnan(AUC):
+            AUC = -1.
     y_pred = [1 if p >= 0.5 else 0 for p in y_score]
     return {
         "AUC": AUC,

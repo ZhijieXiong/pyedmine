@@ -15,8 +15,8 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
     # 加载KT模型
-    parser.add_argument("--model_dir_name", type=str, help="",
-                        default=r"DKT_KG4EX@@pykt_setting@@assist2009_train@@seed_0@@2025-03-02@14-57-38")
+    parser.add_argument("--model_dir_name", type=str, help="模型文件夹名",
+                        default=r"DKT_KG4EX@@pykt_setting@@assist2009_train@@seed_0@@2025-03-03@23-56-29")
     parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # batch size

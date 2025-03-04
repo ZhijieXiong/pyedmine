@@ -37,9 +37,8 @@ if __name__ == "__main__":
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
     parser.add_argument("--a_range", type=float, default=1)
-    # 模型保存
+    # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
-    # wandb
     parser.add_argument("--use_wandb", type=str2bool, default=False)
 
     args = parser.parse_args()

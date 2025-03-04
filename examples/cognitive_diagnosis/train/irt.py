@@ -39,9 +39,8 @@ if __name__ == "__main__":
     parser.add_argument("--value_range", type=float, default=1)
     parser.add_argument("--a_range", type=float, default=1)
     parser.add_argument("--D", type=float, default=1.702)
-    # 模型保存
+    # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
-    # wandb
     parser.add_argument("--use_wandb", type=str2bool, default=False)
 
     args = parser.parse_args()

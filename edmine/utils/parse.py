@@ -1,6 +1,7 @@
 import argparse
 import ast
 import numpy as np
+from collections import defaultdict
 
 from edmine.utils.check import check_q_table
 
@@ -172,3 +173,73 @@ def kt_data2cd_data(kt_data, useful_keys={"use_time_seq": "use_time"}):
         data4cd.append(user_data)
 
     return data4cd
+
+
+def cal_qc_acc4kt_data(kt_data, target, num2drop, q2c=None):
+    """
+    计算习题或者知识点的准确率
+    """
+    assert target in ["question", "concept"], "target must be `question` or `concept`"
+    if target == "concept" and q2c is None:
+        raise ValueError("Calculation based on concept must have q2c")
+    
+    correctness_dict = defaultdict(int)
+    counts = defaultdict(int)
+    for item_data in kt_data:
+        for q_id, correctness in zip(item_data["question_seq"], item_data["correctness_seq"]):
+            if target == "question":
+                correctness_dict[q_id] += correctness
+                counts[q_id] += 1
+            else:
+                c_ids = q2c[q_id]
+                for c_id in c_ids:
+                    correctness_dict[c_id] += correctness
+                    counts[c_id] += 1
+    
+    all_ids = list(counts.keys())
+    for qc_id in all_ids:
+        if counts[qc_id] < num2drop:
+            del counts[qc_id]
+            del correctness_dict[qc_id]
+
+    return {qc_id: correctness_dict[qc_id] / float(counts[qc_id]) for qc_id in correctness_dict}
+
+
+def kt_data2user_question_matrix(data, num_question, remove_last=1):
+    """
+    构造user-question矩阵，矩阵元素是用户对习题答对正确率，如果未作答过，则为-1
+    """
+    num_user = len(data)
+    matrix = np.zeros((num_user, num_question))
+    sum_matrix = np.zeros((num_user, num_question))
+    for item_data in data:
+        user_id = item_data["user_id"]
+        question_seq = item_data["question_seq"][:item_data["seq_len"]-remove_last]
+        correct_seq = item_data["correctness_seq"][:item_data["seq_len"] - remove_last]
+        for q_id, correctness in zip(question_seq, correct_seq):
+            matrix[user_id][q_id] += correctness
+            sum_matrix[user_id][q_id] += 1
+    matrix[sum_matrix == 0] = -1
+    sum_matrix[sum_matrix == 0] = 1
+    return matrix / sum_matrix
+
+
+def kt_data2user_concept_matrix(kt_data, num_concept, q2c, remove_last=1):
+    """
+    构造user-concept矩阵，矩阵元素是用户对知识点答对正确率，如果未作答过，则为-1
+    """
+    num_user = len(kt_data)
+    matrix = np.zeros((num_user, num_concept))
+    sum_matrix = np.zeros((num_user, num_concept))
+    for item_data in kt_data:
+        user_id = item_data["user_id"]
+        question_seq = item_data["question_seq"][:item_data["seq_len"]-remove_last]
+        correct_seq = item_data["correctness_seq"][:item_data["seq_len"] - remove_last]
+        for q_id, correctness in zip(question_seq, correct_seq):
+            c_ids = q2c[q_id]
+            for c_id in c_ids:
+                matrix[user_id][c_id] += correctness
+                sum_matrix[user_id][c_id] += 1
+    matrix[sum_matrix == 0] = -1
+    sum_matrix[sum_matrix == 0] = 1
+    return matrix / sum_matrix

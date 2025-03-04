@@ -12,3 +12,6 @@ script
 script_result
 
 /examples/settings.json
+
+/dataset
+/models

@@ -45,9 +45,8 @@ if __name__ == "__main__":
     parser.add_argument("--num_predict_layer", type=int, default=1)
     parser.add_argument("--dim_predict_mid", type=int, default=64)
     parser.add_argument("--activate_type", type=str, default="sigmoid")
-    # 模型保存
+    # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
-    # wandb
     parser.add_argument("--use_wandb", type=str2bool, default=False)
 
     args = parser.parse_args()

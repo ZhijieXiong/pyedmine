@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--dropout", type=float, default=0.1)
+    parser.add_argument("--dropout", type=float, default=0.3)
     parser.add_argument("--num_predict_layer", type=int, default=2)
     parser.add_argument("--dim_predict_mid", type=int, default=64)
     parser.add_argument("--activate_type", type=str, default="sigmoid")
@@ -81,10 +81,12 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        "train_batch_size": [256, 512, 1024],
+        # 一阶段
+        "train_batch_size": [512, 1024, 2048],
         "learning_rate": [0.0001, 0.001],
         "weight_decay": [0.0001, 0.00001, 0],
-        "dropout": [0.1, 0.3, 0.5],
+        # 二阶段
+        # "dropout": [0.1, 0.2, 0.3, 0.4, 0.5],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
