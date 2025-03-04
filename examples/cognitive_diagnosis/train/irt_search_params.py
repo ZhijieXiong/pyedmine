@@ -48,7 +48,7 @@ if __name__ == "__main__":
         # 替换参数
         params["search_params"] = True
         params["save_model"] = False
-        params["debug_mode"] = True
+        params["debug_mode"] = False
         params["use_cpu"] = False
         for param_name in parameters:
             params[param_name] = parameters[param_name]

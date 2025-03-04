@@ -18,8 +18,8 @@ if __name__ == "__main__":
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     # 是否使用知识追踪的训练集和验证集（假设为ER_offline_setting的话）
-    parser.add_argument("--use_kt_train_valid", type=str2bool, default=False)
-    # 构建习题相似度矩阵的方法
+    parser.add_argument("--use_kt_train_valid", type=str2bool, default=True)
+    # 构建相似度矩阵的方法
     parser.add_argument("--similarity", type=str, default="cossim", choices=("cossim", "pearson_corr"))
     parser.add_argument("--alpha", type=float, default=1,
                         help="相似度（余弦相似度或者皮尔逊相关系数）的权重")

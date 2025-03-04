@@ -33,17 +33,16 @@ if __name__ == "__main__":
     kt_data_valid = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_valid.txt"))
     kt_data_test = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_test.txt"))
     
+    # 不论是er data还是cd data都不要对user id进行重映射，保持原来的id，方便后续习题推荐处理
     er_data = []
-    num_user = 0
+    num_user = len(kt_data_train + kt_data_valid + kt_data_test)
     for user_data in kt_data_test:
         seq_len = user_data["seq_len"]
         if seq_len < 10:
             continue
-        user_data["user_id"] = num_user
         user_data["train_end_idx"] = int(seq_len * 0.5)
         user_data["valid_end_idx"] = int(seq_len * 0.7)
         er_data.append(user_data)
-        num_user += 1
     
     # 用于训练认知诊断模型，为习题推荐模型服务
     kt_data_train_valid = []
@@ -51,9 +50,8 @@ if __name__ == "__main__":
         seq_len = user_data["seq_len"]
         if seq_len < 10:
             continue
-        user_data["user_id"] = num_user
         kt_data_train_valid.append(user_data)
-        num_user += 1
+
     cd_data_train = []
     cd_data_valid = []
     for user_data in er_data:

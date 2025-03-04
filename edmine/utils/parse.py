@@ -208,12 +208,12 @@ def cal_qc_acc4kt_data(kt_data, target, num2drop, q2c=None):
 def kt_data2user_question_matrix(data, num_question, remove_last=1):
     """
     构造user-question矩阵，矩阵元素是用户对习题答对正确率，如果未作答过，则为-1
+    该方法返回的U-Q矩阵，其中行和数据中的user_id没有关系
     """
     num_user = len(data)
     matrix = np.zeros((num_user, num_question))
     sum_matrix = np.zeros((num_user, num_question))
-    for item_data in data:
-        user_id = item_data["user_id"]
+    for user_id, item_data in enumerate(data):
         question_seq = item_data["question_seq"][:item_data["seq_len"]-remove_last]
         correct_seq = item_data["correctness_seq"][:item_data["seq_len"] - remove_last]
         for q_id, correctness in zip(question_seq, correct_seq):
@@ -227,12 +227,12 @@ def kt_data2user_question_matrix(data, num_question, remove_last=1):
 def kt_data2user_concept_matrix(kt_data, num_concept, q2c, remove_last=1):
     """
     构造user-concept矩阵，矩阵元素是用户对知识点答对正确率，如果未作答过，则为-1
+    该方法返回的U-C矩阵，其中行和数据中的user_id没有关系
     """
     num_user = len(kt_data)
     matrix = np.zeros((num_user, num_concept))
     sum_matrix = np.zeros((num_user, num_concept))
-    for item_data in kt_data:
-        user_id = item_data["user_id"]
+    for user_id, item_data in enumerate(kt_data):
         question_seq = item_data["question_seq"][:item_data["seq_len"]-remove_last]
         correct_seq = item_data["correctness_seq"][:item_data["seq_len"] - remove_last]
         for q_id, correctness in zip(question_seq, correct_seq):

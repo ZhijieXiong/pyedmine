@@ -23,7 +23,7 @@ def cosine_similarity_matrix(arr, axis=0):
 
     # 归一化列向量（除以 L2 范数）
     norm = np.linalg.norm(arr, axis=0, keepdims=True)  # 计算每列的 L2 范数
-    arr_normalized = arr / norm  # 归一化
+    arr_normalized = arr / (norm + 1e-8)  # 归一化
 
     # 计算余弦相似度矩阵
     cosine_sim = arr_normalized.T @ arr_normalized  # 矩阵乘法计算点积
