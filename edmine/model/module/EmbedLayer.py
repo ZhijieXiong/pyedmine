@@ -144,7 +144,8 @@ class EmbedLayer(nn.Module):
             base2related_transfer_table,
             base2related_mask_table,
             base_item_index,
-            fusion_method="mean"
+            fusion_method="mean",
+            other_item_index=None
     ):
         """
         Fuses embeddings of related items (e.g., concepts) associated with a base item (e.g., questions) using a specified fusion method (e.g., mean pooling).
@@ -153,10 +154,14 @@ class EmbedLayer(nn.Module):
         :param base2related_mask_table: A tensor of shape (num_base_items, max_num_related_items) that acts as a mask for the base2related_transfer_table. It contains 1 for valid related items and 0 for padding.
         :param base_item_index: A tensor of indices specifying the base items for which fused embeddings are to be computed.
         :param fusion_method: The method used to fuse the embeddings.
+        :param other_item_index: for DKVMN
         :return:
         """
         embed_related = self.__getattr__(related_embed_name)
-        related_emb = embed_related(base2related_transfer_table[base_item_index])
+        if other_item_index is None:
+            related_emb = embed_related(base2related_transfer_table[base_item_index])
+        else:
+            related_emb = embed_related(base2related_transfer_table[base_item_index] + other_item_index)
         mask = base2related_mask_table[base_item_index]
         if fusion_method == "mean":
             related_emb_fusion = (related_emb * mask.unsqueeze(-1)).sum(-2)

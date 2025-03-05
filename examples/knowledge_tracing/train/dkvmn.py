@@ -1,16 +1,19 @@
 import argparse
-from hyperopt import fmin, tpe, hp
+
+from torch.utils.data import DataLoader
 
 from set_params.sequential_kt_params import setup_common_args
-from config.qdkt import config_qdkt
-from utils import get_objective_func
+from config.dkvmn import config_dkvmn
 
 from edmine.utils.parse import str2bool
-from edmine.model.sequential_kt_model.qDKT import qDKT
+from edmine.utils.use_torch import set_seed
+from edmine.dataset.SequentialKTDataset import BasicSequentialKTDataset
+from edmine.model.sequential_kt_model.DKVMN import DKVMN
+from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], description="qDKT的配置", add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args()], description="DKVMN的配置", add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=64)
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
@@ -33,42 +36,32 @@ if __name__ == "__main__":
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--dim_concept", type=int, default=64)
-    parser.add_argument("--dim_question", type=int, default=64)
-    parser.add_argument("--dim_correctness", type=int, default=128)
-    parser.add_argument("--dim_latent", type=int, default=256)
-    parser.add_argument("--rnn_type", type=str, default="gru")
-    parser.add_argument("--num_rnn_layer", type=int, default=1)
+    parser.add_argument("--dim_key", type=int, default=128)
+    parser.add_argument("--dim_value", type=int, default=128)
     parser.add_argument("--dropout", type=float, default=0.1)
     parser.add_argument("--num_predict_layer", type=int, default=1)
     parser.add_argument("--dim_predict_mid", type=int, default=64)
     parser.add_argument("--activate_type", type=str, default="sigmoid")
+    # 其它
+    parser.add_argument("--save_model", type=str2bool, default=False)
+    parser.add_argument("--use_wandb", type=str2bool, default=False)
 
-    # 设置参数空间
-    parameters_space = {
-        "weight_decay": [0.0001, 0.00001, 0],
-        "dim_question": [64, 128],
-        "dim_concept": [64, 128],
-        "dim_correctness": [64, 128],
-        "dim_latent": [64, 128, 256],
-        "dropout": [0.1, 0.2, 0.3],
+    args = parser.parse_args()
+    params = vars(args)
+    set_seed(params["seed"])
+    global_params, global_objects = config_dkvmn(params)
+
+    dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
+    dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
+    dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)
+    dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
+
+    global_objects["data_loaders"] = {
+        "train_loader": dataloader_train,
+        "valid_loader": dataloader_valid
     }
-    space = {
-        param_name: hp.choice(param_name, param_space)
-        for param_name, param_space in parameters_space.items()
+    global_objects["models"] = {
+        "DKVMN": DKVMN(global_params, global_objects).to(global_params["device"])
     }
-    num = 1
-    for parameter_space in parameters_space.values():
-        num *= len(parameter_space)
-    if num > 100:
-        max_evals = 20 + int(num * 0.2)
-    elif num > 50:
-        max_evals = 15 + int(num * 0.2)
-    elif num > 20:
-        max_evals = 10 + int(num * 0.2)
-    elif num > 10:
-        max_evals = 5 + int(num * 0.2)
-    else:
-        max_evals = num
-    current_best_performance = 0
-    fmin(get_objective_func(parser, config_qdkt, "qDKT", qDKT), space, algo=tpe.suggest, max_evals=max_evals)
+    trainer = SequentialDLKTTrainer(global_params, global_objects)
+    trainer.train()
