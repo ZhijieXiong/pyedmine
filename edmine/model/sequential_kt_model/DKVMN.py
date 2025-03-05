@@ -104,6 +104,7 @@ class DKVMN(nn.Module, DLSequentialKTModel):
         }
 
     def get_predict_score_on_target_question(self, batch, target_index, target_question):
+        # todo: 
         latent = self.get_latent(batch)
         target_latent = latent[:, target_index-1]
 
@@ -121,10 +122,12 @@ class DKVMN(nn.Module, DLSequentialKTModel):
         return predict_score
 
     def get_predict_score_at_target_time(self, batch, target_index):
+        # todo: 
         predict_score_batch = self.forward(batch)
         return predict_score_batch[:, target_index-1]
 
     def get_knowledge_state(self, batch):
+        # todo: 
         num_concept = self.params["models_config"]["DKT"]["embed_config"]["concept"]["num_item"]
 
         self.encoder_layer.flatten_parameters()

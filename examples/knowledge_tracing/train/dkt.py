@@ -13,7 +13,7 @@ from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], description="DKT参数配置", add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=64)
     parser.add_argument("--evaluate_batch_size", type=int, default=256)

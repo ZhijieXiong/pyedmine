@@ -1,5 +1,6 @@
 import torch
 import json
+import math
 import os
 import numpy as np
 import torch.nn as nn
@@ -38,6 +39,8 @@ class EmbedLayer(nn.Module):
                     self.__setattr__(embed_name, self.init_constant_embed(embed_config))
                 else:
                     self.__setattr__(embed_name, nn.Embedding(embed_config["num_item"], embed_config["dim_item"]))
+                    if init_method == "init_zero":
+                        nn.init.constant_(self.__getattr__(embed_name).weight, 0.)
                     # 默认是可学习的
                     self.__getattr__(embed_name).weight.requires_grad = embed_config.get("learnable", True)
             else:
@@ -199,3 +202,21 @@ class EmbedLayer(nn.Module):
         else:
             raise NotImplementedError()
         return related2_emb_fusion
+
+
+class CosinePositionalEmbedding(nn.Module):
+    def __init__(self, d_model, max_len=512):
+        super(CosinePositionalEmbedding, self).__init__()
+        # Compute the positional encodings once in log space.
+        pe = 0.1 * torch.randn(max_len, d_model)
+        position = torch.arange(0, max_len).unsqueeze(1).float()
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() *
+                             -(math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0)
+        self.weight = nn.Parameter(pe, requires_grad=False)
+
+    def forward(self, x):
+        return self.weight[:, :x.size(1), :]
+    

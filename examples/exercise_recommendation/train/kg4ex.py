@@ -14,7 +14,7 @@ from edmine.trainer.ExerciseRecommendationTrainer import ExerciseRecommendationT
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], description="KG4EX的配置", add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
     # 评价指标选择
     parser.add_argument("--top_ns", type=str, default="[5,10]")
     parser.add_argument("--main_metric", type=str, default="KG4EX_ACC")
