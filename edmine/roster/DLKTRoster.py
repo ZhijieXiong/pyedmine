@@ -27,7 +27,7 @@ class DLKTRoster:
     def get_knowledge_state(self, batch):
         model_name = self.params["roster_config"]["model_name"]
         model = self.objects["models"][model_name]
-
+        model.eval()
         if model.model_type == "DLSequentialKTModel":
             batch = self.process_batch4sequential_kt_model(batch)
         else:

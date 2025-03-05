@@ -1,12 +1,13 @@
+import torch
 from abc import abstractmethod
 
 from edmine.model.KnowledgeTracingModel import KnowledgeTracingModel
+from edmine.model.loss import binary_cross_entropy
 
 
 class DLSequentialKTModel(KnowledgeTracingModel):
     model_type = "DLSequentialKTModel"
 
-    @abstractmethod
     def get_predict_loss(self, batch, seq_start=2):
         """
         Computes the prediction loss for a batch of data using binary cross-entropy loss and returns the total loss, detailed loss values, and prediction scores.
@@ -14,7 +15,23 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         :param seq_start: An integer specifying the starting index of the sequence for which to compute the loss. Default is 2.
         :return: A dictionary containing: total_loss, losses_value (A dictionary with detailed loss information), predict_score (The predicted scores for the batch), predict_score_batch (the predicted scores reshaped to match the batch structure)
         """
-        pass
+        mask_bool = torch.ne(batch["mask_seq"], 0)
+        predict_score_result = self.get_predict_score(batch)
+        predict_score = predict_score_result["predict_score"]
+        ground_truth = torch.masked_select(batch["correctness_seq"][:, seq_start-1:], mask_bool[:, seq_start-1:])
+        predict_loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
+        num_sample = torch.sum(batch["mask_seq"][:, seq_start-1:]).item()
+        return {
+            "total_loss": predict_loss,
+            "losses_value": {
+                "predict loss": {
+                    "value": predict_loss.detach().cpu().item() * num_sample,
+                    "num_sample": num_sample
+                },
+            },
+            "predict_score": predict_score,
+            "predict_score_batch": predict_score_result["predict_score_batch"]
+        }
 
     @abstractmethod
     def get_predict_score(self, batch, seq_start=2):

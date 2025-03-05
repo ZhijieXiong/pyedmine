@@ -103,8 +103,8 @@ if __name__ == "__main__":
     alpha = params["alpha"]
     beta = params["beta"]
     gamma = params["gamma"]
-    que_sim_matrix = alpha * user_que_similarity + beta * user_concept_similarity + gamma * user_diff_similarity
+    user_sim_matrix = alpha * user_que_similarity + beta * user_concept_similarity + gamma * user_diff_similarity
 
     save_path = os.path.join(setting_dir,
                              f"{params['dataset_name']}_user_sim_mat_{params['similarity']}_{alpha}_{beta}_{gamma}.npy")
-    np.save(save_path, que_sim_matrix)
+    np.save(save_path, user_sim_matrix)

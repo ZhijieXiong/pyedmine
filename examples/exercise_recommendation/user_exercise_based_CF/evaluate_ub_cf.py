@@ -41,7 +41,6 @@ if __name__ == "__main__":
     file_manager = FileManager(config.FILE_MANAGER_ROOT)
     setting_dir = file_manager.get_setting_dir(setting_name)
     users_data = read_kt_file(os.path.join(setting_dir, params["user_data_file_name"]))
-    delete_test_data(users_data)
     Q_table = file_manager.get_q_table(params["dataset_name"])
     q2c = q2c_from_q_table(Q_table)
     num_question, num_concept = Q_table.shape[0], Q_table.shape[1]
@@ -55,8 +54,8 @@ if __name__ == "__main__":
         else:
             question_diff[q_id] = 1 - question_acc[q_id]
 
-    que_sim_mat = np.load(os.path.join(setting_dir, params["user_sim_mat_file_name"]))
-    similar_users = np.argsort(-que_sim_mat, axis=1)
+    user_sim_mat = np.load(os.path.join(setting_dir, params["user_sim_mat_file_name"]))
+    similar_users = np.argsort(-user_sim_mat, axis=1)
 
     rec_strategy = params["rec_strategy"]
     top_ns = eval(params["top_ns"])

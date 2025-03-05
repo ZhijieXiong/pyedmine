@@ -6,7 +6,6 @@ from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.Transformer import TransformerLayer4SimpleKT
 from edmine.model.module.EmbedLayer import CosinePositionalEmbedding
 from edmine.model.module.PredictorLayer import PredictorLayer
-from edmine.model.loss import binary_cross_entropy
 
 
 class SimpleKT(nn.Module, DLSequentialKTModel):
@@ -65,34 +64,15 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
 
         latent = self.encoder_layer(encoder_input)
         predict_layer_input = torch.cat((latent, question_emb), dim=2)
-        predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
+        predict_score_batch = self.predict_layer(predict_layer_input).squeeze(dim=-1)
 
-        return predict_score
+        return predict_score_batch
 
-    def get_predict_score(self, batch):
-        mask_bool_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_batch = self.forward(batch)[:, 1:]
-        predict_score = torch.masked_select(predict_score_batch, mask_bool_seq[:, 1:])
+    def get_predict_score(self, batch, seq_start=2):
+        mask_seq = torch.ne(batch["mask_seq"], 0)
+        predict_score_batch = self.forward(batch)[:, seq_start-1:]
+        predict_score = torch.masked_select(predict_score_batch, mask_seq[:, seq_start-1:])
         return {
-            "predict_score": predict_score,
-            "predict_score_batch": predict_score_batch
-        }
-
-    def get_predict_loss(self, batch):
-        mask_bool_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_batch = self.forward(batch)[:, 1:]
-        predict_score = torch.masked_select(predict_score_batch, mask_bool_seq[:, 1:])
-        ground_truth = torch.masked_select(batch["correctness_seq"][:, 1:], mask_bool_seq[:, 1:])
-        predict_loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
-        num_sample = torch.sum(batch["mask_seq"][:, 1:]).item()
-        return {
-            "total_loss": predict_loss,
-            "losses_value": {
-                "predict loss": {
-                    "value": predict_loss.detach().cpu().item() * num_sample,
-                    "num_sample": num_sample
-                }
-            },
             "predict_score": predict_score,
             "predict_score_batch": predict_score_batch
         }

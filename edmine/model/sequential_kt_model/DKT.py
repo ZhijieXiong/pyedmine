@@ -53,41 +53,18 @@ class DKT(nn.Module, DLSequentialKTModel):
             "concept", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
         latent = self.get_latent(batch)
         predict_layer_input = torch.cat((latent, concept_emb[:, 1:]), dim=2)
-        predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
+        predict_score_batch = self.predict_layer(predict_layer_input).squeeze(dim=-1)
 
-        return predict_score
+        return predict_score_batch
 
     def get_predict_score(self, batch, seq_start=2):
-        mask_bool_seq = torch.ne(batch["mask_seq"], 0)
+        mask_seq = torch.ne(batch["mask_seq"], 0)
         predict_score_batch = self.forward(batch)
-        predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_bool_seq[:, seq_start-1:])
+        predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_seq[:, seq_start-1:])
 
         return {
             "predict_score": predict_score,
             "predict_score_batch": predict_score_batch
-        }
-
-    def get_predict_loss(self, batch, seq_start=2):
-        mask_bool_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_result = self.get_predict_score(batch)
-        predict_score = predict_score_result["predict_score"]
-        ground_truth = torch.masked_select(batch["correctness_seq"][:, seq_start-1:], mask_bool_seq[:, seq_start-1:])
-        # mac M1不支持double
-        if self.params["device"] == "mps":
-            predict_loss = nn.functional.binary_cross_entropy(predict_score.float(), ground_truth.float())
-        else:
-            predict_loss = nn.functional.binary_cross_entropy(predict_score.double(), ground_truth.double())
-        num_sample = torch.sum(batch["mask_seq"][:, 1:]).item()
-        return {
-            "total_loss": predict_loss,
-            "losses_value": {
-                "predict loss": {
-                    "value": predict_loss.detach().cpu().item() * num_sample,
-                    "num_sample": num_sample
-                },
-            },
-            "predict_score": predict_score,
-            "predict_score_batch": predict_score_result["predict_score_batch"]
         }
 
     def get_predict_score_on_target_question(self, batch, target_index, target_question):

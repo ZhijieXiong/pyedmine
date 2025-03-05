@@ -5,7 +5,7 @@ import numpy as np
 
 import config
 from rec_strategy import *
-from utils import get_performance
+from utils import delete_test_data, get_performance
 
 from edmine.utils.data_io import read_mlkc_data, read_kt_file
 from edmine.utils.parse import q2c_from_q_table
@@ -43,6 +43,7 @@ if __name__ == "__main__":
     num_question, num_concept = Q_table.shape[0], Q_table.shape[1]
 
     users_data = read_kt_file(os.path.join(setting_dir, params["user_data_file_name"]))
+    delete_test_data(users_data)
     que_sim_mat = np.load(os.path.join(setting_dir, params["que_sim_mat_file_name"]))
     similar_questions = np.argsort(-que_sim_mat, axis=1)[:, 1:]
 
@@ -64,6 +65,7 @@ if __name__ == "__main__":
 
     used_metrics = eval(params["used_metrics"])
     mlkc = read_mlkc_data(os.path.join(setting_dir, params["mlkc_file_name"]))
+    users_data = read_kt_file(os.path.join(setting_dir, params["user_data_file_name"]))
     performance = get_performance(used_metrics, top_ns, users_data, rec_result, q2c, mlkc, params["delta"])
     top_ns = sorted(top_ns)
     print(f"performance of {params['que_sim_mat_file_name']}-rec{params['rec_strategy']}")
