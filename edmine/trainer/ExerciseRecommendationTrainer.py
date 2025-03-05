@@ -25,13 +25,13 @@ class ExerciseRecommendationTrainer(SingleModelStepTrainer):
             valid_end_idx = user_history_answer["valid_end_idx"]
             seq_len = user_history_answer["seq_len"]
             users_concepts.append(
-                get_user_answer_correctly_concepts(
+                get_history_correct_concepts(
                     user_history_answer["question_seq"][:seq_len], 
                     user_history_answer["correctness_seq"][:seq_len], q2c
                 )
             )
             users_questions.append(
-                get_user_answer_correctly_questions(
+                get_future_incorrect_questions(
                     user_history_answer["question_seq"][valid_end_idx:seq_len], 
                     user_history_answer["correctness_seq"][valid_end_idx:seq_len]
                 )

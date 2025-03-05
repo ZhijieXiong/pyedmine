@@ -87,9 +87,9 @@ def offline_ndcg(users_future_wrong_questions, users_recommended_questions):
     return np.mean(users_ndcg)
 
 
-def get_user_answer_correctly_questions(question_seq, correct_seq):
+def get_future_incorrect_questions(question_seq, correct_seq):
     """
-    返回用户做错的习题，保持顺序（为了计算NDCG）
+    返回用户未来做错的习题，保持顺序（为了计算NDCG）
     """
     answer_correctly_questions = []
     for q_id, correctness in zip(question_seq, correct_seq):
@@ -98,7 +98,10 @@ def get_user_answer_correctly_questions(question_seq, correct_seq):
     return answer_correctly_questions
 
 
-def get_user_answer_correctly_concepts(question_seq, correct_seq, q2c):
+def get_history_correct_concepts(question_seq, correct_seq, q2c):
+    """
+    返回用户历史做对的知识点
+    """
     answer_correctly_concepts = []
     for q_id, correctness in zip(question_seq, correct_seq):
         if correctness == 1:

@@ -85,5 +85,5 @@ if __name__ == "__main__":
     que_sim_matrix = alpha * similarity + beta * concept_similarity - gamma * difficulty_dissimilarity
 
     save_path = os.path.join(setting_dir,
-                             f"{params['dataset_name']}_que_smi_mat_{params['similarity']}_{alpha}_{beta}_{gamma}.npy")
+                             f"{params['dataset_name']}_que_sim_mat_{params['similarity']}_{alpha}_{beta}_{gamma}.npy")
     np.save(save_path, que_sim_matrix)

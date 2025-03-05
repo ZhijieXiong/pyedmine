@@ -1,15 +1,15 @@
 import argparse
 import json
 import os
+import numpy as np
 
 import config
-from utils import delete_test_data
+from utils import delete_test_data, get_performance
 from rec_strategy import *
 
 from edmine.utils.data_io import read_mlkc_data, read_kt_file
 from edmine.utils.parse import q2c_from_q_table, cal_qc_acc4kt_data
 from edmine.data.FileManager import FileManager
-from edmine.metric.exercise_recommendation import *
 
 
 if __name__ == "__main__":
@@ -18,10 +18,10 @@ if __name__ == "__main__":
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
-    parser.add_argument("--user_sim_mat_file_name", type=str, default="assist2009_user_smi_mat_cossim_1_0.25_0.5.npy")
+    parser.add_argument("--user_sim_mat_file_name", type=str, default="assist2009_user_sim_mat_cossim_1.0_0.5_0.5.npy")
     # 评价指标选择
-    parser.add_argument("--used_metrics", type=str, default="['KG4EX_ACC', 'KG4EX_NOV', 'PER_IND']",
-                        help='KG4EX_ACC, KG4EX_VOL, PER_IND')
+    parser.add_argument("--used_metrics", type=str, default="['KG4EX_ACC', 'KG4EX_NOV', 'PERSONALIZATION_INDEX', 'OFFLINE_ACC', 'OFFLINE_NDCG']",
+                        help='KG4EX_ACC, KG4EX_VOL, PERSONALIZATION_INDEX, OFFLINE_ACC, OFFLINE_NDCG')
     parser.add_argument("--top_ns", type=str, default="[5,10,20]")
     # KG4EX_ACC指标需要的数据
     parser.add_argument("--mlkc_file_name", type=str, default="assist2009_dkt_mlkc_test.txt")
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     users_data = read_kt_file(os.path.join(setting_dir, params["user_data_file_name"]))
     delete_test_data(users_data)
     Q_table = file_manager.get_q_table(params["dataset_name"])
-    question2concept = q2c_from_q_table(Q_table)
+    q2c = q2c_from_q_table(Q_table)
     num_question, num_concept = Q_table.shape[0], Q_table.shape[1]
 
     question_acc = cal_qc_acc4kt_data(users_data, "question", 0)
@@ -76,41 +76,13 @@ if __name__ == "__main__":
         raise ValueError(f"{rec_strategy} is not implemented")
 
     used_metrics = eval(params["used_metrics"])
-    performance = {x: {} for x in top_ns}
-    for metric in used_metrics:
-        for top_n in top_ns:
-            rec_ques = rec_result[top_n]
-            if metric == "PER_IND":
-                rec_ques_ = []
-                for user_id in rec_ques.keys():
-                    rec_ques_.append(rec_ques[user_id])
-                performance[top_n][metric] = personalization_index(rec_ques_)
-            if metric == "KG4EX_ACC":
-                mlkc = read_mlkc_data(os.path.join(setting_dir, params["mlkc_file_name"]))
-                rec_ques_ = []
-                mlkc_ = []
-                for user_id in rec_ques.keys():
-                    rec_ques_.append(rec_ques[user_id])
-                    mlkc_.append(mlkc[user_id])
-
-                performance[top_n][metric] = kg4ex_acc(mlkc_, rec_ques_, question2concept, params["delta"])
-            if metric == "KG4EX_NOV":
-                correct_cs = {}
-                for item_data in users_data:
-                    user_id = item_data["user_id"]
-                    seq_len = item_data["seq_len"]
-                    question_seq = item_data["question_seq"][:seq_len]
-                    correct_seq = item_data["correctness_seq"][:seq_len]
-                    correct_cs[user_id] = get_user_answer_correctly_concepts(question_seq, correct_seq, question2concept)
-
-                rec_ques_ = []
-                correct_cs_ = []
-                for user_id in rec_ques.keys():
-                    rec_ques_.append(rec_ques[user_id])
-                    correct_cs_.append(correct_cs[user_id])
-
-                performance[top_n][metric] = kg4ex_novelty(correct_cs_, rec_ques_, question2concept)
-
+    mlkc = read_mlkc_data(os.path.join(setting_dir, params["mlkc_file_name"]))
+    performance = get_performance(used_metrics, top_ns, users_data, rec_result, q2c, mlkc, params["delta"])
     top_ns = sorted(top_ns)
+    print(f"performance of {params['user_sim_mat_file_name']}-rec{params['rec_strategy']}")
     for top_n in top_ns:
-        print(f"top {top_n}, {json.dumps(performance[top_n])}")
+        top_n_performance = performance[top_n]
+        performance_str = ""
+        for metric_name, metric_value in top_n_performance.items():
+            performance_str += f"{metric_name}: {metric_value:<9.5}, "
+        print(f"    top {top_n} performance are {performance_str}")
