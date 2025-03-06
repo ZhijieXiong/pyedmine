@@ -41,6 +41,8 @@ class EmbedLayer(nn.Module):
                     self.__setattr__(embed_name, nn.Embedding(embed_config["num_item"], embed_config["dim_item"]))
                     if init_method == "init_zero":
                         nn.init.constant_(self.__getattr__(embed_name).weight, 0.)
+                    if init_method == "xavier_normal":
+                        nn.init.xavier_normal_(self.__getattr__(embed_name).weight)
                     # 默认是可学习的
                     self.__getattr__(embed_name).weight.requires_grad = embed_config.get("learnable", True)
             else:

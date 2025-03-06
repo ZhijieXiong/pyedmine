@@ -32,12 +32,12 @@ class NCD(nn.Module, DLCognitiveDiagnosisModel):
     def forward(self, batch):
         user_id = batch["user_id"]
         question_id = batch["question_id"]
-        Q_table = self.objects["dataset"]["q_table_tensor"]
+        q_table = self.objects["dataset"]["q_table_tensor"]
 
         user_emb = torch.sigmoid(self.embed_layer.get_emb("user", user_id))
         question_diff = torch.sigmoid(self.embed_layer.get_emb("question_diff", question_id))
         question_disc = torch.sigmoid(self.embed_layer.get_emb("question_disc", question_id)) * 10
-        predict_layer_input = question_disc * (user_emb - question_diff) * Q_table[question_id]
+        predict_layer_input = question_disc * (user_emb - question_diff) * q_table[question_id]
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
 
         return predict_score
