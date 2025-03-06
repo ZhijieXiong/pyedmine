@@ -43,7 +43,7 @@ if __name__ == "__main__":
     if not os.path.exists(graph_dir):
         os.mkdir(graph_dir)
         
-    with open(os.path.join(graph_dir, f"u_from_e_{params['train_file_name']}.txt"), 'w') as f:
+    with open(os.path.join(graph_dir, f"u_from_e_{params['train_file_name']}"), 'w') as f:
         f.write(u_from_e)
-    with open(os.path.join(graph_dir, f"e_from_u_{params['train_file_name']}.txt"), 'w') as f:
+    with open(os.path.join(graph_dir, f"e_from_u_{params['train_file_name']}"), 'w') as f:
         f.write(e_from_u)

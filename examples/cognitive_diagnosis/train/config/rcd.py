@@ -23,7 +23,6 @@ MODELS_DIR = settings["MODELS_DIR"]
 
 def build_graph(g_path, node, directed=True):
     g = dgl.DGLGraph()
-    # add 34 nodes into the graph; nodes are labeled from 0~33
     g.add_nodes(node)
     edge_list = []
     with open(g_path, 'r') as f:
@@ -70,56 +69,46 @@ def config_rcd(local_params):
                 },
                 "concept": {
                     "num_item": local_params["num_concept"],
-                    "dim_item": local_params["dim_concept"],
+                    "dim_item": local_params["num_concept"],
                     "init_method": "xavier_normal"
                 }
-            },
-            "predictor_config": {
-                "type": "direct",
-                "dropout": local_params["dropout"],
-                "num_predict_layer": local_params["num_predict_layer"],
-                "dim_predict_in": 2 * local_params["num_concept"],
-                "dim_predict_mid": local_params["dim_predict_mid"],
-                "dim_predict_out": 1,
-                "activate_type": local_params["activate_type"],
-                "last_layer_max_value": 1
             }
         }
     }
     
     # 加载需要的数据
     setting_dir = global_objects["file_manager"].get_setting_dir(local_params["setting_name"])
-    graph_dir = os.path.join(setting_dir, "graph")
+    graph_dir = os.path.join(setting_dir, "RCD")
     dataset_name = local_params["dataset_name"]
     train_file_name = local_params["train_file_name"]
     global_objects["dataset"]["local_map"] = {
         'directed_g': build_graph(
             os.path.join(graph_dir, f"{dataset_name}_K_Directed.txt"), 
-            local_params["num_comcept"],
+            local_params["num_concept"],
             True
         ).to(global_params["device"]),
         'undirected_g': build_graph(
             os.path.join(graph_dir, f"{dataset_name}_K_Undirected.txt"), 
-            local_params["num_comcept"],
+            local_params["num_concept"],
             False
         ).to(global_params["device"]),
         'k_from_e': build_graph(
-            os.path.join(graph_dir, f"k_from_e_{train_file_name}.txt"), 
-            local_params["num_comcept"] + local_params["num_question"],
+            os.path.join(graph_dir, f"k_from_e_{train_file_name}"), 
+            local_params["num_concept"] + local_params["num_question"],
             True
         ).to(global_params["device"]),
         'e_from_k': build_graph(
-            os.path.join(graph_dir, f"e_from_k_{train_file_name}.txt"), 
-            local_params["num_comcept"] + local_params["num_question"],
+            os.path.join(graph_dir, f"e_from_k_{train_file_name}"), 
+            local_params["num_concept"] + local_params["num_question"],
             True
         ).to(global_params["device"]),
         'u_from_e': build_graph(
-            os.path.join(graph_dir, f"u_from_e_{train_file_name}.txt"), 
+            os.path.join(graph_dir, f"u_from_e_{train_file_name}"), 
             local_params["num_question"] + local_params["num_user"],
             True
         ).to(global_params["device"]),
         'e_from_u': build_graph(
-            os.path.join(graph_dir, f"e_from_u_{train_file_name}.txt"), 
+            os.path.join(graph_dir, f"e_from_u_{train_file_name}"), 
             local_params["num_question"] + local_params["num_user"],
             True
         ).to(global_params["device"])

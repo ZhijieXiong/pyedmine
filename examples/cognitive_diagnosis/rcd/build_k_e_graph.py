@@ -47,7 +47,7 @@ if __name__ == "__main__":
         os.mkdir(graph_dir)
         
     
-    with open(os.path.join(graph_dir, f"k_from_e_{params['train_file_name']}.txt"), 'w') as f:
+    with open(os.path.join(graph_dir, f"k_from_e_{params['train_file_name']}"), 'w') as f:
         f.write(k_from_e)
-    with open(os.path.join(graph_dir, f"e_from_k_{params['dataset_name']}.txt"), 'w') as f:
+    with open(os.path.join(graph_dir, f"e_from_k_{params['train_file_name']}"), 'w') as f:
         f.write(e_from_k)

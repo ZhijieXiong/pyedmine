@@ -63,6 +63,8 @@ class SingleModelEpochTrainer(ABC):
                     nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip_config["grad_clipped"])
                 if (batch_i + 1) % accumulation_step == 0:
                     optimizer.step()
+                    if hasattr(model, 'apply_clipper') and callable(getattr(model, 'apply_clipper')):
+                        model.apply_clipper()
                     optimizer.zero_grad()
             if scheduler_config["use_scheduler"]:
                 scheduler.step()

@@ -104,8 +104,8 @@ class RCD(nn.Module, DLCognitiveDiagnosisModel):
         
         model_config = params["models_config"]["RCD"]
         num_concept = model_config["embed_config"]["concept"]["num_item"]
-        num_question = model_config["embed_config"]["concept"]["num_item"]
-        num_user = model_config["embed_config"]["concept"]["num_item"]
+        num_question = model_config["embed_config"]["question"]["num_item"]
+        num_user = model_config["embed_config"]["user"]["num_item"]
         
         self.embed_layer = EmbedLayer(model_config["embed_config"])
         self.k_index = torch.LongTensor(list(range(num_concept))).to(params["device"])
@@ -113,7 +113,11 @@ class RCD(nn.Module, DLCognitiveDiagnosisModel):
         self.exer_index = torch.LongTensor(list(range(num_question))).to(params["device"])
         self.FusionLayer1 = Fusion(params, objects)
         self.FusionLayer2 = Fusion(params, objects)
-        self.predict_layer = PredictorLayer(model_config["predictor_config"])
+        self.prednet_full1 = nn.Linear(2 * num_concept, num_concept, bias=False)
+        # self.drop_1 = nn.Dropout(p=0.5)
+        self.prednet_full2 = nn.Linear(2 * num_concept, num_concept, bias=False)
+        # self.drop_2 = nn.Dropout(p=0.5)
+        self.prednet_full3 = nn.Linear(1 * num_concept, 1)
 
         # initialization
         for name, param in self.named_parameters():
@@ -126,8 +130,8 @@ class RCD(nn.Module, DLCognitiveDiagnosisModel):
         q_table = self.objects["dataset"]["q_table_tensor"]
         
         all_user_emb = self.embed_layer.get_emb("user", self.stu_index)
-        all_question_emb = self.get_emb("question", self.exer_index)
-        all_concept_emb = self.get_emb("concept", self.k_index)
+        all_question_emb = self.embed_layer.get_emb("question", self.exer_index)
+        all_concept_emb = self.embed_layer.get_emb("concept", self.k_index)
 
         # Fusion layer 1
         kn_emb1, exer_emb1, all_stu_emb1 = self.FusionLayer1(all_concept_emb, all_question_emb, all_user_emb)
@@ -153,7 +157,7 @@ class RCD(nn.Module, DLCognitiveDiagnosisModel):
         sum_out = torch.sum(o * q_table[question_id].unsqueeze(2), dim = 1)
         count_of_concept = torch.sum(q_table[question_id], dim = 1).unsqueeze(1)
         output = sum_out / count_of_concept
-        return output
+        return output.squeeze(-1)
     
     def get_predict_score(self, batch):
         predict_score = self.forward(batch)
