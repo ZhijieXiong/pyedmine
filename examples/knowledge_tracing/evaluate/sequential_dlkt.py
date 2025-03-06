@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 加载模型参数配置
     parser.add_argument("--model_dir_name", type=str, help="",
-                        default="DKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-02@01-56-01")
+                        default="DKVMN@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-06@02-12-53")
     parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # 测试配置

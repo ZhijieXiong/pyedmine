@@ -74,4 +74,4 @@ if __name__ == "__main__":
         performance_str = ""
         for metric_name, metric_value in top_n_performance.items():
             performance_str += f"{metric_name}: {metric_value:<9.5}, "
-        print(f"    top {top_n} performance are {performance_str}")
+        print(f"    top {top_n} performances are {performance_str}")

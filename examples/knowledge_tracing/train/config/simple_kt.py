@@ -51,7 +51,7 @@ def config_simple_kt(local_params):
                     "dim_item": local_params["dim_model"]
                 },
                 "interaction": {
-                    "num_item": local_params["num_concept"] * (2 if local_params["separate_qa"] else 1),
+                    "num_item": (local_params["num_concept"] * 2) if local_params["separate_qa"] else 2,
                     "dim_item": local_params["dim_model"]
                 },
                 "interaction_var": {

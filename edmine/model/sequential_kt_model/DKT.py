@@ -59,6 +59,8 @@ class DKT(nn.Module, DLSequentialKTModel):
 
     def get_predict_score(self, batch, seq_start=2):
         mask_seq = torch.ne(batch["mask_seq"], 0)
+        # predict_score_batch的shape必须为(bs, seq_len-1)，其中第二维的第一个元素为对序列第二题的预测分数
+        # 如此设定是为了做cold start evaluation
         predict_score_batch = self.forward(batch)
         predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_seq[:, seq_start-1:])
 
@@ -73,13 +75,13 @@ class DKT(nn.Module, DLSequentialKTModel):
 
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        concept_emb = self.embed_layer.get_emb_fused1(
+        target_question_emb = self.embed_layer.get_emb_fused1(
             "concept", q2c_transfer_table, q2c_mask_table, target_question)
 
         num_question = target_question.shape[1]
         batch_size = batch["correctness_seq"].shape[0]
         target_latent_extend = target_latent.repeat_interleave(num_question, dim=0).view(batch_size, num_question, -1)
-        predict_layer_input = torch.cat((target_latent_extend, concept_emb), dim=2)
+        predict_layer_input = torch.cat((target_latent_extend, target_question_emb), dim=2)
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
 
         return predict_score

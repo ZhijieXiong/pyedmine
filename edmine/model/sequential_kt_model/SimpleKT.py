@@ -35,11 +35,11 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
                 "interaction", q2c_transfer_table, q2c_mask_table, batch["question_seq"], other_item_index=interaction_seq)
         else:
             # e_{(c_t, r_t)} = c_{c_t} + r_{r_t}
-            interaction_emb = self.embed_layer.get_emb("interaction_var", batch["correctness_seq"]) + concept_emb
+            interaction_emb = self.embed_layer.get_emb("interaction", batch["correctness_seq"]) + concept_emb
 
         return concept_emb, interaction_emb
-
-    def forward(self, batch):
+    
+    def get_latent(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
 
@@ -48,7 +48,7 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
         # d_ct 总结了包含当前question（concept）的problems（questions）的变化
         concept_variation_emb = self.embed_layer.get_emb_fused1("concept_var", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
         # mu_{q_t}
-        question_difficulty_emb = self.embed_layer.get_emb_fused1("question_diff", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
+        question_difficulty_emb = self.embed_layer.get_emb("question_diff", batch["question_seq"])
         # mu_{q_t} * d_ct + c_ct
         question_emb = concept_emb + question_difficulty_emb * concept_variation_emb
         # f_{(c_t, r_t)}中的r_t
@@ -63,13 +63,24 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
         }
 
         latent = self.encoder_layer(encoder_input)
+        return latent
+
+    def forward(self, batch):
+        q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
+        q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
+        concept_emb, _ = self.base_emb(batch)
+        concept_variation_emb = self.embed_layer.get_emb_fused1("concept_var", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
+        question_difficulty_emb = self.embed_layer.get_emb("question_diff", batch["question_seq"])
+        question_emb = concept_emb + question_difficulty_emb * concept_variation_emb
+        latent = self.get_latent(batch)
         predict_layer_input = torch.cat((latent, question_emb), dim=2)
         predict_score_batch = self.predict_layer(predict_layer_input).squeeze(dim=-1)
-
         return predict_score_batch
 
     def get_predict_score(self, batch, seq_start=2):
         mask_seq = torch.ne(batch["mask_seq"], 0)
+        # predict_score_batch的shape必须为(bs, seq_len-1)，其中第二维的第一个元素为对序列第二题的预测分数
+        # 如此设定是为了做cold start evaluation
         predict_score_batch = self.forward(batch)[:, seq_start-1:]
         predict_score = torch.masked_select(predict_score_batch, mask_seq[:, seq_start-1:])
         return {
@@ -78,25 +89,22 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
         }
     
     def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        # todo: 
-        latent = self.get_latent(batch)
-        target_latent = latent[:, target_index-1]
-
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        concept_emb = self.embed_layer.get_emb_fused1(
-            "concept", q2c_transfer_table, q2c_mask_table, target_question)
-
+        concept_emb = self.embed_layer.get_emb_fused1("concept", q2c_transfer_table, q2c_mask_table, target_question)
+        concept_variation_emb = self.embed_layer.get_emb_fused1("concept_var", q2c_transfer_table, q2c_mask_table, target_question)
+        question_difficulty_emb = self.embed_layer.get_emb("question_diff", target_question)
+        question_emb = concept_emb + question_difficulty_emb * concept_variation_emb
+        latent = self.get_latent(batch)
+        target_latent = latent[:, target_index-1]
         num_question = target_question.shape[1]
         batch_size = batch["correctness_seq"].shape[0]
         target_latent_extend = target_latent.repeat_interleave(num_question, dim=0).view(batch_size, num_question, -1)
-        predict_layer_input = torch.cat((target_latent_extend, concept_emb), dim=2)
+        predict_layer_input = torch.cat((target_latent_extend, question_emb), dim=2)
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
-
         return predict_score
 
     def get_predict_score_at_target_time(self, batch, target_index):
-        # todo: 
         predict_score_batch = self.forward(batch)
         return predict_score_batch[:, target_index-1]
 

@@ -6,7 +6,13 @@ from edmine.utils.data_io import read_json
 from edmine.model.sequential_kt_model.DKT import DKT
 from edmine.model.sequential_kt_model.DKT_KG4EX import DKT_KG4EX
 from edmine.model.sequential_kt_model.qDKT import qDKT
+from edmine.model.sequential_kt_model.DKVMN import DKVMN
+from edmine.model.sequential_kt_model.ATKT import ATKT
+from edmine.model.sequential_kt_model.SimpleKT import SimpleKT
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
+from edmine.model.cognitive_diagnosis_model.IRT import IRT
+from edmine.model.cognitive_diagnosis_model.MIRT import MIRT
+from edmine.model.cognitive_diagnosis_model.DINA import DINA
 from edmine.model.exercise_recommendation_model.KG4EX import KG4EX
 
 
@@ -14,7 +20,13 @@ model_table = {
     "DKT": DKT,
     "DKT_KG4EX": DKT_KG4EX,
     "qDKT": qDKT,
+    "DKVMN": DKVMN,
+    "ATKT": ATKT,
+    "SimpleKT": SimpleKT,
     "NCD": NCD,
+    "IRT": IRT,
+    "MIRT": MIRT,
+    "DINA": DINA,
     "KG4EX": KG4EX
 }
 

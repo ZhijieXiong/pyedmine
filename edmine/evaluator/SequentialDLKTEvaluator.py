@@ -69,8 +69,8 @@ class SequentialDLKTEvaluator(DLEvaluator):
 
         if multi_step > 1:
             inference_result["multi_step"] = {
-                "accumulate": self.multi_step_inference(model, data_loader, True),
-                "non-accumulate": self.multi_step_inference(model, data_loader, False)
+                "non-accumulate": self.multi_step_inference(model, data_loader, False),
+                "accumulate": self.multi_step_inference(model, data_loader, True)
             }
 
         return inference_result
@@ -81,7 +81,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
 
         predict_score_all = []
         ground_truth_all = []
-        for batch in tqdm(data_loader, desc=f"multi step inference, accumulative: {use_accumulative}"):
+        for batch in tqdm(data_loader, desc=f"multi step inference, {'accumulative' if use_accumulative else 'non-accumulative'}"):
             seq_len = batch["correctness_seq"].shape[1]
             for i in range(seq_start - 1, seq_len - multi_step):
                 if use_accumulative:
