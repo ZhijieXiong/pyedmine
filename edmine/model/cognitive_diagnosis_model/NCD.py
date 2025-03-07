@@ -4,17 +4,8 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
-
-
-class NoneNegClipper(object):
-    def __init__(self):
-        super(NoneNegClipper, self).__init__()
-
-    def __call__(self, module):
-        if hasattr(module, 'weight'):
-            w = module.weight.data
-            a = torch.relu(torch.neg(w))
-            w.add_(a)
+from edmine.model.module.Clipper import NoneNegClipper
+from edmine.model.loss import binary_cross_entropy
 
 
 class NCD(nn.Module, DLCognitiveDiagnosisModel):
@@ -45,10 +36,7 @@ class NCD(nn.Module, DLCognitiveDiagnosisModel):
     def get_predict_loss(self, batch):
         predict_score = self.forward(batch)
         ground_truth = batch["correctness"]
-        if self.params["device"] == "mps":
-            loss = torch.nn.functional.binary_cross_entropy(predict_score.float(), ground_truth.float())
-        else:
-            loss = torch.nn.functional.binary_cross_entropy(predict_score.double(), ground_truth.double())
+        loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
         num_sample = batch["correctness"].shape[0]
         return {
             "total_loss": loss,
