@@ -3,12 +3,12 @@ import argparse
 from torch.utils.data import DataLoader
 
 from set_params.sequential_kt_params import setup_common_args
-from config.simple_kt import config_simple_kt
+from config.akt import config_akt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
 from edmine.dataset.SequentialKTDataset import BasicSequentialKTDataset
-from edmine.model.sequential_kt_model.SimpleKT import SimpleKT
+from edmine.model.sequential_kt_model.AKT import AKT
 from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=24)
-    parser.add_argument("--evaluate_batch_size", type=int, default=256)
+    parser.add_argument("--evaluate_batch_size", type=int, default=128)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.0001)
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("--scheduler_milestones", type=str, default="[20, 50, 100]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
     # 梯度裁剪
-    parser.add_argument("--enable_clip_grad", type=str2bool, default=False)
+    parser.add_argument("--enable_clip_grad", type=str2bool, default=True)
     parser.add_argument("--grad_clipped", type=float, default=10.0)
     # 梯度累计
     parser.add_argument("--accumulation_step", type=int, default=1,
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument("--dim_model", type=int, default=256)
     parser.add_argument("--num_block", type=int, default=4)
     parser.add_argument("--num_head", type=int, default=4)
-    parser.add_argument("--dim_ff", type=int, default=256)
+    parser.add_argument("--dim_ff", type=int, default=64)
     parser.add_argument("--seq_len", type=int, default=200)
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--num_predict_layer", type=int, default=2)
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--activate_type", type=str, default="relu")
     parser.add_argument("--key_query_same", type=str2bool, default=True)
     parser.add_argument("--separate_qa", type=str2bool, default=False)
-    parser.add_argument("--difficulty_scalar", type=str2bool, default=False)
+    parser.add_argument("--w_rasch_loss", type=float, default=0.00001)
     # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
     parser.add_argument("--use_wandb", type=str2bool, default=False)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = vars(args)
     set_seed(params["seed"])
-    global_params, global_objects = config_simple_kt(params)
+    global_params, global_objects = config_akt(params)
 
     dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         "valid_loader": dataloader_valid
     }
     global_objects["models"] = {
-        "SimpleKT": SimpleKT(global_params, global_objects).to(global_params["device"])
+        "AKT": AKT(global_params, global_objects).to(global_params["device"])
     }
     trainer = SequentialDLKTTrainer(global_params, global_objects)
     trainer.train()
