@@ -1,4 +1,6 @@
 import torch
+import scipy.sparse as sp
+import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -29,3 +31,16 @@ class RCDGraphLayer(nn.Module):
         self.g.apply_edges(self.edge_attention)
         self.g.update_all(self.message_func, self.reduce_func)
         return self.g.ndata.pop('h')
+
+
+class HyperCDgraph:
+    def __init__(self, H: np.ndarray):
+        self.H = H
+        # avoid zero
+        self.Dv = np.count_nonzero(H, axis=1) + 1
+        self.De = np.count_nonzero(H, axis=0) + 1
+
+    def to_tensor_nadj(self):
+        coo = sp.coo_matrix(self.H @ np.diag(1 / self.De) @ self.H.T @ np.diag(1 / self.Dv))
+        indices = torch.from_numpy(np.asarray([coo.row, coo.col]))
+        return torch.sparse_coo_tensor(indices, coo.data, coo.shape, dtype=torch.float64).coalesce()

@@ -3,20 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
     
 from edmine.model.module.Graph import RCDGraphLayer
+from edmine.model.module.Clipper import NoneNegClipper
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
-
-
-class NoneNegClipper(object):
-    def __init__(self):
-        super(NoneNegClipper, self).__init__()
-
-    def __call__(self, module):
-        if hasattr(module, 'weight'):
-            w = module.weight.data
-            a = torch.relu(torch.neg(w))
-            w.add_(a)
             
             
 class Fusion(nn.Module):

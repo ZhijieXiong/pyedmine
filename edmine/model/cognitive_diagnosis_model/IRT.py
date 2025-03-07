@@ -25,7 +25,7 @@ class IRT(nn.Module, DLCognitiveDiagnosisModel):
         a_range = model_config["a_range"]
         D = model_config["D"]
 
-        theta = torch.squeeze(self.embed_layer.get_emb("c", user_id), dim=-1)
+        theta = torch.squeeze(self.embed_layer.get_emb("theta", user_id), dim=-1)
         a = torch.squeeze(self.embed_layer.get_emb("a", question_id), dim=-1)
         b = torch.squeeze(self.embed_layer.get_emb("b", question_id), dim=-1)
         c = torch.sigmoid(torch.squeeze(self.embed_layer.get_emb("c", question_id), dim=-1))
