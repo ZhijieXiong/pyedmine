@@ -69,9 +69,9 @@ class NCD(nn.Module, DLCognitiveDiagnosisModel):
 
     def apply_clipper(self):
         clipper = NoneNegClipper()
-        self.predict_layer1.apply(clipper)
-        self.predict_layer2.apply(clipper)
-        self.predict_layer3.apply(clipper)
+        for layer in self.predict_layer:
+            if isinstance(layer, nn.Linear):
+                layer.apply(clipper)
 
     def get_knowledge_state(self, user_id):
         return torch.sigmoid(self.embed_layer.get_emb("user", user_id))

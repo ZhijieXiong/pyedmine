@@ -4,7 +4,6 @@ import torch.nn.functional as F
     
 from edmine.model.module.Graph import RCDGraphLayer
 from edmine.model.module.EmbedLayer import EmbedLayer
-from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
 
