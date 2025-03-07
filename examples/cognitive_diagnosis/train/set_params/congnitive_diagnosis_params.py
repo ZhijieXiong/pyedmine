@@ -10,9 +10,9 @@ def setup_common_args():
     parser.add_argument("--train_file_name", type=str, default="assist2009_train_fold_0.txt")
     parser.add_argument("--valid_file_name", type=str, default="assist2009_valid_fold_0.txt")
     # 训练策略
-    parser.add_argument("--max_epoch", type=int, default=100)
+    parser.add_argument("--max_epoch", type=int, default=50)
     parser.add_argument("--use_early_stop", type=str2bool, default=True)
-    parser.add_argument("--num_epoch_early_stop", type=int, default=10)
+    parser.add_argument("--num_epoch_early_stop", type=int, default=5)
     # 评价指标选择
     parser.add_argument("--main_metric", type=str, default="AUC")
     parser.add_argument("--use_multi_metrics", type=str2bool, default=False)

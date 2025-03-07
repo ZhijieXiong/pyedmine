@@ -69,7 +69,7 @@ class NCD(nn.Module, DLCognitiveDiagnosisModel):
 
     def apply_clipper(self):
         clipper = NoneNegClipper()
-        for layer in self.predict_layer:
+        for layer in self.predict_layer.predict_layer:
             if isinstance(layer, nn.Linear):
                 layer.apply(clipper)
 
