@@ -1,0 +1,17 @@
+edmine.egg-info
+build
+.ipynb_checkpoints
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.DS_Store
+**/.DS_Store
+wandb
+script
+script_result
+
+/examples/settings.json
+
+/dataset
+/models
