@@ -3,6 +3,8 @@ import numpy as np
 import torch.nn as nn
 
 from edmine.model.module.Attention import MultiHeadAttention4SimpleKT
+from edmine.model.module.Attention import MultiHeadAttention4AKT
+
 
 class TransformerLayer4SimpleKT(nn.Module):
     def __init__(self, params):
@@ -40,6 +42,53 @@ class TransformerLayer4SimpleKT(nn.Module):
             query2 = self.masked_attn_head(query, key, values, mask=src_mask, zero_pad=True)
         else:
             query2 = self.masked_attn_head(query, key, values, mask=src_mask, zero_pad=False)
+        # 残差
+        query = query + self.dropout1(query2)
+        query = self.layer_norm1(query)
+        if apply_pos:
+            query2 = self.linear2(self.dropout(self.activation(self.linear1(query))))
+            query = query + self.dropout2(query2)
+            query = self.layer_norm2(query)
+        return query
+    
+    
+class TransformerLayer4AKT(nn.Module):
+    def __init__(self, params):
+        super(TransformerLayer4AKT, self).__init__()
+        self.params = params
+
+        model_config = self.params["models_config"]["AKT"]
+        dim_model = model_config["dim_model"]
+        dim_ff = model_config["dim_ff"]
+        dropout = model_config["dropout"]
+
+        # Multi-Head Attention Block
+        self.masked_attn_head = MultiHeadAttention4AKT(params)
+
+        # Two layer norm layer and two dropout layer
+        self.layer_norm1 = nn.LayerNorm(dim_model)
+        self.dropout1 = nn.Dropout(dropout)
+
+        self.linear1 = nn.Linear(dim_model, dim_ff)
+        self.activation = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_ff, dim_model)
+
+        self.layer_norm2 = nn.LayerNorm(dim_model)
+        self.dropout2 = nn.Dropout(dropout)
+
+    def forward(self, query, key, value, question_difficulty_emb, apply_pos, mask_flag):
+        seq_len, batch_size = query.size(1), query.size(0)
+        # 上三角和对角为1，其余为0的矩阵
+        upper_triangle_ones = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask_flag).astype('uint8')
+        src_mask = (torch.from_numpy(upper_triangle_ones) == 0).to(self.params["device"])
+        if not mask_flag:
+            # 只看过去
+            query2 = self.masked_attn_head(query, key, value, src_mask, True, question_difficulty_emb)
+        else:
+            # 看当前和过去
+            query2 = self.masked_attn_head(query, key, value, src_mask, False, question_difficulty_emb)
+
         # 残差
         query = query + self.dropout1(query2)
         query = self.layer_norm1(query)

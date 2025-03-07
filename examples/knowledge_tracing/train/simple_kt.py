@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument("--dim_model", type=int, default=256)
     parser.add_argument("--num_block", type=int, default=4)
     parser.add_argument("--num_head", type=int, default=4)
-    parser.add_argument("--dim_ff", type=int, default=64)
+    parser.add_argument("--dim_ff", type=int, default=256)
     parser.add_argument("--seq_len", type=int, default=200)
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--num_predict_layer", type=int, default=2)
