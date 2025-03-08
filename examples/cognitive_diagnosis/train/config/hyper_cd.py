@@ -13,6 +13,7 @@ from edmine.utils.log import get_now_time
 from edmine.utils.data_io import save_params
 from edmine.model.module.Graph import HyperCDgraph
 
+
 current_file_name = inspect.getfile(inspect.currentframe())
 current_dir = os.path.dirname(current_file_name)
 settings_path = os.path.join(current_dir, "../../../settings.json")

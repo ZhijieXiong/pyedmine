@@ -53,7 +53,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         }
 
         if cold_start >= 1:
-            predict_label_cold_start = []
+            predict_score_cold_start = []
             ground_truth_cold_start = []
             for batch_result in result_all_batch:
                 batch_size = batch_result["mask"].shape[0]
@@ -61,11 +61,11 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 cold_start_mask = np.ones((batch_size, seq_len))
                 cold_start_mask[:, cold_start:] = 0
                 mask = np.logical_and(cold_start_mask, batch_result["mask"])
-                predict_label_cold_start.append(batch_result["predict_score"][mask])
+                predict_score_cold_start.append(batch_result["predict_score"][mask])
                 ground_truth_cold_start.append(batch_result["label"][mask])
-            predict_label_cold_start = np.concatenate(predict_label_cold_start, axis=0)
+            predict_score_cold_start = np.concatenate(predict_score_cold_start, axis=0)
             ground_truth_cold_start = np.concatenate(ground_truth_cold_start, axis=0)
-            inference_result["cold_start"] = get_kt_metric(ground_truth_cold_start, predict_label_cold_start)
+            inference_result["cold_start"] = get_kt_metric(ground_truth_cold_start, predict_score_cold_start)
 
         if multi_step > 1:
             inference_result["multi_step"] = {
