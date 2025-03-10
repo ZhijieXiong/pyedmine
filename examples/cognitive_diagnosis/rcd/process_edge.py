@@ -89,31 +89,37 @@ if __name__ == "__main__":
     file_manager = FileManager(FILE_MANAGER_ROOT)
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
     graph_dir = os.path.join(setting_dir, "RCD")
+    if not os.path.exists(graph_dir):
+        os.mkdir(graph_dir)
     data_path = file_manager.get_preprocessed_path(params["dataset_name"])
-    kt_data_ = read_kt_file(data_path)
-    q_table_ = file_manager.get_q_table(params['dataset_name'])
-    graph_ = RCD_construct_dependency_matrix(kt_data_, q_table_).strip()
-    relations = graph_.split("\n")
-    K_Directed = ''
-    K_Undirected = ''
-    edge = []
-    for relation in relations:
-        relation = relation.replace('\n', '').split('\t')
-        src = relation[0]
-        tar = relation[1]
-        edge.append((src, tar))
-    visit = []
-    for e in edge:
-        if e not in visit:
-            if (e[1],e[0]) in edge:
-                K_Undirected += str(e[0] + '\t' + e[1] + '\n')
-                visit.append(e)
-                visit.append((e[1],e[0]))
-            else:
-                K_Directed += str(e[0] + '\t' + e[1] + '\n')
-                visit.append(e)
-    with open(os.path.join(graph_dir, f'{params["dataset_name"]}_K_Directed.txt'), 'w') as f:
-        f.write(K_Directed)
-    with open(os.path.join(graph_dir, f'{params["dataset_name"]}_K_Undirected.txt'), 'w') as f:
-        f.write(K_Undirected)
-        
+    directed_path = os.path.join(graph_dir, f'{params["dataset_name"]}_K_Directed.txt')
+    undirected_path = os.path.join(graph_dir, f'{params["dataset_name"]}_K_Undirected.txt')
+    
+    if (not os.path.exists(directed_path)) or (not os.path.join(undirected_path)):
+        kt_data_ = read_kt_file(data_path)
+        q_table_ = file_manager.get_q_table(params['dataset_name'])
+        graph_ = RCD_construct_dependency_matrix(kt_data_, q_table_).strip()
+        relations = graph_.split("\n")
+        K_Directed = ''
+        K_Undirected = ''
+        edge = []
+        for relation in relations:
+            relation = relation.replace('\n', '').split('\t')
+            src = relation[0]
+            tar = relation[1]
+            edge.append((src, tar))
+        visit = []
+        for e in edge:
+            if e not in visit:
+                if (e[1],e[0]) in edge:
+                    K_Undirected += str(e[0] + '\t' + e[1] + '\n')
+                    visit.append(e)
+                    visit.append((e[1],e[0]))
+                else:
+                    K_Directed += str(e[0] + '\t' + e[1] + '\n')
+                    visit.append(e)
+        with open(directed_path, 'w') as f:
+            f.write(K_Directed)
+        with open(undirected_path, 'w') as f:
+            f.write(K_Undirected)
+            

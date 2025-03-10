@@ -19,6 +19,11 @@ if __name__ == "__main__":
     file_manager = FileManager(FILE_MANAGER_ROOT)
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
     train_data_path = os.path.join(setting_dir, params["train_file_name"])
+    graph_dir = os.path.join(setting_dir, "RCD")
+    if not os.path.exists(graph_dir):
+        os.mkdir(graph_dir)
+    u_from_e_path = os.path.join(graph_dir, f"u_from_e_{params['train_file_name']}")
+    e_from_u_path = os.path.join(graph_dir, f"e_from_u_{params['train_file_name']}")
     
     train_data = read_cd_file(train_data_path)
     data_statics_path = os.path.join(setting_dir, f"{params['dataset_name']}_statics.txt")
@@ -29,21 +34,24 @@ if __name__ == "__main__":
     q2c = q2c_from_q_table(q_table)
     num_question, num_concept = q_table.shape[0], q_table.shape[1]
     
-    u_from_e = '' # e(src) to k(dst)
-    e_from_u = '' # k(src) to k(dst)
-    for interaction in train_data:
-        q_id = interaction['question_id']
-        user_id = interaction['user_id']
-        c_ids = q2c[q_id]
-        for _ in c_ids:
-            u_from_e += str(q_id) + '\t' + str(user_id + num_question) + '\n'
-            e_from_u += str(user_id + num_question) + '\t' + str(q_id) + '\n'
-            
-    graph_dir = os.path.join(setting_dir, "RCD")
-    if not os.path.exists(graph_dir):
-        os.mkdir(graph_dir)
-        
-    with open(os.path.join(graph_dir, f"u_from_e_{params['train_file_name']}"), 'w') as f:
-        f.write(u_from_e)
-    with open(os.path.join(graph_dir, f"e_from_u_{params['train_file_name']}"), 'w') as f:
-        f.write(e_from_u)
+    if not os.path.exists(u_from_e_path):
+        u_from_e = '' # e(src) to k(dst)
+        for interaction in train_data:
+            q_id = interaction['question_id']
+            user_id = interaction['user_id']
+            c_ids = q2c[q_id]
+            for _ in c_ids:
+                u_from_e += str(q_id) + '\t' + str(user_id + num_question) + '\n'
+        with open(u_from_e_path, 'w') as f:
+            f.write(u_from_e)
+         
+    if not os.path.exists(e_from_u_path):   
+        e_from_u = '' # k(src) to k(dst)
+        for interaction in train_data:
+            q_id = interaction['question_id']
+            user_id = interaction['user_id']
+            c_ids = q2c[q_id]
+            for _ in c_ids:
+                e_from_u += str(user_id + num_question) + '\t' + str(q_id) + '\n'
+        with open(e_from_u_path, 'w') as f:
+            f.write(e_from_u)
