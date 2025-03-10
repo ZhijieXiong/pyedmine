@@ -54,26 +54,41 @@ def config_dlcd(local_params):
     cold_start_dir = os.path.join(setting_dir, "data4cold_start")
     if not os.path.exists(cold_start_dir):
         os.mkdir(cold_start_dir)
-    
-    train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
-    train_data = read_cd_file(train_file_path)
-    num_q_in_train = defaultdict(int)
-    num_u_in_train = defaultdict(int)
-    for interaction in train_data:
-        user_id = interaction["user_id"]
-        question_id = interaction["question_id"]
-        num_u_in_train[user_id] += 1
-        num_q_in_train[question_id] += 1
-    global_objects["num_u_in_train"] = num_u_in_train
-    global_objects["num_q_in_train"] = num_q_in_train
-    global_objects["cold_start_user"] = []
-    global_objects["cold_start_question"] = []
-    for user_id, num_user in num_u_in_train.items():
-        if num_user <= local_params["user_cold_start"]:
-            global_objects["cold_start_user"].append(user_id)
-    for question_id, num_question in num_q_in_train.items():
-        if num_question <= local_params["question_cold_start"]:
-            global_objects["cold_start_question"].append(question_id)
+    question_cold_start = global_params["question_cold_start"]
+    user_cold_start = global_params["user_cold_start"]
+    if (question_cold_start >= 0) or (user_cold_start >= 1):
+        train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
+        train_data = read_cd_file(train_file_path)
+        cold_start_question_path = os.path.join(cold_start_dir, f"cold_start_question_start_{question_cold_start}.json")
+        cold_start_user_path = os.path.join(cold_start_dir, f"cold_start_user_{user_cold_start}.json")
+        
+        if os.path.exists(cold_start_question_path):
+            global_objects["cold_start_question"] = read_json(cold_start_question_path)
+        else:
+            num_q_in_train = defaultdict(int)
+            for interaction in train_data:
+                question_id = interaction["question_id"]
+                num_q_in_train[question_id] += 1
+            global_objects["num_q_in_train"] = num_q_in_train
+            global_objects["cold_start_question"] = []
+            for question_id, num_question in num_q_in_train.items():
+                if num_question <= local_params["question_cold_start"]:
+                    global_objects["cold_start_question"].append(question_id)
+            write_json(global_objects["cold_start_question"], cold_start_question_path)
+                    
+        if os.path.exists(cold_start_user_path):
+            global_objects["cold_start_user"] = read_json(cold_start_user_path)
+        else:
+            num_u_in_train = defaultdict(int)
+            for interaction in train_data:
+                user_id = interaction["user_id"]
+                num_u_in_train[user_id] += 1
+            global_objects["num_u_in_train"] = num_u_in_train
+            global_objects["cold_start_user"] = []
+            for user_id, num_user in num_u_in_train.items():
+                if num_user <= local_params["user_cold_start"]:
+                    global_objects["cold_start_user"].append(user_id)
+            write_json(global_objects["cold_start_user"], cold_start_user_path)
         
     model_dir = os.path.join(MODEL_DIR, local_params["model_dir_name"])
     model = load_dl_model(global_params, global_objects,

@@ -46,8 +46,8 @@ class DLCDEvaluator(DLEvaluator):
         predict_score_all = np.concatenate(predict_score_all, axis=0)
         ground_truth_all = np.concatenate(ground_truth_all, axis=0)
         inference_result = get_kt_metric(ground_truth_all, predict_score_all)
-        inference_result["user_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
-        inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_u, predict_score_cold_start_u)
+        inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
+        inference_result["user_cold_start"] = get_kt_metric(ground_truth_cold_start_u, predict_score_cold_start_u)
         
 
     def log_inference_results(self):

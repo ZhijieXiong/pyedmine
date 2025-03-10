@@ -26,15 +26,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = vars(args)
 
-    model_name, setting_name, train_file_name = get_model_info(params["model_dir_name"])
-    params["setting_name"] = setting_name
-    params["seq_start"] = 2
-    params["cold_start"] = 1
-    params["multi_step"] = 1
     global_params, global_objects = config_sequential_dlkt(params)
-
+    
     dataset_test = BasicSequentialKTDataset({
-        "setting_name": params["setting_name"],
+        "setting_name": get_model_info(params["model_dir_name"])[1],
         "file_name": params["test_file_name"],
         "device": global_params["device"]
     }, global_objects)

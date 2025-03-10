@@ -2,6 +2,7 @@ import warnings
 import math
 import numpy as np
 
+from tqdm import tqdm
 from sklearn.metrics import roc_auc_score, mean_squared_error, accuracy_score, mean_absolute_error
 
 
@@ -29,7 +30,7 @@ def core_metric(predict_score, ground_truth, question_ids, allow_replace=True):
     predict_score_balanced = []
     ground_truth_balanced = []
 
-    for q_id in question_ids_:
+    for q_id in tqdm(question_ids_, desc=f"calculate core metric, {'repeated' if allow_replace else 'non-repeated'}"):
         predict_score4q_id = predict_score[question_ids == q_id]
         ground_truth4q_id = ground_truth[question_ids == q_id]
         num_right = np.sum(ground_truth4q_id == 1)
