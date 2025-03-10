@@ -19,6 +19,11 @@ if __name__ == "__main__":
     file_manager = FileManager(FILE_MANAGER_ROOT)
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
     train_data_path = os.path.join(setting_dir, params["train_file_name"])
+    graph_dir = os.path.join(setting_dir, "RCD")
+    if not os.path.exists(graph_dir):
+        os.mkdir(graph_dir)
+    k_from_e_path = os.path.join(graph_dir, f"k_from_e_{params['train_file_name']}")
+    e_from_k_path = os.path.join(graph_dir, f"e_from_k_{params['train_file_name']}")
     
     train_data = read_cd_file(train_data_path)
     data_statics_path = os.path.join(setting_dir, f"{params['dataset_name']}_statics.txt")
@@ -29,25 +34,30 @@ if __name__ == "__main__":
     q2c = q2c_from_q_table(q_table)
     num_question, num_concept = q_table.shape[0], q_table.shape[1]
     
-    temp_list = []
-    k_from_e = '' # e(src) to k(dst)
-    e_from_k = '' # k(src) to k(dst)
-    for interaction in train_data:
-        q_id = interaction["question_id"]
-        c_ids = q2c[q_id]
-        for c_id in c_ids:
-            if (str(q_id) + '\t' + str(c_id + num_question)) not in temp_list or (str(c_id + num_question) + '\t' + str(q_id)) not in temp_list:
-                k_from_e += str(q_id) + '\t' + str(c_id + num_question) + '\n'
-                e_from_k += str(c_id + num_question) + '\t' + str(q_id) + '\n'
-                temp_list.append((str(q_id) + '\t' + str(c_id + num_question)))
-                temp_list.append((str(c_id + num_question) + '\t' + str(q_id)))
+    if not os.path.exists(k_from_e_path):
+        temp_list = []
+        k_from_e = '' # e(src) to k(dst)
+        for interaction in train_data:
+            q_id = interaction["question_id"]
+            c_ids = q2c[q_id]
+            for c_id in c_ids:
+                if (str(q_id) + '\t' + str(c_id + num_question)) not in temp_list or (str(c_id + num_question) + '\t' + str(q_id)) not in temp_list:
+                    k_from_e += str(q_id) + '\t' + str(c_id + num_question) + '\n'
+                    temp_list.append((str(q_id) + '\t' + str(c_id + num_question)))
+                    temp_list.append((str(c_id + num_question) + '\t' + str(q_id)))
+        with open(k_from_e_path, 'w') as f:
+            f.write(k_from_e)
     
-    graph_dir = os.path.join(setting_dir, "RCD")
-    if not os.path.exists(graph_dir):
-        os.mkdir(graph_dir)
-        
-    
-    with open(os.path.join(graph_dir, f"k_from_e_{params['train_file_name']}"), 'w') as f:
-        f.write(k_from_e)
-    with open(os.path.join(graph_dir, f"e_from_k_{params['train_file_name']}"), 'w') as f:
-        f.write(e_from_k)
+    if not os.path.exists(e_from_k_path):
+        temp_list = [] 
+        e_from_k = '' # k(src) to k(dst)
+        for interaction in train_data:
+            q_id = interaction["question_id"]
+            c_ids = q2c[q_id]
+            for c_id in c_ids:
+                if (str(q_id) + '\t' + str(c_id + num_question)) not in temp_list or (str(c_id + num_question) + '\t' + str(q_id)) not in temp_list:
+                    e_from_k += str(c_id + num_question) + '\t' + str(q_id) + '\n'
+                    temp_list.append((str(q_id) + '\t' + str(c_id + num_question)))
+                    temp_list.append((str(c_id + num_question) + '\t' + str(q_id)))
+        with open(e_from_k_path, 'w') as f:
+            f.write(e_from_k)

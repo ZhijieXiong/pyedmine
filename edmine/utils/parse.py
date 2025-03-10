@@ -183,26 +183,26 @@ def cal_qc_acc4kt_data(kt_data, target, num2drop, q2c=None):
     if target == "concept" and q2c is None:
         raise ValueError("Calculation based on concept must have q2c")
     
-    correctness_dict = defaultdict(int)
+    corrects = defaultdict(int)
     counts = defaultdict(int)
     for item_data in kt_data:
         for q_id, correctness in zip(item_data["question_seq"], item_data["correctness_seq"]):
             if target == "question":
-                correctness_dict[q_id] += correctness
+                corrects[q_id] += correctness
                 counts[q_id] += 1
             else:
                 c_ids = q2c[q_id]
                 for c_id in c_ids:
-                    correctness_dict[c_id] += correctness
+                    corrects[c_id] += correctness
                     counts[c_id] += 1
     
     all_ids = list(counts.keys())
     for qc_id in all_ids:
         if counts[qc_id] < num2drop:
             del counts[qc_id]
-            del correctness_dict[qc_id]
+            del corrects[qc_id]
 
-    return {qc_id: correctness_dict[qc_id] / float(counts[qc_id]) for qc_id in correctness_dict}
+    return {qc_id: corrects[qc_id] / float(counts[qc_id]) for qc_id in corrects}
 
 
 def kt_data2user_question_matrix(data, num_question, remove_last=1):
@@ -243,3 +243,10 @@ def kt_data2user_concept_matrix(kt_data, num_concept, q2c, remove_last=1):
     matrix[sum_matrix == 0] = -1
     sum_matrix[sum_matrix == 0] = 1
     return matrix / sum_matrix
+
+
+def get_ppmcc_no_error(x, y):
+    assert len(x) == len(y), f"length of x and y must be equal"
+    if len(x) == 0:
+        return -1.0
+    return np.corrcoef(x, y)[0, 1]

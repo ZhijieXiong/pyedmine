@@ -41,11 +41,11 @@ if __name__ == "__main__":
     # 设置参数空间
     parameters_space = {
         # 一阶段
-        "train_batch_size": [512, 1024, 2048],
-        "learning_rate": [0.0001, 0.001],
-        "weight_decay": [0.0001, 0.00001, 0],
+        # "train_batch_size": [512, 1024, 2048],
+        # "learning_rate": [0.0001, 0.001],
+        # "weight_decay": [0.0001, 0.00001, 0],
         # 二阶段
-        # "dropout": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "dropout": [0.1, 0.2, 0.3, 0.4, 0.5],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
