@@ -177,4 +177,4 @@ class RCD(nn.Module, DLCognitiveDiagnosisModel):
         self.prednet_full3.apply(clipper)
         
     def get_knowledge_state(self, user_id):
-        return torch.sigmoid(self.embed_layer.get_emb("user", user_id))
+        return torch.sigmoid(self.embed_layer.get_emb("user", user_id)).detach().cpu().numpy()

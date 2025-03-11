@@ -20,8 +20,8 @@ def config_roster(local_params):
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
     config_general_dl_model(local_params, global_params)
-
-    config_q_table(local_params, global_params, global_objects)
+    if local_params.get("dataset_name", False):
+        config_q_table(local_params, global_params, global_objects)
     model_name = local_params["model_dir_name"]
     model_dir = os.path.join(MODEL_DIR, model_name)
     model = load_dl_model(global_params, global_objects,

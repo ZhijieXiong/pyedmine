@@ -110,7 +110,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
                 layer.apply(clipper)
 
 
-    def get_proficiency_level(self):
+    def get_knowledge_state(self, user_id):
         leaky = self.params["models_config"]["HyperCD"]["leaky"]
         student_adj = self.objects["dataset"]["adj"]["user"]
         knowledge_adj = self.objects["dataset"]["adj"]["concept"]
@@ -121,7 +121,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
         student_feature = F.leaky_relu(self.student_emb2feature(convolved_student_emb), negative_slope=leaky)
         knowledge_feature = F.leaky_relu(self.knowledge_emb2feature(convolved_knowledge_emb), negative_slope=leaky)
 
-        return torch.sigmoid(student_feature @ knowledge_feature.T).detach().cpu().numpy()
+        return torch.sigmoid(student_feature @ knowledge_feature.T)[user_id].detach().cpu().numpy()
 
     def get_exercise_level(self):
         leaky = self.params["models_config"]["HyperCD"]["leaky"]

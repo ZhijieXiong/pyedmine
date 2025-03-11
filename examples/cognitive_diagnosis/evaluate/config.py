@@ -48,19 +48,20 @@ def config_dlcd(local_params):
         
     # 配置cold start
     global_params["dlcd"] = {
-        "question_cold_start": local_params["question_cold_start"],
-        "user_cold_start": local_params["user_cold_start"],
+        "evaluate_overall": local_params.get("evaluate_overall", True),
+        "question_cold_start": local_params.get("question_cold_start", -1),
+        "user_cold_start": local_params.get("user_cold_start", 0),
     }
     cold_start_dir = os.path.join(setting_dir, "data4cold_start")
     if not os.path.exists(cold_start_dir):
         os.mkdir(cold_start_dir)
-    question_cold_start = global_params["question_cold_start"]
-    user_cold_start = global_params["user_cold_start"]
-    if (question_cold_start >= 0) or (user_cold_start >= 1):
+    question_cold_start = global_params["dlcd"]["question_cold_start"]
+    user_cold_start = global_params["dlcd"]["user_cold_start"]
+    if (question_cold_start >= 0) or (user_cold_start >= 0):
         train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
         train_data = read_cd_file(train_file_path)
-        cold_start_question_path = os.path.join(cold_start_dir, f"cold_start_question_start_{question_cold_start}.json")
-        cold_start_user_path = os.path.join(cold_start_dir, f"cold_start_user_{user_cold_start}.json")
+        cold_start_question_path = os.path.join(cold_start_dir, f"{train_file_name}_cold_start_question_{question_cold_start}.json")
+        cold_start_user_path = os.path.join(cold_start_dir, f"{train_file_name}_cold_start_user_{user_cold_start}.json")
         
         if os.path.exists(cold_start_question_path):
             global_objects["cold_start_question"] = read_json(cold_start_question_path)

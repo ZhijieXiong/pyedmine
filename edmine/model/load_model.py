@@ -5,7 +5,6 @@ from edmine.utils.parse import str_dict2params
 from edmine.utils.data_io import read_json
 # KT
 from edmine.model.sequential_kt_model.DKT import DKT
-from edmine.model.sequential_kt_model.DKT_KG4EX import DKT_KG4EX
 from edmine.model.sequential_kt_model.qDKT import qDKT
 from edmine.model.sequential_kt_model.DKVMN import DKVMN
 from edmine.model.sequential_kt_model.ATKT import ATKT
@@ -20,6 +19,7 @@ from edmine.model.cognitive_diagnosis_model.RCD import RCD
 from edmine.model.cognitive_diagnosis_model.HyperCD import HyperCD
 # ER
 from edmine.model.exercise_recommendation_model.KG4EX import KG4EX
+from edmine.model.sequential_kt_model.DKT_KG4EX import DKT_KG4EX
 
 
 model_table = {

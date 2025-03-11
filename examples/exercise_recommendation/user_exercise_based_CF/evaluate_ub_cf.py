@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 import config
-from utils import delete_test_data, get_performance
+from utils import get_performance
 from rec_strategy import *
 
 from edmine.utils.data_io import read_mlkc_data, read_kt_file
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--user_data_file_name", type=str, default="assist2009_user_data.txt")
-    parser.add_argument("--user_sim_mat_file_name", type=str, default="assist2009_user_sim_mat_cossim_1.0_0.5_0.5.npy")
+    parser.add_argument("--user_sim_mat_file_name", type=str, default="assist2009_cossim_1_1_1.npy")
     # 评价指标选择
     parser.add_argument("--used_metrics", type=str, default="['KG4EX_ACC', 'KG4EX_NOV', 'PERSONALIZATION_INDEX', 'OFFLINE_ACC', 'OFFLINE_NDCG']",
                         help='KG4EX_ACC, KG4EX_VOL, PERSONALIZATION_INDEX, OFFLINE_ACC, OFFLINE_NDCG')
@@ -40,6 +40,7 @@ if __name__ == "__main__":
     setting_name = params["setting_name"]
     file_manager = FileManager(config.FILE_MANAGER_ROOT)
     setting_dir = file_manager.get_setting_dir(setting_name)
+    save_dir = os.path.join(setting_dir, "user_smi_mat")
     users_data = read_kt_file(os.path.join(setting_dir, params["user_data_file_name"]))
     Q_table = file_manager.get_q_table(params["dataset_name"])
     q2c = q2c_from_q_table(Q_table)
@@ -54,7 +55,7 @@ if __name__ == "__main__":
         else:
             question_diff[q_id] = 1 - question_acc[q_id]
 
-    user_sim_mat = np.load(os.path.join(setting_dir, params["user_sim_mat_file_name"]))
+    user_sim_mat = np.load(os.path.join(save_dir, params["user_sim_mat_file_name"]))
     similar_users = np.argsort(-user_sim_mat, axis=1)
 
     rec_strategy = params["rec_strategy"]
