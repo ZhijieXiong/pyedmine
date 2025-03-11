@@ -42,7 +42,7 @@ if __name__ == "__main__":
     alpha = params["alpha"]
     beta = params["beta"]
     gamma = params["gamma"]
-    save_path = os.path.join(setting_dir, f"{params['dataset_name']}_{params['similarity']}_{alpha}_{beta}_{gamma}.npy")
+    save_path = os.path.join(save_dir, f"{params['dataset_name']}_{params['similarity']}_{alpha}_{beta}_{gamma}.npy")
     
     if not os.path.exists(save_path):
         # 这里假设了是ER_offline_setting，则构建user-question交互矩阵时，只使用知识追踪测试集中属于习题推荐训练集和验证集部分的数据
