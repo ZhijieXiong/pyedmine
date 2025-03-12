@@ -39,9 +39,10 @@ def config_kg4ex(local_params):
     setting_name = local_params["setting_name"]
     dataset_name = local_params["dataset_name"]
     setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
-    global_objects["dataset"]["entity2id"] = read_id_map_kg4ex(os.path.join(setting_dir, f'{dataset_name}_entities_kg4ex.dict'))
+    kg4ex_dir = os.path.join(setting_dir, "kg4ex")
+    global_objects["dataset"]["entity2id"] = read_id_map_kg4ex(os.path.join(kg4ex_dir, f'{dataset_name}_entities_kg4ex.dict'))
     # 存储relations
-    relations_path = os.path.join(setting_dir, "relations_kg4ex.dict")
+    relations_path = os.path.join(kg4ex_dir, "relations_kg4ex.dict")
     if not os.path.exists(relations_path):
         scores = [round(i * 0.01, 2) for i in range(101)]
         with open(relations_path, "w") as fs:
@@ -52,7 +53,7 @@ def config_kg4ex(local_params):
             for i, s in enumerate(scores):
                 fs.write(f"{i + 202}\tefr{s}\n")
             fs.write("303\trec")
-    global_objects["dataset"]["relation2id"] = read_id_map_kg4ex(os.path.join(setting_dir, 'relations_kg4ex.dict'))
+    global_objects["dataset"]["relation2id"] = read_id_map_kg4ex(os.path.join(kg4ex_dir, 'relations_kg4ex.dict'))
 
     # 模型参数
     global_params["models_config"] = {
