@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # 数据配置
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
-    # 加载KT模型
+    # 加载CD模型
     parser.add_argument("--model_dir_name", type=str, help="模型文件夹名",
                         default="NCD@@CD_setting4ER_offline_setting@@assist2009_train@@seed_0@@2025-03-11@18-08-00")
     parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
