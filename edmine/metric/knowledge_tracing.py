@@ -11,18 +11,27 @@ def root_mean_squared_error(y_true, y_pred):
 
 
 def get_kt_metric(y_true, y_score):
+    assert len(y_true) == len(y_score), "len of y_true and len of y_score must be equal"
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         AUC = roc_auc_score(y_true, y_score)
         if math.isnan(AUC):
             AUC = -1.
     y_pred = [1 if p >= 0.5 else 0 for p in y_score]
-    return {
-        "AUC": AUC,
-        "ACC": accuracy_score(y_true=y_true, y_pred=y_pred),
-        "MAE": mean_absolute_error(y_true=y_true, y_pred=y_score),
-        "RMSE": root_mean_squared_error(y_true=y_true, y_pred=y_score)
-    }
+    if (len(y_true) == 0):
+        return {
+            "AUC": -1,
+            "ACC": -1,
+            "MAE": -1,
+            "RMSE": -1
+        }
+    else:
+        return {
+            "AUC": AUC,
+            "ACC": accuracy_score(y_true=y_true, y_pred=y_pred),
+            "MAE": mean_absolute_error(y_true=y_true, y_pred=y_score),
+            "RMSE": root_mean_squared_error(y_true=y_true, y_pred=y_score)
+        }
 
 
 def core_metric(predict_score, ground_truth, question_ids, allow_replace=True):
