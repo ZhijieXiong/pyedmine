@@ -60,35 +60,38 @@ if __name__ == "__main__":
 
     file_manager = global_objects["file_manager"]
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
-    users_data = read_kt_file(os.path.join(setting_dir, f"{params['dataset_name']}_user_data.txt"))
-    delete_test_data(users_data)
-    # 使用知识追踪训练集和验证集的数据找相似用户
-    kt_setting_dir = file_manager.get_setting_dir("pykt_setting")
-    kt_train_data = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_train.txt"))
-    kt_valid_data = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_valid.txt"))
-    users_data += kt_train_data + kt_valid_data
-    user_ids = list(map(lambda x: x["user_id"], users_data))
-    num_user = max(user_ids) + 1
+    save_dir = os.path.join(setting_dir, "user_smi_mat")
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    save_path = os.path.join(save_dir, f"{params['dataset_name']}_{params['similarity']}_{params['model_dir_name']}.npy")
+    if not os.path.exists(save_path):
+        users_data = read_kt_file(os.path.join(setting_dir, f"{params['dataset_name']}_user_data.txt"))
+        delete_test_data(users_data)
+        # 使用知识追踪训练集和验证集的数据找相似用户
+        kt_setting_dir = file_manager.get_setting_dir("pykt_setting")
+        kt_train_data = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_train.txt"))
+        kt_valid_data = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_valid.txt"))
+        users_data += kt_train_data + kt_valid_data
+        user_ids = list(map(lambda x: x["user_id"], users_data))
+        num_user = max(user_ids) + 1
 
-    batches_train = data2batches(users_data, params["batch_size"])
-    mlkc = get_mlkc(kt_roster, batches_train)
-    num_concept = len(mlkc[list(mlkc.keys())[0]])
-    user_concept_matrix = np.zeros((num_user, num_concept))
-    for user_id, user_data in mlkc.items():
-        user_concept_matrix[user_id] = mlkc[user_id]
+        batches_train = data2batches(users_data, params["batch_size"])
+        mlkc = get_mlkc(kt_roster, batches_train)
+        num_concept = len(mlkc[list(mlkc.keys())[0]])
+        user_concept_matrix = np.zeros((num_user, num_concept))
+        for user_id, user_data in mlkc.items():
+            user_concept_matrix[user_id] = mlkc[user_id]
 
-    if params["similarity"] == "cossim":
-        user_similarity = cosine_similarity_matrix(user_concept_matrix, axis=1)
-    elif params["similarity"] == "pearson_corr":
-        user_similarity = np.zeros((num_user, num_user))
-        for i in range(num_user):
-            for j in range(num_user):
-                si = user_concept_matrix[i, :]
-                sj = user_concept_matrix[j, :]
-                user_similarity[i][j] = pearson_similarity(si, sj)
-    else:
-        raise NotImplementedError(f'{params["similarity"]} is not implemented')
-    
-    save_path = os.path.join(setting_dir,
-                             f"{params['dataset_name']}_user_sim_mat_{params['similarity']}_{params['model_dir_name']}.npy")
-    np.save(save_path, user_similarity)
+        if params["similarity"] == "cossim":
+            user_similarity = cosine_similarity_matrix(user_concept_matrix, axis=1)
+        elif params["similarity"] == "pearson_corr":
+            user_similarity = np.zeros((num_user, num_user))
+            for i in range(num_user):
+                for j in range(num_user):
+                    si = user_concept_matrix[i, :]
+                    sj = user_concept_matrix[j, :]
+                    user_similarity[i][j] = pearson_similarity(si, sj)
+        else:
+            raise NotImplementedError(f'{params["similarity"]} is not implemented')
+        
+        np.save(save_path, user_similarity)

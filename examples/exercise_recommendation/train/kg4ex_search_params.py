@@ -16,11 +16,9 @@ from edmine.trainer.ExerciseRecommendationTrainer import ExerciseRecommendationT
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
-    # 评价指标选择
-    parser.add_argument("--top_ns", type=str, default="[5,10]")
-    parser.add_argument("--main_metric", type=str, default="KG4EX_ACC")
-    parser.add_argument("--use_multi_metrics", type=str2bool, default=False)
-    parser.add_argument("--multi_metrics", type=str, default="[('KG4EX_ACC', 1, 1), ('KG4EX_NOV', 1, 1), ('OFFLINE_ACC', 1, 1)]")
+    # 数据集
+    parser.add_argument("--valid_pkc_file_name", type=str, default="assist2009_pkc_valid.txt")
+    parser.add_argument("--valid_efr_file_name", type=str, default="assist2009_efr_0.2_valid.txt")
     # 学习率
     parser.add_argument("--train_batch_size", type=int, default=1024)
     parser.add_argument("--evaluate_batch_size", type=int, default=1, 
@@ -69,6 +67,7 @@ if __name__ == "__main__":
 
         setting_name = params["setting_name"]
         setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
+        kg4ex_dir = os.path.join(setting_dir, "kg4ex")
         dataset_head_train = KG4EXDataset(global_params["datasets_config"]["train"]["head"], global_objects)
         dataset_tail_train = KG4EXDataset(global_params["datasets_config"]["train"]["tail"], global_objects)
         dataloader_head_train = DataLoader(dataset_head_train, batch_size=params["train_batch_size"], shuffle=True)
@@ -83,9 +82,9 @@ if __name__ == "__main__":
             "train_loader": train_iterator,
             # users_data_dict和mlkc是计算指标时需要的数据，所有推荐模型都要，第3个元素则是各个模型推理时需要的数据
             "valid_loader": (users_data_dict,
-                            read_mlkc_data(os.path.join(setting_dir, params["valid_mlkc_file_name"])),
-                            (read_mlkc_data(os.path.join(setting_dir, params["valid_pkc_file_name"])),
-                            read_mlkc_data(os.path.join(setting_dir, params["valid_efr_file_name"]))))
+                            read_mlkc_data(os.path.join(kg4ex_dir, params["valid_mlkc_file_name"])),
+                            (read_mlkc_data(os.path.join(kg4ex_dir, params["valid_pkc_file_name"])),
+                            read_mlkc_data(os.path.join(kg4ex_dir, params["valid_efr_file_name"]))))
         }
         global_objects["models"] = {"KG4EX": KG4EX(global_params, global_objects).to(global_params["device"])}
         trainer = ExerciseRecommendationTrainer(global_params, global_objects)
@@ -116,11 +115,11 @@ if __name__ == "__main__":
     if num > 100:
         max_evals = 20 + int(num * 0.2)
     elif num > 50:
-        max_evals = 15 + int(num * 0.2)
-    elif num > 20:
         max_evals = 10 + int(num * 0.2)
+    elif num > 20:
+        max_evals = 5 + int(num * 0.3)
     elif num > 10:
-        max_evals = 5 + int(num * 0.2)
+        max_evals = 3 + int(num * 0.3)
     else:
         max_evals = num
     current_best_performance = 0

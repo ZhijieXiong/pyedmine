@@ -41,7 +41,7 @@ class KG4EXDataset(Dataset):
     def load_dataset(self):
         setting_name = self.dataset_config["setting_name"]
         file_name = self.dataset_config["file_name"]
-        dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), file_name)
+        dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), "kg4ex", file_name)
         self.triples = read_triple(dataset_path, self.objects["dataset"]["entity2id"], self.objects["dataset"]["relation2id"])
         self.triple_set = set(self.triples)
 
