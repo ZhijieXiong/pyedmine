@@ -113,6 +113,7 @@ class SingleModelStepTrainer(ABC):
 
                 valid_data_loader = self.objects["data_loaders"]["valid_loader"]
                 valid_performance = self.evaluate_dataset(model, valid_data_loader)
+                # todo: 这里后面要修改，通用的trainer不应该调用get_average_performance_top_ns
                 average_valid_performance = get_average_performance_top_ns(valid_performance)
                 if use_multi_metrics:
                     valid_main_metric = TrainRecord.cal_main_metric(average_valid_performance, multi_metrics)

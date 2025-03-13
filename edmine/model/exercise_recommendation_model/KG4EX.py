@@ -276,33 +276,41 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
         users_rec_questions = {}
         for batch in batches:
             batch_size = batch["mlkc"].shape[0]
-            rec_emb4fr1 = self.relation_embedding[303].expand(batch_size, num_question,num_concept, -1)
-            rec_emb4fr2 = self.relation_embedding[303].expand(batch_size, num_question, -1)
+            num_batch_q = 1000
+            scores = []
+            for i in range(0, num_question, num_batch_q):
+                batch_que_id = all_que_id[i:i+num_batch_q]
+                q_batch_size = batch_que_id.shape[0]
+                
+                rec_emb4fr1 = self.relation_embedding[303].expand(batch_size, q_batch_size, num_concept, -1)
+                rec_emb4fr2 = self.relation_embedding[303].expand(batch_size, q_batch_size, -1)
 
-            kc_emb = self.entity_embedding[all_kc_id].expand(batch_size, -1, -1)
-            que_emb = self.entity_embedding[all_que_id].expand(batch_size, -1, -1)
-            mlkc_emb = self.relation_embedding[batch["mlkc"]]
-            pkc_emb = self.relation_embedding[batch["pkc"]]
-            efr_emb = self.relation_embedding[batch["efr"]]
+                kc_emb = self.entity_embedding[all_kc_id].expand(batch_size, -1, -1)
+                que_emb = self.entity_embedding[batch_que_id].expand(batch_size, -1, -1)
+                mlkc_emb = self.relation_embedding[batch["mlkc"]]
+                pkc_emb = self.relation_embedding[batch["pkc"]]
+                efr_emb = self.relation_embedding[batch["efr"][:, i:i+q_batch_size]]
 
-            mlkc_emb4que = (kc_emb + mlkc_emb).repeat_interleave(num_question, dim=0).view(batch_size, num_question,num_concept, -1)
-            pkc_emb4que = (kc_emb + pkc_emb).repeat_interleave(num_question, dim=0).view(batch_size, num_question,num_concept, -1)
-            que_emb_extend = que_emb.repeat_interleave(num_concept, dim=1).view(batch_size, num_question,num_concept, -1)
-            # 下面就是TransE的操作
-            fr1_emb1 = mlkc_emb4que + rec_emb4fr1 - que_emb_extend
-            fr1_sum1 = gamma - fr1_emb1.norm(dim=-1)
-            fr1_mlkc = fr1_sum1.sum(dim=-1)
-            # 同理
-            fr1_emb2 = pkc_emb4que + rec_emb4fr1 - que_emb_extend
-            fr1_sum2 = gamma - fr1_emb2.norm(dim=-1)
-            fr1_pkc = fr1_sum2.sum(dim=-1)
-            fr1 = fr1_mlkc + fr1_pkc
-            # 原代码中TransE(ej_embedding + efr_embedding, rec_embedding, e)的操作中ej_embedding和e是相同的emb
-            fr2_emb = efr_emb + rec_emb4fr2
-            fr2 = gamma - fr2_emb.norm(dim=-1)
-            
-            # shape: (batch_size, num_question)
-            scores = ((fr1 / num_concept) + fr2)
+                mlkc_emb4que = (kc_emb + mlkc_emb).repeat_interleave(q_batch_size, dim=0).view(batch_size, q_batch_size, num_concept, -1)
+                pkc_emb4que = (kc_emb + pkc_emb).repeat_interleave(q_batch_size, dim=0).view(batch_size, q_batch_size, num_concept, -1)
+                que_emb_extend = que_emb.repeat_interleave(num_concept, dim=1).view(batch_size, q_batch_size, num_concept, -1)
+
+                # 下面就是TransE的操作
+                fr1_emb1 = mlkc_emb4que + rec_emb4fr1 - que_emb_extend
+                fr1_sum1 = gamma - fr1_emb1.norm(dim=-1)
+                fr1_mlkc = fr1_sum1.sum(dim=-1)
+                # 同理
+                fr1_emb2 = pkc_emb4que + rec_emb4fr1 - que_emb_extend
+                fr1_sum2 = gamma - fr1_emb2.norm(dim=-1)
+                fr1_pkc = fr1_sum2.sum(dim=-1)
+                fr1 = fr1_mlkc + fr1_pkc
+                # 原代码中TransE(ej_embedding + efr_embedding, rec_embedding, e)的操作中ej_embedding和e是相同的emb
+                fr2_emb = efr_emb + rec_emb4fr2
+                fr2 = gamma - fr2_emb.norm(dim=-1)
+                
+                # shape: (batch_size, num_batch_q)
+                scores.append(((fr1 / num_concept) + fr2).detach().cpu())
+            scores = torch.cat(scores, dim=1)
             _, indices = torch.topk(scores, max_top_n, dim=1)
             batch_user_ids = batch["user_id"].detach().cpu().numpy()
             for user_id, rec_q_ids in zip(batch_user_ids, indices.detach().cpu().numpy()):

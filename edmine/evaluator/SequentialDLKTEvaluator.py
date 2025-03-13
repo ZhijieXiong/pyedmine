@@ -85,15 +85,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 if q_id in cold_start_question:
                     predict_score_cold_start_q.append(ps)
                     ground_truth_cold_start_q.append(gt)
-            if len(predict_score_cold_start_q) > 0:
-                inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
-            else:
-                inference_result["question_cold_start"] = {
-                    "AUC": -1.,
-                    "ACC": -1.,
-                    "RMSE": -1.,
-                    "MAE": -1.
-                }
+            inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
         
         if multi_step > 1:
             inference_result["multi_step"] = {

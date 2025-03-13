@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # 学习率
     parser.add_argument("--train_batch_size", type=int, default=512)
     parser.add_argument("--evaluate_batch_size", type=int, default=1, 
-                        help="如果习题数量非常大的话，推理非常占显存，设置小点，如static2011有1223道习题，batch size为16时，推理显存约16G")
+                        help="推理比较占显存，与知识点数量相关")
     parser.add_argument("--learning_rate", type=float, default=0.0001)
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
     parser.add_argument("--scheduler_type", type=str, default="MultiStepLR", choices=("StepLR", "MultiStepLR"))

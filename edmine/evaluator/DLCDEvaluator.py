@@ -58,25 +58,9 @@ class DLCDEvaluator(DLEvaluator):
             if evaluate_overall:
                 inference_result.update(get_kt_metric(ground_truth_all, predict_score_all))
             if question_cold_start >= 0:
-                if len(predict_score_cold_start_q) > 0:
-                    inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
-                else:
-                    inference_result["question_cold_start"] = {
-                        "AUC": -1.,
-                        "ACC": -1.,
-                        "RMSE": -1.,
-                        "MAE": -1.
-                    }
+                inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
             if user_cold_start >= 0:
-                if len(predict_score_cold_start_u) > 0:
-                    inference_result["user_cold_start"] = get_kt_metric(ground_truth_cold_start_u, predict_score_cold_start_u)
-                else:
-                    inference_result["user_cold_start"] = {
-                        "AUC": -1.,
-                        "ACC": -1.,
-                        "RMSE": -1.,
-                        "MAE": -1.
-                    }
+                inference_result["user_cold_start"] = get_kt_metric(ground_truth_cold_start_u, predict_score_cold_start_u)
             return inference_result
 
     def log_inference_results(self):

@@ -21,8 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("--valid_efr_file_name", type=str, default="assist2009_efr_0.2_valid.txt")
     # 学习率
     parser.add_argument("--train_batch_size", type=int, default=1024)
-    parser.add_argument("--evaluate_batch_size", type=int, default=1, 
-                        help="如果习题数量非常大的话，推理非常占显存，设置小点，如static2011有1223道习题，batch size为16时，推理显存约16G")
+    parser.add_argument("--evaluate_batch_size", type=int, default=1)
     parser.add_argument("--learning_rate", type=float, default=0.0001)
     # 学习率衰减
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
