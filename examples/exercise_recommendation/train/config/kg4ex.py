@@ -39,7 +39,7 @@ def config_kg4ex(local_params):
     setting_name = local_params["setting_name"]
     dataset_name = local_params["dataset_name"]
     setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
-    kg4ex_dir = os.path.join(setting_dir, "kg4ex")
+    kg4ex_dir = os.path.join(setting_dir, "KG4EX")
     global_objects["dataset"]["entity2id"] = read_id_map_kg4ex(os.path.join(kg4ex_dir, f'{dataset_name}_entities_kg4ex.dict'))
     # 存储relations
     relations_path = os.path.join(kg4ex_dir, "relations_kg4ex.dict")

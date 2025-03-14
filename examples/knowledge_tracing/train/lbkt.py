@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
     parser.add_argument("--scheduler_type", type=str, default="StepLR",
                         choices=("StepLR", "MultiStepLR"))
-    parser.add_argument("--scheduler_step", type=int, default=3)
+    parser.add_argument("--scheduler_step", type=int, default=5)
     parser.add_argument("--scheduler_milestones", type=str, default="[5, 10]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
     # 梯度裁剪

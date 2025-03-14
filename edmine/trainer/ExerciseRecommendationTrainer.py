@@ -12,7 +12,10 @@ class ExerciseRecommendationTrainer(SingleModelStepTrainer):
 
         # data_loader第3个数据是模型需要的，不同模型要的数据不一样
         user_history_data, user_mlkc, _ = data_loader
-        top_ns_rec_questions = model.get_top_ns(data_loader, top_ns)
+        if model.model_name == "KG4EX":
+            top_ns_rec_questions = model.get_top_ns(data_loader, top_ns, self.params["trainer_config"]["evaluate_batch_size"])
+        else:
+            top_ns_rec_questions = model.get_top_ns(data_loader, top_ns)
 
         performance = {top_n: {} for top_n in top_ns}
         users_mlkc = []

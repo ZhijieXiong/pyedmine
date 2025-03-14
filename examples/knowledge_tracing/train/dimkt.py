@@ -19,14 +19,14 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
-    parser.add_argument("--learning_rate", type=float, default=0.002)
+    parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--weight_decay", type=float, default=0.0001)
     parser.add_argument("--momentum", type=float, default=0.9)
     # scheduler配置
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
     parser.add_argument("--scheduler_type", type=str, default="StepLR",
                         choices=("StepLR", "MultiStepLR"))
-    parser.add_argument("--scheduler_step", type=int, default=5)
+    parser.add_argument("--scheduler_step", type=int, default=10)
     parser.add_argument("--scheduler_milestones", type=str, default="[5, 10]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
     # 梯度裁剪

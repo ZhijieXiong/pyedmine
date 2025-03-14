@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from tqdm import tqdm
 
 from edmine.model.exercise_recommendation_model.DLExerciseRecommendationModel import DLExerciseRecommendationModel
 
@@ -223,7 +224,7 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
             "losses_value": losses_value
         }
 
-    def data2batches(self, data, batch_size):
+    def data2batches(self, data, batch_size, show_process_bar=False):
         batches = []
         batch = []
         for user_id, user_data in data.items():
@@ -243,9 +244,12 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
                 "pkc": torch.tensor([x["pkc"] for x in batch]).long().to(self.params["device"]),
                 "efr": torch.tensor([x["efr"] for x in batch]).long().to(self.params["device"])
             })
-        return batches_tensor
+        if show_process_bar:
+            return tqdm(batches_tensor, desc="inferencing: ")
+        else:
+            return batches_tensor
 
-    def get_top_ns(self, data, top_ns):
+    def get_top_ns(self, data, top_ns, batch_size, show_process_bar=False):
         entity2id = self.objects["dataset"]["entity2id"]
         q_table = self.objects["dataset"]["q_table"]
         num_question, num_concept = q_table.shape[0], q_table.shape[1]
@@ -272,7 +276,7 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
             q_id = entity2id[f"ex{j}"]
             all_que_id.append(q_id)
         all_que_id = torch.tensor(all_que_id).long().to(self.params["device"])
-        batches = self.data2batches(users_data, self.params["trainer_config"]["evaluate_batch_size"])
+        batches = self.data2batches(users_data, batch_size, show_process_bar)
         users_rec_questions = {}
         for batch in batches:
             batch_size = batch["mlkc"].shape[0]

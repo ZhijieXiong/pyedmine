@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     file_manager = global_objects["file_manager"]
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
-    kg4ex_dir = os.path.join(setting_dir, "kg4ex")
+    kg4ex_dir = os.path.join(setting_dir, "KG4EX")
     if not os.path.exists(kg4ex_dir):
         os.mkdir(kg4ex_dir)
     dataset_name = params["dataset_name"]

@@ -26,7 +26,7 @@ if __name__ == "__main__":
     question2concept = q2c_from_q_table(Q_table)
 
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
-    kg4ex_dir = os.path.join(setting_dir, "kg4ex")
+    kg4ex_dir = os.path.join(setting_dir, "KG4EX")
     dataset_name = params["dataset_name"]
     kt_model_name = params["kt_model_name"]
     efr_theta = params["efr_theta"]
