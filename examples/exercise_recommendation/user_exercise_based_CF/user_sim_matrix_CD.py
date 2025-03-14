@@ -4,10 +4,8 @@ import torch
 import numpy as np
 
 from config import config_roster
-from utils import delete_test_data
 
 from edmine.roster.DLCDRoster import DLCDRoster
-from edmine.utils.data_io import read_kt_file
 from edmine.utils.calculate import cosine_similarity_matrix, pearson_similarity
 
 

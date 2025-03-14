@@ -13,6 +13,8 @@ script_result
 
 /examples/settings.json
 /examples/knowledge_tracing/llm4kt/output
+/examples/knowledge_tracing/llm4kt/emb
+/examples/knowledge_tracing/llm4kt/cal_metric.py
 /dataset
 /models
 

@@ -1,6 +1,4 @@
 import argparse
-import os
-from torch.utils.data import DataLoader
 
 from utils import get_model_info
 from config import config_dler

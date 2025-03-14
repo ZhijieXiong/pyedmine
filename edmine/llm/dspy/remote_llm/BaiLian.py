@@ -51,6 +51,7 @@ class BaiLian(dspy.LM):
 
         super().__init__(model, **kwargs)
         self.model_name = model.split("/")[1]
+        self.kws = kwargs
         if api_key is None:
             self.model = OpenAI(
                 api_key=os.getenv("BAILIAN_API_KEY"),
@@ -69,10 +70,17 @@ class BaiLian(dspy.LM):
         completions = self.model.chat.completions.create(
             model=self.model_name,  # 填写需要调用的模型编码
             messages=messages,
+            **self.kws
         )
 
         outputs = [completions.choices[0].message.content]
-        self.history.append({"messages": messages, "outputs": outputs, "timestamp": datetime.now().isoformat()})
+        self.history.append({
+            "messages": messages,
+            "outputs": outputs,
+            "timestamp": datetime.now().isoformat(),
+            "input_tokens": completions.usage.prompt_tokens,
+            "output_tokens": completions.usage.completion_tokens,
+        })
 
         # Must return a list of strings
         return outputs

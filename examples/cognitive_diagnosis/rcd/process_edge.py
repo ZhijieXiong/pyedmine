@@ -1,6 +1,5 @@
 import argparse
 import os
-import json
 import numpy as np
 
 from config import FILE_MANAGER_ROOT
