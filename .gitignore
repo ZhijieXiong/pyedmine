@@ -12,6 +12,7 @@ script
 script_result
 
 /examples/settings.json
-
+/examples/knowledge_tracing/llm4kt/output
 /dataset
 /models
+
