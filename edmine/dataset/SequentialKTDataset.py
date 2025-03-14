@@ -113,6 +113,7 @@ class LPKTDataset(BasicSequentialKTDataset):
                 if k == "time_seq":
                     interval_time_seq = [0]
                     for time_i in range(1, seq_len):
+                        # 原始数据以s为单位
                         interval_time_real = (item_data["time_seq"][time_i] - item_data["time_seq"][time_i - 1]) // 60
                         interval_time_idx = max(0, min(interval_time_real, 60 * 24 * 30))
                         interval_time_seq.append(interval_time_idx)

@@ -19,6 +19,7 @@ if __name__ == "__main__":
     # 测试配置
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--test_file_name", type=str, help="文件名", default="assist2009_test.txt")
+    parser.add_argument("--seq_start", type=int, default=2, help="序列中seq_start（自然序列，从1开始）之前的元素不参与评估")
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # 保存测试结果
     parser.add_argument("--save_log", type=str2bool, default=True)

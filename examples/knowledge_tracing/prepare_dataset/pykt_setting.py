@@ -10,7 +10,7 @@ from edmine.utils.data_io import write_kt_file, read_kt_file
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, default="ednet-kt1")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
     args = parser.parse_args()
     params = vars(args)
 

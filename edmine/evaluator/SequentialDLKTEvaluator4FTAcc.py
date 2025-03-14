@@ -12,18 +12,21 @@ class SequentialDLKTEvaluator4FTAcc(DLEvaluator):
         super().__init__(params, objects)
 
     def inference(self, model, data_loader):
+        seq_start = self.params["sequential_dlkt"]["seq_start"]
         predict_score_all = []
         ground_truth_all = []
         for batch in tqdm(data_loader, desc="one step inference"):
             q2c = self.objects["dataset"]["q2c"]
             question_seqs = batch["question_seq"][:, 1:].detach().cpu().numpy()
             correctness_seqs = batch["correctness_seq"][:, 1:].detach().cpu().numpy()
-            seq_lens = (batch["seq_len"] - 1).detach().cpu().numpy()
+            predict_lens = (batch["seq_len"] - 1).detach().cpu().numpy()
             predict_score_seqs = model.get_predict_score(batch)["predict_score_batch"].detach().cpu().numpy()
-            for q_seq, c_seq, seq_len, ps_seq in zip(question_seqs, correctness_seqs, seq_lens, predict_score_seqs):
+            for q_seq, c_seq, predict_len, ps_seq in zip(question_seqs, correctness_seqs, predict_lens, predict_score_seqs):
+                if predict_len < (seq_start-1):
+                    continue
                 history_count = defaultdict(int)
                 history_correct = defaultdict(int)
-                for q_id, correctness, ps in zip(q_seq[:seq_len], c_seq[:seq_len], ps_seq[:seq_len]):
+                for q_id, correctness, ps in zip(q_seq[seq_start-2:predict_len], c_seq[seq_start-2:predict_len], ps_seq[seq_start-2:predict_len]):
                     c_ids = q2c[q_id]
                     for c_id in c_ids:
                         num_exercised = history_count[c_id]

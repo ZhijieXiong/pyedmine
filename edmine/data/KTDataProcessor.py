@@ -583,7 +583,7 @@ class KTDataProcessor:
 
         def time_str2timestamp(time_str):
             datetime_obj = datetime.datetime.strptime(time_str, "%Y/%m/%d %H:%M")
-            timestamp = int(datetime_obj.timestamp() / 60)
+            timestamp = int(datetime_obj.timestamp())
             return timestamp
 
         def process_concept_id(c_id_str):
@@ -1472,7 +1472,7 @@ class KTDataProcessor:
             "question_seq": seqs["question_seq"],
             "concept_seq": seqs["concept_seq"],
             "correctness_seq": seqs["correctness_seq"],
-            "time_seq": seqs["time_seq"],
+            "time_seq": list(map(lambda t: int(t/1000), seqs["time_seq"])),
             "seq_len": len(seqs["correctness_seq"])
         } for user_id, seqs in data_all.items()]
 
