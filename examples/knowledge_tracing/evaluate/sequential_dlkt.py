@@ -2,10 +2,9 @@ import argparse
 from torch.utils.data import DataLoader
 
 from config import config_sequential_dlkt
-from utils import get_model_info
+from utils import get_model_info, select_dataset
 
 from edmine.utils.parse import str2bool
-from edmine.dataset.SequentialKTDataset import BasicSequentialKTDataset
 from edmine.evaluator.SequentialDLKTEvaluator import SequentialDLKTEvaluator
 
 
@@ -44,9 +43,10 @@ if __name__ == "__main__":
     params = vars(args)
 
     global_params, global_objects = config_sequential_dlkt(params)
+    model_name, setting_name, _ = get_model_info(params["model_dir_name"])
 
-    dataset_test = BasicSequentialKTDataset({
-        "setting_name": get_model_info(params["model_dir_name"])[1],
+    dataset_test = select_dataset(model_name)({
+        "setting_name": setting_name,
         "file_name": params["test_file_name"],
         "device": global_params["device"]
     }, global_objects)

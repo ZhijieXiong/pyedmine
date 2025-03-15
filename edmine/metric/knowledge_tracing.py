@@ -14,16 +14,19 @@ def get_kt_metric(y_true, y_score):
     assert len(y_true) == len(y_score), "len of y_true and len of y_score must be equal"
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
-        AUC = roc_auc_score(y_true, y_score)
+        if (len(y_true) == 0):
+            AUC = -1.
+        else:
+            AUC = roc_auc_score(y_true, y_score)
         if math.isnan(AUC):
             AUC = -1.
     y_pred = [1 if p >= 0.5 else 0 for p in y_score]
     if (len(y_true) == 0):
         return {
-            "AUC": -1,
-            "ACC": -1,
-            "MAE": -1,
-            "RMSE": -1
+            "AUC": -1.,
+            "ACC": -1.,
+            "MAE": -1.,
+            "RMSE": -1.
         }
     else:
         return {

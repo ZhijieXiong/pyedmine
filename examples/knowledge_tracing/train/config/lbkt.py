@@ -56,6 +56,7 @@ def config_lbkt(local_params):
                     "init_method": "xavier_normal"
                 }
             },
+            "q_gamma": local_params["q_gamma"],
             "dim_h": local_params["dim_h"],
             "dim_factor": local_params["dim_factor"],
             "r": local_params["r"],
