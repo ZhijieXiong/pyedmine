@@ -17,13 +17,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     params = vars(args)
     
-    file_namager = FileManager(config.FILE_MANAGER_ROOT)
-    setting_dir = file_namager.get_setting_dir(params["setting_name"])
-    q_table = file_namager.get_q_table(params["dataset_name"])
+    file_manager = FileManager(config.FILE_MANAGER_ROOT)
+    setting_dir = file_manager.get_setting_dir(params["setting_name"])
+    q_table = file_manager.get_q_table(params["dataset_name"])
     q2c = q2c_from_q_table(q_table)
     test_data = read_kt_file(os.path.join(setting_dir, params["test_file_name"]))
     
-    candiate = []
+    candidate = []
     for user_data in test_data:
         seq_len = user_data["seq_len"]
         if seq_len < 200:
@@ -36,9 +36,10 @@ if __name__ == "__main__":
             c_ids = q2c[q_id]
             concept_exercised.update(c_ids)
         user_data["num_c_exercised"] = len(concept_exercised)
-        candiate.append(user_data)
+        candidate.append(user_data)
         
-    candiate_sorted = sorted(candiate, key=lambda x: x["num_c_exercised"], reverse=True)
-    final_data = candiate_sorted[:params["num_data"]]
-    save_path = os.path.join(setting_dir, f"{params['dataset_name']}-subtest-{params['num_data']}.txt")
+    candidate_sorted = sorted(candidate, key=lambda x: x["num_c_exercised"], reverse=True)
+    num_data = min(params["num_data"], len(candidate_sorted))
+    final_data = candidate_sorted[:num_data]
+    save_path = os.path.join(setting_dir, f"{params['dataset_name']}-subtest-{num_data}.txt")
     write_kt_file(final_data, save_path)

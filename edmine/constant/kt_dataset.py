@@ -171,7 +171,7 @@ def datasets_seq_keys(datasets_merged=None):
                        "num_attempt_seq"],
         "edi2020-task1": ["question_seq", "correctness_seq", "time_seq", "age_seq"],
         "edi2020-task34": ["question_seq", "correctness_seq", "time_seq", "age_seq"],
-        "SLP": ["question_seq", "correctness_seq", "time_seq", "question_mode_seq", "correctness_float_seq"],
+        "SLP": ["question_seq", "correctness_seq", "time_seq", "mode_seq", "answer_score_seq"],
         "slepemapy-anatomy": ["question_seq", "correctness_seq", "time_seq", "use_time_seq"],
         "statics2011": ["question_seq", "correctness_seq", "time_seq", "num_hint_seq"],
         "ednet-kt1": ["question_seq", "correctness_seq", "time_seq", "use_time_seq"],

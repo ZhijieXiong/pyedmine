@@ -46,6 +46,47 @@ def load_ednet_kt1(data_dir, num_file):
     return pd.concat(dfs, axis=0)
 
 
+def load_SLP(data_dir, dataset_name):
+    subject = dataset_name.split("-")[-1]
+    unit_path = os.path.join(data_dir, f"unit-{subject}.csv")
+    term_path = os.path.join(data_dir, f"term-{subject}.csv")
+    student_path = os.path.join(data_dir, "student.csv")
+    family_path = os.path.join(data_dir, "family.csv")
+    # school_path = os.path.join(data_dir, "school.csv")
+
+    useful_cols = ["student_id", "question_id", "concept", "score", "full_score", "time_access"]
+    family_cols = ["student_id", "live_on_campus"]
+    student_cols = ["student_id", "gender", "school_id"]
+    # school_cols = ["school_id", "school_type"]
+
+    unit = read_csv(unit_path, useful_cols)
+    term = read_csv(term_path, useful_cols)
+    student = read_csv(student_path, student_cols)
+    family = read_csv(family_path, family_cols)
+    # school = load_csv(school_path, school_cols)
+
+    # 原文件已经是排过序的，加上order方便后面利用
+    unit["order"] = range(len(unit))
+    term["order"] = range(len(unit), len(unit) + len(term))
+    # 将总评数据加入
+    student_ids = pd.unique(unit["student_id"])
+    student_df = pd.DataFrame({"student_id": student_ids})
+
+    # unit为0，term为1
+    unit.insert(loc=len(unit.columns), column='interaction_type', value=0)
+    term = student_df.merge(term, how="left", on=["student_id"])
+    term.insert(loc=len(term.columns), column='interaction_type', value=1)
+    df = pd.concat([unit, term], axis=0)
+
+    df = df.merge(family, how="left", on=["student_id"])
+    df = df.merge(student, how="left", on=["student_id"])
+    # df = df.merge(school, how="left", on=["school_id"])
+
+    # live_on_campus和school_type有nan
+    return df[["student_id", "question_id", "concept", "score", "full_score", "time_access", "order",
+               "live_on_campus", "school_id", "gender", "interaction_type"]]
+
+
 def map_qc_id(df: pd.DataFrame) -> dict[str, Any]:
     """
     Remaps question IDs and concept IDs in a dataset to sequential integers, constructs a question-concept relationship matrix (Q_table), and returns the processed data along with mapping information for both questions and concepts.
@@ -195,8 +236,8 @@ class KTDataProcessor:
             self.process_xes3g5m()
         # elif dataset_name in ["algebra2005", "algebra2006", "algebra2008", "bridge2algebra2006", "bridge2algebra2008"]:
         #     self.process_kdd_cup2010()
-        # elif dataset_name in ["SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy"]:
-        #     self.process_SLP()
+        elif dataset_name in ["SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy"]:
+            self.process_SLP()
         elif dataset_name == "statics2011":
             self.process_statics2011()
         elif dataset_name == "slepemapy-anatomy":
@@ -222,8 +263,8 @@ class KTDataProcessor:
         elif dataset_name in ["assist2009-full", "ednet-kt1", "algebra2005", "algebra2006", "algebra2008",
                               "bridge2algebra2006", "bridge2algebra2008", "slepemapy-anatomy"]:
             self.uniform_raw_is_single_concept()
-        # elif dataset_name in ["SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy"]:
-        #     self.uniform_SLP()
+        elif dataset_name in ["SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy"]:
+            self.uniform_SLP()
         elif dataset_name == "statics2011":
             self.uniform_statics2011()
         else:
@@ -963,7 +1004,7 @@ class KTDataProcessor:
 
     def process_c_id_not_num(self, df_multi_concept, df_new):
         # 扩展为多知识点数据，即一条记录为一个知识点，而不是一道习题，类似skill_builder_data_corrected_collapsed.csv这种格式
-        dataset_name = self.params["preprocess_config"]["dataset_name"]
+        dataset_name = self.params["dataset_name"]
         # 多知识点之间的连接符
         split_table = {
             "algebra2005": "~~",
@@ -1518,6 +1559,143 @@ class KTDataProcessor:
                 if k != "concept_seq":
                     item_data_[k] = deepcopy(item_data[k])
             self.data_uniformed.append(item_data_)
+        self.user_id_map = pd.DataFrame({
+            "original_id": user_id_map.keys(),
+            "mapped_id": user_id_map.values()
+        })
+
+    def process_SLP(self):
+        data_dir = self.params["data_path"]
+        dataset_name = self.params["dataset_name"]
+        self.data_raw = load_SLP(data_dir, dataset_name)
+        self.data_raw.rename(columns=CONSTANT.datasets_renamed()["SLP"], inplace=True)
+        self.statics_raw = self.get_basic_info(self.data_raw)
+
+        # 去除question_id和concept_id为nan以及"n.a."的数据
+        df = deepcopy(self.data_raw)
+        df.dropna(subset=["question_id", "concept_id", "score", "full_score", "timestamp"], inplace=True)
+        df = df[(df["question_id"] != "n.a.") & (df["concept_id"] != "n.a.")]
+
+        # 将user_id、question_id、concept_id、school_type、live_on_campus、timestamp映射为数字
+        user_ids = list(pd.unique(df["user_id"]))
+        df["user_id"] = df["user_id"].map({u_id: i for i, u_id in enumerate(user_ids)})
+
+        question_ids = list(pd.unique(df["question_id"]))
+        concept_ids = list(pd.unique(df["concept_id"]))
+        question_id_map = {q_id: i for i, q_id in enumerate(question_ids)}
+        concept_id_map = {c_id: i for i, c_id in enumerate(concept_ids)}
+        df["question_id"] = df["question_id"].map(question_id_map)
+        df["concept_id"] = df["concept_id"].map(concept_id_map)
+        question_info = pd.DataFrame({
+            "original_id": question_id_map.keys(),
+            "mapped_id": question_id_map.values()
+        })
+        concept_info = pd.DataFrame({
+            "original_id": concept_id_map.keys(),
+            "mapped_id": concept_id_map.values()
+        })
+        self.question_id_map = question_info
+        self.concept_id_map = concept_info
+
+        def map_campus(item):
+            item_str = str(item)
+            if item_str == "Yes":
+                return 1
+            if item_str == "No":
+                return 2
+            return 0
+
+        df["live_on_campus"] = df["live_on_campus"].map(map_campus)
+
+        def map_gender(item):
+            item_str = str(item)
+            if item_str == "Male":
+                return 2
+            if item_str == "Female":
+                return 1
+            return 0
+
+        df["gender"] = df["gender"].map(map_gender)
+
+        def time_str2timestamp(time_str):
+            if "-" in time_str:
+                return int(time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S")))
+            else:
+                return int(time.mktime(time.strptime(time_str, "%Y/%m/%d %H:%M")))
+
+        df["timestamp"] = df["timestamp"].map(time_str2timestamp)
+        df["order"] = df["order"].map(int)
+
+        # 将score和full_score转换为correct
+        df["score"] = df["score"].map(float)
+
+        def map_full_score(item):
+            item_str = str(item)
+            if item_str == "n.a.":
+                return 1.0
+            return float(item_str)
+
+        df["full_score"] = df["full_score"].map(map_full_score)
+        df["answer_score"] = df["score"] / df["full_score"]
+        df["correctness"] = df["answer_score"] > 0.5
+        df["correctness"] = df["correctness"].map(int)
+        df["answer_score"] = df["answer_score"].map(lambda s: float("{:.2f}".format(s)))
+
+        df.rename(columns={"live_on_campus": "campus"}, inplace=True)
+        self.data_preprocessed = df[
+            ["user_id", "question_id", "concept_id", "correctness", "gender", "campus", "school_id", "timestamp", "order",
+             "interaction_type", "answer_score"]
+        ]
+        self.statics_preprocessed = KTDataProcessor.get_basic_info(self.data_preprocessed)
+
+        # Q table
+        df_new = pd.DataFrame({
+            "question_id": map(int, df["question_id"].tolist()),
+            "concept_id": map(int, df["concept_id"].tolist())
+        })
+        Q_table = np.zeros((len(question_ids), len(concept_ids)), dtype=int)
+        for question_id, group_info in df_new[["question_id", "concept_id"]].groupby("question_id"):
+            correspond_c = pd.unique(group_info["concept_id"]).tolist()
+            Q_table[[question_id] * len(correspond_c), correspond_c] = [1] * len(correspond_c)
+        self.Q_table = Q_table
+
+    def uniform_SLP(self):
+        df = deepcopy(self.data_preprocessed)
+        # school_id按照学生数量重映射
+        df["school_id"] = df["school_id"].fillna(-1)
+        self.other_info["school_id_map"] = map_user_info(df, "school_id")
+
+        info_name_table = {
+            "question_seq": "question_id",
+            "correctness_seq": "correctness",
+            "time_seq": "timestamp",
+            "mode_seq": "interaction_type",
+            "answer_score_seq": "answer_score"
+        }
+
+        id_keys = list(set(df.columns) - set(info_name_table.values()) - {"concept_id"})
+        seq_keys = deepcopy(CONSTANT.datasets_seq_keys()["SLP"])
+        seqs = []
+        user_id_map = {}
+        for i, user_id in enumerate(pd.unique(df["user_id"])):
+            user_id_map[user_id] = i
+            user_data = df[df["user_id"] == user_id]
+            user_data = user_data.sort_values(by=["timestamp", "order"])
+            object_data = {seq_key: [] for seq_key in seq_keys}
+            for k in id_keys:
+                if k == "user_id":
+                    object_data[k] = i
+                else:
+                    object_data[k] = user_data.iloc[0][k]
+            for _, row_data in user_data.iterrows():
+                for seq_key in seq_keys:
+                    if seq_key not in ["answer_score_seq"]:
+                        object_data[seq_key].append(int(row_data[info_name_table[seq_key]]))
+                    else:
+                        object_data[seq_key].append(row_data[info_name_table[seq_key]])
+            object_data["seq_len"] = len(object_data["correctness_seq"])
+            seqs.append(object_data)
+        self.data_uniformed = list(filter(lambda item: 2 <= item["seq_len"], seqs))
         self.user_id_map = pd.DataFrame({
             "original_id": user_id_map.keys(),
             "mapped_id": user_id_map.values()

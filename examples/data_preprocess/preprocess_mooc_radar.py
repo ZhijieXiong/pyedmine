@@ -19,6 +19,7 @@ if __name__ == "__main__":
     data_process_dir = "/Users/dream/myProjects/pyedmine/dataset/dataset_preprocessed"
     # 最大3个课程的数据集C_2287011（政治），C_797404（酒）, C_746997（模电）
     target_course_id = "C_746997"
+    target_course_id_rename = target_course_id.replace("_", "")
 
     problem_data = []
     with open(problem_data_path, "r") as f:
@@ -160,7 +161,7 @@ if __name__ == "__main__":
         item_data["user_id"] = i
         item_data["question_seq"] = [course_q_map[q_ori_id] for q_ori_id in item_data["question_seq"]]
 
-    data_dir = os.path.join(data_process_dir, f"moocradar-{target_course_id}")
+    data_dir = os.path.join(data_process_dir, f"moocradar-{target_course_id_rename}")
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
     num_interaction = 0
@@ -180,19 +181,42 @@ if __name__ == "__main__":
     }
     question_id_map = {
         "mapped_id": [],
-        "original_id": []
+        "original_id": [],
+        "text": [],
+        "type": [],
+        "answer": [],
+        "knowledge_type": [],
+        "cognitive_dimension": []
     }
+    question_meta = {}
+    for q_meta in question_meta_data.values():
+        question_meta[q_meta["original_id"]] = {
+            "text": q_meta["content"],
+            "type": q_meta["type"],
+            "answer": q_meta["answer"]
+        }
+    for q_meta in problem_data:
+        question_meta[q_meta["problem_id"]]["knowledge_type"] = q_meta.get("knowledge_type", -1)
+        question_meta[q_meta["problem_id"]]["cognitive_dimension"] = q_meta.get("cognitive_dimension", -1)
     for question_id, question_mapped_id in course_q_map.items():
         question_id_map["mapped_id"].append(question_mapped_id)
         question_id_map["original_id"].append(question_id)
+        question_id_map["text"].append(question_meta[question_id].get("text", "unknown"))
+        question_id_map["type"].append(question_meta[question_id].get("type", "unknown"))
+        question_id_map["answer"].append(question_meta[question_id].get("answer", "unknown"))
+        question_id_map["knowledge_type"].append(question_meta[question_id]["knowledge_type"])
+        question_id_map["cognitive_dimension"].append(question_meta[question_id]["cognitive_dimension"])
     question_id_map = pd.DataFrame(question_id_map)
+
     concept_id_map = {
         "mapped_id": [],
-        "original_id": []
+        "original_id": [],
+        "text": []
     }
     for concept_id, concept_mapped_id in course_c_map.items():
         concept_id_map["mapped_id"].append(concept_mapped_id)
-        concept_id_map["original_id"].append(concept_id)
+        concept_id_map["original_id"].append(concept_mapped_id)
+        concept_id_map["text"].append(concept_id)
     concept_id_map = pd.DataFrame(concept_id_map)
 
     # 必须有的数据
