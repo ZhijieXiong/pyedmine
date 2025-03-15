@@ -2,11 +2,13 @@ import argparse
 import os
 import dspy
 import inspect
+import numpy as np
 
 from config import FILE_MANAGER_ROOT
-from predict import predict_basic
+from predict import predict_rag
 
-from edmine.utils.data_io import read_kt_file, read_csv, write_json
+from edmine.utils.data_io import read_kt_file, read_json, read_csv, write_json
+from edmine.utils.calculate import cosine_similarity_matrix
 from edmine.data.FileManager import FileManager
 from edmine.llm.dspy.remote_llm.GLM import GLM
 from edmine.llm.dspy.remote_llm.BaiLian import BaiLian
@@ -15,13 +17,14 @@ from edmine.utils.parse import q2c_from_q_table
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--llm", type=str, default="qwen-max")
+    parser.add_argument("--llm", type=str, default="qwen-plus")
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
     parser.add_argument("--dataset_name", type=str, default="xes3g5m")
+    parser.add_argument("--emb_file_name", type=str, default="xes3g5m_qid2content_emb.json")
     parser.add_argument("--test_file_name", type=str, default="xes3g5m-subtest-100.txt")
     parser.add_argument("--seq_start", type=int, default=171)
-    parser.add_argument("--max_history", type=int, default=90, help="unit: day")
-    parser.add_argument("--num2evaluate", type=int, default=2)
+    parser.add_argument("--max_history", type=int, default=60, help="unit: day")
+    parser.add_argument("--num2evaluate", type=int, default=3000)
     parser.add_argument("--top_p", type=float, default=0.1)
     parser.add_argument("--presence_penalty", type=float, default=1.8)
     args = parser.parse_args()
@@ -52,6 +55,17 @@ if __name__ == "__main__":
     # 获取当前目录
     current_file_name = inspect.getfile(inspect.currentframe())
     current_dir = os.path.dirname(current_file_name)
+    question_emb_json = read_json(os.path.join(current_dir, "emb", params["emb_file_name"]))
+    num_question = len(question_emb_json)
+    question_emb = []
+    for i in range(num_question):
+        question_emb.append(np.array(question_emb_json[str(i)]))
+    question_emb = np.stack(question_emb)
+    que_sim_mat = cosine_similarity_matrix(question_emb, axis=1)
+    similar_questions_np = np.argsort(-que_sim_mat, axis=1)[:, 1:num_question//100]
+    similar_questions = {}
+    for i in range(num_question):
+        similar_questions[i] = similar_questions_np[i].tolist()
 
     # 选择LLM
     if args.llm in ["glm-4-plus"]:
@@ -67,7 +81,7 @@ if __name__ == "__main__":
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     output_path = os.path.join(current_dir,
-                               f"output/{args.llm}_{args.test_file_name.replace('.txt', '')}_{args.seq_start}_{args.max_history}.json")
-    prediction = predict_basic(dspy_lm, kt_data, question_meta, concept_meta, q2c, output_path, params)
+                               f"output/{args.llm}_rag_{args.test_file_name.replace('.txt', '')}_{args.seq_start}_{args.max_history}.json")
+    prediction = predict_rag(dspy_lm, kt_data, question_meta, concept_meta, q2c, similar_questions, output_path, params)
     write_json(prediction, output_path)
 

@@ -10,6 +10,9 @@ from edmine.model.sequential_kt_model.DKVMN import DKVMN
 from edmine.model.sequential_kt_model.ATKT import ATKT
 from edmine.model.sequential_kt_model.SimpleKT import SimpleKT
 from edmine.model.sequential_kt_model.AKT import AKT
+from edmine.model.sequential_kt_model.DIMKT import DIMKT
+from edmine.model.sequential_kt_model.LPKT import LPKT
+from edmine.model.sequential_kt_model.LBKT import LBKT
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT
@@ -30,6 +33,9 @@ model_table = {
     "ATKT": ATKT,
     "SimpleKT": SimpleKT,
     "AKT": AKT,
+    "DIMKT": DIMKT,
+    "LPKT": LPKT,
+    "LBKT": LBKT,
     "NCD": NCD,
     "IRT": IRT,
     "MIRT": MIRT,

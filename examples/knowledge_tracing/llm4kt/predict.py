@@ -68,6 +68,7 @@ def predict_basic(dspy_lm, kt_data, question_meta, concept_meta, q2c, output_pat
                 except:
                     # 如果解析报错，就直接用相同知识点的习题
                     interaction_ids = interaction_ids_
+                interaction_ids = interaction_ids[:15]
 
                 if len(interaction_ids) == 0:
                     continue
@@ -189,8 +190,9 @@ def predict_rag(dspy_lm, kt_data, question_meta, concept_meta, q2c, similar_ques
                 except:
                     # 如果解析报错，就直接用相同知识点的习题
                     interaction_ids = interaction_ids_
-                interaction_ids = list(set(interaction_ids).union(set(similar_interaction_ids)))
-                interaction_ids = sorted(interaction_ids, reverse=True)
+                if len(interaction_ids) < 10:
+                    interaction_ids = list(set(interaction_ids).union(set(similar_interaction_ids[:5])))
+                    interaction_ids = sorted(interaction_ids, reverse=True)
 
                 if len(interaction_ids) == 0:
                     continue
