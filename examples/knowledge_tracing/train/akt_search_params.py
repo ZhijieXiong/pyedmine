@@ -1,23 +1,23 @@
 import argparse
 from hyperopt import fmin, tpe, hp
 
-from set_params.congnitive_diagnosis_params import setup_common_args
-from config.ncd import config_ncd
+from set_params.sequential_kt_params import setup_common_args
+from config.akt import config_akt
 from utils import get_objective_func
 
 from edmine.utils.parse import str2bool
-from edmine.model.cognitive_diagnosis_model.NCD import NCD
+from edmine.model.sequential_kt_model.AKT import AKT
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
     # batch size
-    parser.add_argument("--train_batch_size", type=int, default=256)
-    parser.add_argument("--evaluate_batch_size", type=int, default=2048)
+    parser.add_argument("--train_batch_size", type=int, default=24)
+    parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
-    parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--weight_decay", type=float, default=0.0001)
+    parser.add_argument("--learning_rate", type=float, default=0.0001)
+    parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
     # scheduler配置
     parser.add_argument("--enable_scheduler", type=str2bool, default=False)
@@ -27,23 +27,32 @@ if __name__ == "__main__":
     parser.add_argument("--scheduler_milestones", type=str, default="[5, 10]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
     # 梯度裁剪
-    parser.add_argument("--enable_clip_grad", type=str2bool, default=False)
+    parser.add_argument("--enable_clip_grad", type=str2bool, default=True)
     parser.add_argument("--grad_clipped", type=float, default=10.0)
     # 梯度累计
     parser.add_argument("--accumulation_step", type=int, default=1,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
-    parser.add_argument("--dropout", type=float, default=0.3)
+    parser.add_argument("--dim_model", type=int, default=256)
+    parser.add_argument("--num_block", type=int, default=4)
+    parser.add_argument("--num_head", type=int, default=4)
+    parser.add_argument("--dim_ff", type=int, default=64)
+    parser.add_argument("--seq_len", type=int, default=200)
+    parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--num_predict_layer", type=int, default=2)
     parser.add_argument("--dim_predict_mid", type=int, default=64)
-    parser.add_argument("--activate_type", type=str, default="sigmoid")
+    parser.add_argument("--activate_type", type=str, default="relu")
+    parser.add_argument("--key_query_same", type=str2bool, default=True)
+    parser.add_argument("--separate_qa", type=str2bool, default=False)
+    parser.add_argument("--w_rasch_loss", type=float, default=0.00001)
 
     # 设置参数空间
     parameters_space = {
-        "train_batch_size": [512, 1024, 2048],
-        "learning_rate": [0.0001, 0.001],
-        "weight_decay": [0.0001, 0.00001, 0],
-        "dropout": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "dim_model": [64, 256],
+        "num_block": [1, 2, 4],
+        "num_head": [4, 8],
+        "dim_ff": [64, 256],
+        "dropout": [0.1, 0.2, 0.3]
     }
     space = {
         param_name: hp.choice(param_name, param_space)
@@ -63,5 +72,4 @@ if __name__ == "__main__":
     else:
         max_evals = num
     current_best_performance = 0
-    fmin(get_objective_func(parser, config_ncd, "NCD", NCD), space, algo=tpe.suggest, max_evals=max_evals)
-
+    fmin(get_objective_func(parser, config_akt, "AKT", AKT), space, algo=tpe.suggest, max_evals=max_evals)

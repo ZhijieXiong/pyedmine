@@ -17,6 +17,12 @@ def get_objective_func(parser, config_func, model_name, model_class):
         params["save_model"] = False
         params["debug_mode"] = False
         params["use_cpu"] = False
+        if model_name in ["DIMKT", "LPKT"]:
+            params["max_epoch"] = 100
+            params["num_epoch_early_stop"] = 10
+        if model_name in ["LBKT"]:
+            params["max_epoch"] = 50
+            params["num_epoch_early_stop"] = 5
         for param_name in parameters:
             params[param_name] = parameters[param_name]
         set_seed(params["seed"])

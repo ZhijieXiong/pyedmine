@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.module.Clipper import NoneNegClipper
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
 
 
 class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
+    model_name = "HyperCD"
     def __init__(self, params, objects):
         super(HyperCD, self).__init__()
         self.params = params

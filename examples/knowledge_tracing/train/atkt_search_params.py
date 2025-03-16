@@ -46,16 +46,14 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        # 一阶段
         "weight_decay": [0.0001, 0.00001, 0],
         "epsilon": [1, 2, 5, 10],
-        "w_adv_loss": [0.1, 0.2, 0.3, 0.4, 0.5],
-        # 二阶段
-        # "dim_concept": [64, 128],
-        # "dim_correctness": [64, 128],
-        # "dim_latent": [128, 256],
-        # "dim_attention": [128, 256],
-        # "dropout": [0.1, 0.2, 0.3],
+        "w_adv_loss": [0.1, 0.3, 0.5],
+        "dim_concept": [64, 128],
+        "dim_correctness": [64, 128],
+        "dim_latent": [128, 256],
+        "dim_attention": [128, 256],
+        "dropout": [0.1, 0.2, 0.3],
     }
     space = {
         param_name: hp.choice(param_name, param_space)

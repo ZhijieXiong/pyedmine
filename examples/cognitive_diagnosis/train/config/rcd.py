@@ -1,6 +1,5 @@
 import json
 import os
-import dgl
 import inspect
 
 from edmine.config.data import config_q_table, config_cd_dataset

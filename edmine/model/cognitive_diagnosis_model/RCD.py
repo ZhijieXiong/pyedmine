@@ -86,6 +86,7 @@ class Fusion(nn.Module):
     
     
 class RCD(nn.Module, DLCognitiveDiagnosisModel):
+    model_name = "RCD"
     def __init__(self, params, objects):
         super(RCD, self).__init__()
         self.params = params

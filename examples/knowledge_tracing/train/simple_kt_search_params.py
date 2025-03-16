@@ -48,14 +48,12 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        # 一阶段
         "weight_decay": [0.0001, 0.00001, 0],
         "dim_model": [64, 128, 256],
         "num_block": [1, 2, 4],
         "num_head": [2, 4, 8],
-        # 二阶段
-        # "dim_ff": [64, 128, 256],
-        # "dropout": [0.1, 0.2, 0.3],
+        "dim_ff": [64, 128, 256],
+        "dropout": [0.1, 0.2, 0.3],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
