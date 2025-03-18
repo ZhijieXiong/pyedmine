@@ -31,6 +31,30 @@ def cosine_similarity_matrix(arr, axis=0):
     return cosine_sim
 
 
+def cosine_similarity(A, B):
+    """
+    计算矩阵 A 和矩阵 B 的行向量之间的余弦相似度。
+
+    参数:
+        A: 形状为 (m, d) 的矩阵，表示 m 个 d 维向量。
+        B: 形状为 (n, d) 的矩阵，表示 n 个 d 维向量。
+
+    返回:
+        形状为 (m, n) 的余弦相似度矩阵。
+    """
+    # 归一化 A 和 B 的行向量（除以 L2 范数）
+    A_norm = np.linalg.norm(A, axis=1, keepdims=True)  # 计算 A 的每行 L2 范数
+    B_norm = np.linalg.norm(B, axis=1, keepdims=True)  # 计算 B 的每行 L2 范数
+
+    A_normalized = A / (A_norm + 1e-8)  # 归一化 A
+    B_normalized = B / (B_norm + 1e-8)  # 归一化 B
+
+    # 计算余弦相似度矩阵
+    cosine_sim = A_normalized @ B_normalized.T  # 矩阵乘法计算点积
+
+    return cosine_sim
+
+
 def pearson_similarity(scores_i, scores_j):
     # 提取共同评分的索引
     common_ids = np.where((scores_i >= 0) & (scores_j >= 0))[0]

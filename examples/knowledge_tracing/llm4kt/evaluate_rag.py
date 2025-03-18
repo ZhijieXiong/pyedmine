@@ -17,10 +17,10 @@ from edmine.utils.parse import q2c_from_q_table
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--llm", type=str, default="qwen-plus")
+    parser.add_argument("--llm", type=str, default="glm-4-air")
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
     parser.add_argument("--dataset_name", type=str, default="xes3g5m")
-    parser.add_argument("--emb_file_name", type=str, default="xes3g5m_qid2content_emb.json")
+    parser.add_argument("--emb_file_name", type=str, default="xes3g5m_qid2content_sol_avg_emb_768.json")
     parser.add_argument("--test_file_name", type=str, default="xes3g5m-subtest-100.txt")
     parser.add_argument("--seq_start", type=int, default=171)
     parser.add_argument("--max_history", type=int, default=60, help="unit: day")
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         similar_questions[i] = similar_questions_np[i].tolist()
 
     # 选择LLM
-    if args.llm in ["glm-4-plus"]:
+    if "glm" in args.llm:
         dspy_lm = GLM(f"zhipu/{args.llm}")
     elif "qwen" in args.llm:
         dspy_lm = BaiLian(f"bailian/{args.llm}", top_p=params["top_p"], presence_penalty=params["presence_penalty"])
