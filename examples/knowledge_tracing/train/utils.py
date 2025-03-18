@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
 
 from edmine.utils.use_torch import set_seed
-from edmine.dataset.SequentialKTDataset import BasicSequentialKTDataset
+from edmine.dataset.SequentialKTDataset import *
 from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 current_best_performance = -100
@@ -11,6 +11,7 @@ def get_objective_func(parser, config_func, model_name, model_class):
         global current_best_performance
         args = parser.parse_args()
         params = vars(args)
+        set_seed(params["seed"])
 
         # 替换参数
         params["search_params"] = True
@@ -25,12 +26,21 @@ def get_objective_func(parser, config_func, model_name, model_class):
             params["num_epoch_early_stop"] = 5
         for param_name in parameters:
             params[param_name] = parameters[param_name]
-        set_seed(params["seed"])
         global_params, global_objects = config_func(params)
 
-        dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
+        if model_name == "DIMKT":
+            dataset_train = DIMKTDataset(global_params["datasets_config"]["train"], global_objects)
+            dataset_valid = DIMKTDataset(global_params["datasets_config"]["valid"], global_objects)
+        elif model_name == "LPKT":
+            dataset_train = LPKTDataset(global_params["datasets_config"]["train"], global_objects)
+            dataset_valid = LPKTDataset(global_params["datasets_config"]["valid"], global_objects)
+        elif model_name == "LBKT":
+            dataset_train = LBKTDataset(global_params["datasets_config"]["train"], global_objects)
+            dataset_valid = LBKTDataset(global_params["datasets_config"]["valid"], global_objects)
+        else:
+            dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
+            dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)
         dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
-        dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)
         dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
 
         global_objects["data_loaders"] = {

@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=256)
-    parser.add_argument("--evaluate_batch_size", type=int, default=2048)
+    parser.add_argument("--evaluate_batch_size", type=int, default=1024)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.001)
