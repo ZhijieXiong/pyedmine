@@ -15,13 +15,13 @@ from edmine.utils.parse import q2c_from_q_table
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--llm", type=str, default="qwen-plus")
+    parser.add_argument("--llm", type=str, default="glm-4-air")
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
     parser.add_argument("--dataset_name", type=str, default="moocradar-C746997")
     parser.add_argument("--test_file_name", type=str, default="moocradar-C746997-subtest-27.txt")
     parser.add_argument("--seq_start", type=int, default=171)
     parser.add_argument("--max_history", type=int, default=60, help="unit: day")
-    parser.add_argument("--num2evaluate", type=int, default=810)
+    parser.add_argument("--num2evaluate", type=int, default=3000)
     parser.add_argument("--top_p", type=float, default=0.1)
     parser.add_argument("--presence_penalty", type=float, default=1.8)
     args = parser.parse_args()
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(current_file_name)
 
     # 选择LLM
-    if args.llm in ["glm-4-plus"]:
+    if "glm" in args.llm:
         dspy_lm = GLM(f"zhipu/{args.llm}")
     elif "qwen" in args.llm:
         dspy_lm = BaiLian(f"bailian/{args.llm}", top_p=params["top_p"], presence_penalty=params["presence_penalty"])

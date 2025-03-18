@@ -66,7 +66,13 @@ class GLM(dspy.LM):
         )
 
         outputs = [completions.choices[0].message.content]
-        self.history.append({"messages": messages, "outputs": outputs, "timestamp": datetime.now().isoformat()})
+        self.history.append({
+            "messages": messages,
+            "outputs": outputs,
+            "timestamp": datetime.now().isoformat(),
+            "input_tokens": completions.usage.prompt_tokens,
+            "output_tokens": completions.usage.completion_tokens,
+        })
 
         # Must return a list of strings
         return outputs
