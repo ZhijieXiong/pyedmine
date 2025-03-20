@@ -17,11 +17,11 @@ from edmine.utils.parse import q2c_from_q_table
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--llm", type=str, default="glm-4-air")
+    parser.add_argument("--llm", type=str, default="qwen-plus")
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
-    parser.add_argument("--dataset_name", type=str, default="xes3g5m")
-    parser.add_argument("--emb_file_name", type=str, default="xes3g5m_qid2content_sol_avg_emb_768.json")
-    parser.add_argument("--test_file_name", type=str, default="xes3g5m-subtest-100.txt")
+    parser.add_argument("--dataset_name", type=str, default="moocradar-C746997")
+    parser.add_argument("--emb_file_name", type=str, default="moocradar-C746997_qid2content_768.json")
+    parser.add_argument("--test_file_name", type=str, default="moocradar-C746997-subtest-27.txt")
     parser.add_argument("--seq_start", type=int, default=171)
     parser.add_argument("--max_history", type=int, default=60, help="unit: day")
     parser.add_argument("--num2evaluate", type=int, default=3000)

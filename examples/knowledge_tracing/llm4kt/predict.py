@@ -121,8 +121,7 @@ def predict_basic(dspy_lm, kt_data, question_meta, concept_meta, q2c, output_pat
                     break
         progress_bar.close()
     except:
-        return prediction
-    finally:
+        progress_bar.close()
         return prediction
 
 
@@ -245,6 +244,6 @@ def predict_rag(dspy_lm, kt_data, question_meta, concept_meta, q2c, similar_ques
                     break
         progress_bar.close()
     except:
+        progress_bar.close()
         return prediction
-    finally:
-        return prediction
+

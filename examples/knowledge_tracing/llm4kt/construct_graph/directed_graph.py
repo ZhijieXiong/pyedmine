@@ -14,9 +14,9 @@ from edmine.utils.calculate import cosine_similarity
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--llm_name", type=str, default="glm-4-air")
-    parser.add_argument("--dataset_name", type=str, default="moocradar-C746997")
-    parser.add_argument("--emb_file_name", type=str, default="moocradar-C746997_cid2content_emb_256.json")
-    parser.add_argument("--sim_th", type=float, default=0.95, help="相似度阈值")
+    parser.add_argument("--dataset_name", type=str, default="xes3g5m")
+    parser.add_argument("--emb_file_name", type=str, default="xes3g5m_cid2content_256.json")
+    parser.add_argument("--sim_th", type=float, default=0.75, help="相似度阈值")
     args = parser.parse_args()
     params = vars(args)
 

@@ -15,7 +15,7 @@ from edmine.utils.parse import q2c_from_q_table
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--llm", type=str, default="glm-4-air")
+    parser.add_argument("--llm", type=str, default="qwen-plus")
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
     parser.add_argument("--dataset_name", type=str, default="moocradar-C746997")
     parser.add_argument("--test_file_name", type=str, default="moocradar-C746997-subtest-27.txt")

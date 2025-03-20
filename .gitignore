@@ -16,6 +16,7 @@ script_result
 /examples/knowledge_tracing/llm4kt/output
 /examples/knowledge_tracing/llm4kt/emb
 /examples/knowledge_tracing/llm4kt/cal_metric.py
+/examples/knowledge_tracing/llm4kt/select_user.py
 /dataset
 /models
 

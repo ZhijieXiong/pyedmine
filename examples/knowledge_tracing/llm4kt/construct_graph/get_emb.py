@@ -11,9 +11,9 @@ from edmine.data.FileManager import FileManager
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, default="xes3g5m")
-    parser.add_argument("--target_item", type=str, default="concept", choices=("concept", "question"))
-    parser.add_argument("--dimensions", type=int, default=256)
+    parser.add_argument("--dataset_name", type=str, default="moocradar-C746997")
+    parser.add_argument("--target_item", type=str, default="question", choices=("concept", "question"))
+    parser.add_argument("--dimensions", type=int, default=768)
     args = parser.parse_args()
     params = vars(args)
 
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     dataset_name = params["dataset_name"]
     dimensions = params["dimensions"]
     item_id_map = read_csv(
-        os.path.join(processed_dir, "concept_id_map.csv" if target_item == "concept" else "question_id_map")
+        os.path.join(processed_dir, "concept_id_map.csv" if target_item == "concept" else "question_id_map.csv")
     ).to_dict()
     item_meta = {
         item_id: {
@@ -51,6 +51,6 @@ if __name__ == "__main__":
         current_dir,
         "..",
         "emb",
-        f"{dataset_name}_{'cid' if target_item == 'concept' else 'qid'}2content_emb_{dimensions}.json"
+        f"{dataset_name}_{'cid' if target_item == 'concept' else 'qid'}2content_{dimensions}.json"
     )
     write_json(item_embs, save_path)
