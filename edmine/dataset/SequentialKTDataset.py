@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import torch
 
 from torch.utils.data import Dataset
@@ -25,7 +26,7 @@ class BasicSequentialKTDataset(Dataset):
         for key in self.dataset.keys():
             result[key] = self.dataset[key][index]
         return result
-    
+
     def process_dataset(self):
         self.load_dataset()
         self.convert_dataset()
@@ -36,7 +37,7 @@ class BasicSequentialKTDataset(Dataset):
         file_name = self.dataset_config["file_name"]
         dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), file_name)
         self.dataset_original = read_kt_file(dataset_path)
-        
+
     def convert_dataset(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
         self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
@@ -81,24 +82,74 @@ class BasicSequentialKTDataset(Dataset):
 class DIMKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects):
         super(DIMKTDataset, self).__init__(dataset_config, objects)
-        
+
     def process_dataset(self):
         self.load_dataset()
         self.parse_difficulty()
         self.convert_dataset()
         self.dataset2tensor()
-        
+
     def parse_difficulty(self):
         question_difficulty = self.objects["dimkt"]["question_difficulty"]
         for item_data in self.dataset_original:
             item_data["question_diff_seq"] = []
             for q_id in item_data["question_seq"]:
                 item_data["question_diff_seq"].append(question_difficulty[q_id])
-    
+
+
+class QDCKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects, train_mode=True):
+        self.train_mode = train_mode
+        if train_mode:
+            q_table = self.objects["dataset"]["q_table"]
+            self.q_with_same_concepts = {}
+            for q_id in range(q_table.shape[0]):
+                q_table_ = q_table - np.tile(q_table[q_id], (q_table.shape[0], 1))
+                q_table_sum = q_table_.sum(axis=1)
+                self.q_with_same_concepts[q_id] = list(set(np.nonzero(q_table_sum == 0)[0]) - {q_id})
+        super(QDCKTDataset, self).__init__(dataset_config, objects)
+
+    def process_dataset(self):
+        self.load_dataset()
+        self.parse_difficulty()
+        self.convert_dataset()
+        self.dataset2tensor()
+
+    def parse_difficulty(self):
+        question_difficulty = self.objects["qdckt"]["question_difficulty"]
+        for item_data in self.dataset_original:
+            item_data["question_diff_seq"] = []
+            item_data["similar_question_seq"] = []
+            item_data["similar_question_diff_seq"] = []
+            item_data["similar_question_mask_seq"] = []
+            for i, q_id in enumerate(item_data["question_seq"]):
+                item_data["question_diff_seq"].append(question_difficulty[q_id])
+                if self.train_mode:
+                    if i >= item_data["seq_len"]:
+                        item_data["similar_question_seq"].append(0)
+                        item_data["similar_question_diff_seq"].append(0)
+                        item_data["similar_question_mask_seq"].append(0)
+                    else:
+                        similar_q_ids = self.q_with_same_concepts[q_id]
+                        if len(similar_q_ids) > 0:
+                            similar_q_id = np.random.choice(similar_q_ids)
+                            item_data["similar_question_seq"].append(similar_q_id)
+                            item_data["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
+                            item_data["similar_question_mask_seq"].append(1)
+                        else:
+                            item_data["similar_question_seq"].append(0)
+                            item_data["similar_question_diff_seq"].append(0)
+                            item_data["similar_question_mask_seq"].append(0)
+            if not self.train_mode:
+                del item_data["similar_question_seq"]
+                del item_data["similar_question_diff_seq"]
+                del item_data["similar_question_mask_seq"]
+
+
 class LPKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects):
         super(LPKTDataset, self).__init__(dataset_config, objects)
-        
+
     def convert_dataset(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
         self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
@@ -127,18 +178,18 @@ class LPKTDataset(BasicSequentialKTDataset):
 
         if "time_seq" in self.dataset_converted.keys():
             del self.dataset_converted["time_seq"]
-        
-        
+
+
 class LBKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects):
         super(LBKTDataset, self).__init__(dataset_config, objects)
-        
+
     def load_dataset(self):
         setting_name = self.dataset_config["setting_name"]
         file_name = self.dataset_config["file_name"]
         dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), "LBKT", file_name)
         self.dataset_original = read_kt_file(dataset_path)
-        
+
     def dataset2tensor(self):
         self.dataset = {}
         for k in self.dataset_converted.keys():
