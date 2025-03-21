@@ -101,7 +101,7 @@ class QDCKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects, train_mode=True):
         self.train_mode = train_mode
         if train_mode:
-            q_table = self.objects["dataset"]["q_table"]
+            q_table = objects["dataset"]["q_table"]
             self.q_with_same_concepts = {}
             for q_id in range(q_table.shape[0]):
                 q_table_ = q_table - np.tile(q_table[q_id], (q_table.shape[0], 1))

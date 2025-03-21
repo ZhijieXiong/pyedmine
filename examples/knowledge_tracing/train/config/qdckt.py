@@ -30,7 +30,9 @@ def config_qdckt(local_params):
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
     config_logger(local_params, global_objects)
     config_general_dl_model(local_params, global_params)
-    global_params["loss_config"] = {}
+    global_params["loss_config"] = {
+        "qdckt loss": local_params["w_qdckt_loss"]
+    }
     config_epoch_trainer(local_params, global_params, model_name)
     config_sequential_kt_dataset(local_params, global_params)
     config_optimizer(local_params, global_params, model_name)
@@ -44,10 +46,11 @@ def config_qdckt(local_params):
     question_difficulty = {}
     for k, v in diff["question_difficulty"].items():
         question_difficulty[int(k)] = v
+    num_que_diff = diff["num_question_diff"]
     global_objects["qdckt"] = {
         "question_difficulty": question_difficulty,
+        "num_question_diff": num_que_diff
     }
-    num_que_diff = diff["num_question_diff"]
     w_size = local_params["window_size"]
     assert (w_size % 2 == 1) and (w_size >= 1), "window_size must an odd number greater than or equal to 1"
     q2diff_transfer_table = []
@@ -87,6 +90,8 @@ def config_qdckt(local_params):
             },
             "dropout": local_params["dropout"],
             "dim_latent": local_params["dim_latent"],
+            "rnn_type": local_params["rnn_type"],
+            "num_rnn_layer": local_params["num_rnn_layer"],
             "window_size": local_params["window_size"],
             "predictor_config": {
                 "type": "direct",
