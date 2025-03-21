@@ -8,7 +8,7 @@ from edmine.data.FileManager import FileManager
 from edmine.utils.parse import q2c_from_q_table, get_ppmcc_no_error, cal_qc_acc4kt_data
 
 
-# 分析数据集中学生做对知识点的正确率与历史练习的关系
+# 分析数据集中学生做对知识点的正确率与习题正确率的关系
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_name", type=str, default="assist2009")
