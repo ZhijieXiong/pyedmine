@@ -2,7 +2,7 @@ import argparse
 
 from torch.utils.data import DataLoader
 
-from set_params.congnitive_diagnosis_params import setup_common_args
+from set_params import *
 from config.hier_cdf import config_hier_cdf
 
 from edmine.utils.parse import str2bool
@@ -13,7 +13,8 @@ from edmine.trainer.DLCognitiveDiagnosisTrainer import DLCognitiveDiagnosisTrain
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args(), setup_clip_args(), setup_grad_acc_args()], 
+                                     add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=64)
     parser.add_argument("--evaluate_batch_size", type=int, default=128)
@@ -22,19 +23,6 @@ if __name__ == "__main__":
     parser.add_argument("--learning_rate", type=float, default=0.0001)
     parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
-    # scheduler配置
-    parser.add_argument("--enable_scheduler", type=str2bool, default=False)
-    parser.add_argument("--scheduler_type", type=str, default="MultiStepLR",
-                        choices=("StepLR", "MultiStepLR"))
-    parser.add_argument("--scheduler_step", type=int, default=10)
-    parser.add_argument("--scheduler_milestones", type=str, default="[5, 10]")
-    parser.add_argument("--scheduler_gamma", type=float, default=0.5)
-    # 梯度裁剪
-    parser.add_argument("--enable_clip_grad", type=str2bool, default=False)
-    parser.add_argument("--grad_clipped", type=float, default=10.0)
-    # 梯度累计
-    parser.add_argument("--accumulation_step", type=int, default=1,
-                        help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 参数
     parser.add_argument("--dim_hidden", type=int, default=16)
     parser.add_argument("--w_penalty_loss", type=float, default=0.001)

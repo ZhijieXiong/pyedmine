@@ -3,7 +3,7 @@ import argparse
 from torch.utils.data import DataLoader
 
 from config.kg4ex import config_kg4ex
-from set_params.exercise_recommendation_params import setup_common_args
+from set_params import *
 
 from edmine.utils.data_io import read_kt_file, read_mlkc_data
 from edmine.utils.parse import str2bool
@@ -14,7 +14,8 @@ from edmine.trainer.ExerciseRecommendationTrainer import ExerciseRecommendationT
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_clip_args(), setup_grad_acc_args()], 
+                                     add_help=False)
     # 数据集
     parser.add_argument("--valid_pkc_file_name", type=str, default="assist2009_pkc_valid.txt")
     parser.add_argument("--valid_efr_file_name", type=str, default="assist2009_efr_0.2_valid.txt")
@@ -23,17 +24,15 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate_batch_size", type=int, default=1, 
                         help="推理比较占显存，与知识点数量相关")
     parser.add_argument("--learning_rate", type=float, default=0.0001)
+    # scheduler配置
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
-    parser.add_argument("--scheduler_type", type=str, default="MultiStepLR", choices=("StepLR", "MultiStepLR"))
+    parser.add_argument("--scheduler_type", type=str, default="MultiStepLR", 
+                        choices=("StepLR", "MultiStepLR"))
     parser.add_argument("--scheduler_step", type=int, default=2000, help="unit: step")
     parser.add_argument("--scheduler_milestones", type=str, default="[1000, 3000, 9000]", help="unit: step")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
-    # 梯度裁剪
-    parser.add_argument("--enable_clip_grad", type=str2bool, default=False)
-    parser.add_argument("--grad_clipped", type=float, default=10.0)
-    # 梯度累计
-    parser.add_argument("--accumulation_step", type=int, default=1,
-                        help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
+    parser.add_argument("--scheduler_T_max", type=int, default=10)
+    parser.add_argument("--scheduler_eta_min", type=float, default=0.0001)
     # 模型参数
     parser.add_argument("--negative_sample_size", type=int, default=256)
     parser.add_argument("--model_selection", type=str, default="TransE", choices=('TransE', 'RotatE'))

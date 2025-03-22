@@ -39,8 +39,6 @@ if __name__ == "__main__":
     parser.add_argument("--setting_name", type=str, default="pykt_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--train_file_name", type=str, default="assist2009_train_fold_0.txt")
-    # 将难度划分等级
-    parser.add_argument("--num_min_question", type=int, default=10)
     parser.add_argument("--num_question_diff", type=int, default=100)
     args = parser.parse_args()
     params = vars(args)

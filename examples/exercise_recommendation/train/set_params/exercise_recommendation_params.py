@@ -4,7 +4,7 @@ from edmine.utils.parse import str2bool
 
 
 def setup_common_args():
-    parser = argparse.ArgumentParser(description="习题推荐模型的公共配置")
+    parser = argparse.ArgumentParser(description="习题推荐模型的公共配置", add_help=False)
     # 数据集相关
     parser.add_argument("--setting_name", type=str, default="ER_offline_setting")
     parser.add_argument("--dataset_name", type=str, default="assist2009")

@@ -1,15 +1,12 @@
 import argparse
-
-from torch.utils.data import DataLoader
+from hyperopt import fmin, tpe, hp
 
 from set_params import *
 from config.qdckt import config_qdckt
+from utils import get_objective_func
 
 from edmine.utils.parse import str2bool
-from edmine.utils.use_torch import set_seed
-from edmine.dataset.SequentialKTDataset import QDCKTDataset
 from edmine.model.sequential_kt_model.QDCKT import QDCKT
-from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
 if __name__ == "__main__":
@@ -36,34 +33,37 @@ if __name__ == "__main__":
     parser.add_argument("--dim_emb", type=int, default=64)
     parser.add_argument("--dim_correctness", type=int, default=64)
     parser.add_argument("--dim_latent", type=int, default=256)
-    parser.add_argument("--window_size", type=int, default=21)
+    parser.add_argument("--window_size", type=int, default=11)
     parser.add_argument("--rnn_type", type=str, default="gru")
     parser.add_argument("--num_rnn_layer", type=int, default=2)
-    parser.add_argument("--dropout", type=float, default=0.1)
+    parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--num_predict_layer", type=int, default=2)
     parser.add_argument("--dim_predict_mid", type=int, default=512)
     parser.add_argument("--activate_type", type=str, default="sigmoid")
     parser.add_argument("--w_qdckt_loss", type=float, default=0.1)
-    # 其它
-    parser.add_argument("--save_model", type=str2bool, default=False)
-    parser.add_argument("--use_wandb", type=str2bool, default=False)
 
-    args = parser.parse_args()
-    params = vars(args)
-    set_seed(params["seed"])
-    global_params, global_objects = config_qdckt(params)
-
-    dataset_train = QDCKTDataset(global_params["datasets_config"]["train"], global_objects)
-    dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
-    dataset_valid = QDCKTDataset(global_params["datasets_config"]["valid"], global_objects, train_mode=False)
-    dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
-
-    global_objects["data_loaders"] = {
-        "train_loader": dataloader_train,
-        "valid_loader": dataloader_valid
+    # 设置参数空间
+    parameters_space = {
+        "window_size": [1, 11, 21],
+        "w_qdckt_loss": [0.01, 0.1, 1],
+        "dropout": [0.1, 0.2, 0.3],
     }
-    global_objects["models"] = {
-        "QDCKT": QDCKT(global_params, global_objects).to(global_params["device"])
+    space = {
+        param_name: hp.choice(param_name, param_space)
+        for param_name, param_space in parameters_space.items()
     }
-    trainer = SequentialDLKTTrainer(global_params, global_objects)
-    trainer.train()
+    num = 1
+    for parameter_space in parameters_space.values():
+        num *= len(parameter_space)
+    if num > 100:
+        max_evals = 20 + int(num * 0.2)
+    elif num > 50:
+        max_evals = 15 + int(num * 0.2)
+    elif num > 20:
+        max_evals = 10 + int(num * 0.2)
+    elif num > 10:
+        max_evals = 5 + int(num * 0.2)
+    else:
+        max_evals = num
+    current_best_performance = 0
+    fmin(get_objective_func(parser, config_qdckt, "QDCKT", QDCKT), space, algo=tpe.suggest, max_evals=max_evals)

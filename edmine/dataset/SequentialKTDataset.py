@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import torch
-
+from copy import deepcopy
 from torch.utils.data import Dataset
 
 from edmine.utils.data_io import read_kt_file
@@ -118,22 +118,19 @@ class QDCKTDataset(BasicSequentialKTDataset):
     def __getitem__(self, index):
         result = dict()
         question_difficulty = self.objects["qdckt"]["question_difficulty"]
-
-        data = self.dataset_original[index]
-        for key, value in data.items():
-            if type(value) is not list:
-                result[key] = value
-            else:
-                result[key] = []
+        for key, value in self.dataset_original[index].items():
+            result[key] = deepcopy(value)
 
         result["question_diff_seq"] = []
-        for i, q_id in enumerate(data["question_seq"]):
+        for q_id in result["question_seq"]:
             result["question_diff_seq"].append(question_difficulty[q_id])
-            if self.train_mode:
-                result["similar_question_seq"] = []
-                result["similar_question_diff_seq"] = []
-                result["similar_question_mask_seq"] = []
-                if i >= data["seq_len"]:
+            
+        if self.train_mode:
+            result["similar_question_seq"] = []
+            result["similar_question_diff_seq"] = []
+            result["similar_question_mask_seq"] = []
+            for i, q_id in enumerate(result["question_seq"]):
+                if i >= result["seq_len"]:
                     result["similar_question_seq"].append(0)
                     result["similar_question_diff_seq"].append(0)
                     result["similar_question_mask_seq"].append(0)

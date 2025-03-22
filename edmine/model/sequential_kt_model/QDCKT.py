@@ -85,7 +85,7 @@ class QDCKT(nn.Module, DLSequentialKTModel):
             "predict_score_batch": predict_score_batch
         }
         
-    def get_predict_loss(self, batch, seq_start=3):
+    def get_predict_loss(self, batch, seq_start=2):
         num_question_diff = self.objects["qdckt"]["num_question_diff"]
         w_qdckt_loss = self.params["loss_config"]["qdckt loss"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]

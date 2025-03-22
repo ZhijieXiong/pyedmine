@@ -5,6 +5,7 @@ from edmine.utils.log import get_now_time
 
 def config_epoch_trainer(local_params, global_params, model_name):
     global_params["trainer_config"] = {
+        "batch_size": local_params["train_batch_size"],
         "model_name": model_name,
         "max_epoch": local_params["max_epoch"],
         "use_early_stop": local_params["use_early_stop"],
@@ -19,6 +20,7 @@ def config_epoch_trainer(local_params, global_params, model_name):
 
 def config_step_trainer(local_params, global_params, model_name):
     global_params["trainer_config"] = {
+        "batch_size": local_params["train_batch_size"],
         "model_name": model_name,
         "max_step": local_params["max_step"],
         "use_early_stop": local_params["use_early_stop"],
@@ -47,6 +49,8 @@ def config_optimizer(local_params, global_params, model_name):
     scheduler_step = local_params[f"scheduler_step"]
     scheduler_milestones = eval(local_params[f"scheduler_milestones"])
     scheduler_gamma = local_params[f"scheduler_gamma"]
+    scheduler_T_max = local_params[f"scheduler_T_max"]
+    scheduler_eta_min = local_params[f"scheduler_eta_min"]
     enable_clip_grad = local_params[f"enable_clip_grad"]
     grad_clipped = local_params[f"grad_clipped"]
 
@@ -75,6 +79,9 @@ def config_optimizer(local_params, global_params, model_name):
         elif scheduler_type == "MultiStepLR":
             scheduler_config[scheduler_type]["milestones"] = scheduler_milestones
             scheduler_config[scheduler_type]["gamma"] = scheduler_gamma
+        elif scheduler_type == "CosineAnnealingLR":
+            scheduler_config[scheduler_type]["T_max"] = scheduler_T_max
+            scheduler_config[scheduler_type]["eta_min"] = scheduler_eta_min
         else:
             raise NotImplementedError(f"scheduler `{scheduler_type}` is not implemented")
     else:

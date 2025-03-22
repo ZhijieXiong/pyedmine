@@ -13,10 +13,9 @@ def create_optimizer(parameters, opt_config):
 
 def create_scheduler(optimizer, sch_config):
     if sch_config["type"] == "CosineAnnealingLR":
-        scheduler = None
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, **sch_config["CosineAnnealingLR"])
     elif sch_config["type"] == "MultiStepLR":
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, **sch_config["MultiStepLR"])
     else:
-        # 默认StepLR
         scheduler = optim.lr_scheduler.StepLR(optimizer, **sch_config["StepLR"])
     return scheduler

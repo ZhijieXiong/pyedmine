@@ -1,7 +1,7 @@
 import argparse
 from hyperopt import fmin, tpe, hp
 
-from set_params.sequential_kt_params import setup_common_args
+from set_params import *
 from config.lpkt import config_lpkt
 from utils import get_objective_func
 
@@ -9,8 +9,10 @@ from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.LPKT import LPKT
 
 
+# LPKT跑不了assist2009，在setup_common_args中调整数据集
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args()], add_help=False)
+    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_clip_args(), setup_grad_acc_args()], 
+                                     add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=64)
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
@@ -22,16 +24,12 @@ if __name__ == "__main__":
     # scheduler配置
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
     parser.add_argument("--scheduler_type", type=str, default="StepLR",
-                        choices=("StepLR", "MultiStepLR"))
+                        choices=("StepLR", "MultiStepLR", "CosineAnnealingLR"))
     parser.add_argument("--scheduler_step", type=int, default=10)
     parser.add_argument("--scheduler_milestones", type=str, default="[5, 10]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
-    # 梯度裁剪
-    parser.add_argument("--enable_clip_grad", type=str2bool, default=False)
-    parser.add_argument("--grad_clipped", type=float, default=10.0)
-    # 梯度累计
-    parser.add_argument("--accumulation_step", type=int, default=1,
-                        help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
+    parser.add_argument("--scheduler_T_max", type=int, default=10)
+    parser.add_argument("--scheduler_eta_min", type=float, default=0.0001)
     # 模型参数
     parser.add_argument("--dim_k", type=int, default=64)
     parser.add_argument("--dim_e", type=int, default=64)
