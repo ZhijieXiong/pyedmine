@@ -66,7 +66,10 @@ class BasicSequentialKTDataset(Dataset):
     def dataset2tensor(self):
         self.dataset = {}
         for k in self.dataset_converted.keys():
-            self.dataset[k] = torch.tensor(self.dataset_converted[k]).long().to(self.dataset_config["device"])
+            if k not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq"]:
+                self.dataset[k] = torch.tensor(self.dataset_converted[k]).long().to(self.dataset_config["device"])
+            else:
+                self.dataset[k] = torch.tensor(self.dataset_converted[k]).float().to(self.dataset_config["device"])
 
     def get_statics_kt_dataset(self):
         num_seq = len(self.dataset["mask_seq"])
@@ -109,41 +112,70 @@ class QDCKTDataset(BasicSequentialKTDataset):
                 self.q_with_same_concepts[q_id] = list(set(np.nonzero(q_table_sum == 0)[0]) - {q_id})
         super(QDCKTDataset, self).__init__(dataset_config, objects)
 
+    def __len__(self):
+        return len(self.dataset_original)
+
+    def __getitem__(self, index):
+        result = dict()
+        question_difficulty = self.objects["qdckt"]["question_difficulty"]
+
+        data = self.dataset_original[index]
+        for key, value in data.items():
+            if type(value) is not list:
+                result[key] = value
+            else:
+                result[key] = []
+
+        result["question_diff_seq"] = []
+        for i, q_id in enumerate(data["question_seq"]):
+            result["question_diff_seq"].append(question_difficulty[q_id])
+            if self.train_mode:
+                result["similar_question_seq"] = []
+                result["similar_question_diff_seq"] = []
+                result["similar_question_mask_seq"] = []
+                if i >= data["seq_len"]:
+                    result["similar_question_seq"].append(0)
+                    result["similar_question_diff_seq"].append(0)
+                    result["similar_question_mask_seq"].append(0)
+                else:
+                    similar_q_ids = self.q_with_same_concepts[q_id]
+                    if len(similar_q_ids) == 0:
+                        result["similar_question_seq"].append(0)
+                        result["similar_question_diff_seq"].append(0)
+                        result["similar_question_mask_seq"].append(0)
+                    else:
+                        similar_q_id = np.random.choice(similar_q_ids)
+                        result["similar_question_seq"].append(similar_q_id)
+                        result["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
+                        result["similar_question_mask_seq"].append(1)
+                    # elif len(similar_q_ids) <= 100:
+                    #     similar_q_id = np.random.choice(similar_q_ids)
+                    #     result["similar_question_seq"].append(similar_q_id)
+                    #     result["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
+                    #     result["similar_question_mask_seq"].append(1)
+                    # else:
+                    #     num_similar_q = len(similar_q_ids)
+                    #     idx = 0
+                    #     num1 = num_similar_q // 100
+                    #     n1 = np.random.choice(list(range(num1)))
+                    #     idx += n1 * 100
+                    #     num2 = num_similar_q % 100
+                    #     if num2 == 0:
+                    #         idx += np.random.choice(list(range(100)))
+                    #     else:
+                    #         idx += np.random.choice(list(range(num2)))
+                    #     similar_q_id = similar_q_ids[idx]
+
+        for key, value in result.items():
+            if key not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq"]:
+                result[key] = torch.tensor(value).long().to(self.dataset_config["device"])
+            else:
+                result[key] = torch.tensor(value).float().to(self.dataset_config["device"])
+
+        return result
+
     def process_dataset(self):
         self.load_dataset()
-        self.parse_difficulty()
-        self.convert_dataset()
-        self.dataset2tensor()
-
-    def parse_difficulty(self):
-        question_difficulty = self.objects["qdckt"]["question_difficulty"]
-        for item_data in self.dataset_original:
-            item_data["question_diff_seq"] = []
-            item_data["similar_question_seq"] = []
-            item_data["similar_question_diff_seq"] = []
-            item_data["similar_question_mask_seq"] = []
-            for i, q_id in enumerate(item_data["question_seq"]):
-                item_data["question_diff_seq"].append(question_difficulty[q_id])
-                if self.train_mode:
-                    if i >= item_data["seq_len"]:
-                        item_data["similar_question_seq"].append(0)
-                        item_data["similar_question_diff_seq"].append(0)
-                        item_data["similar_question_mask_seq"].append(0)
-                    else:
-                        similar_q_ids = self.q_with_same_concepts[q_id]
-                        if len(similar_q_ids) > 0:
-                            similar_q_id = np.random.choice(similar_q_ids)
-                            item_data["similar_question_seq"].append(similar_q_id)
-                            item_data["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
-                            item_data["similar_question_mask_seq"].append(1)
-                        else:
-                            item_data["similar_question_seq"].append(0)
-                            item_data["similar_question_diff_seq"].append(0)
-                            item_data["similar_question_mask_seq"].append(0)
-            if not self.train_mode:
-                del item_data["similar_question_seq"]
-                del item_data["similar_question_diff_seq"]
-                del item_data["similar_question_mask_seq"]
 
 
 class LPKTDataset(BasicSequentialKTDataset):
@@ -189,11 +221,3 @@ class LBKTDataset(BasicSequentialKTDataset):
         file_name = self.dataset_config["file_name"]
         dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), "LBKT", file_name)
         self.dataset_original = read_kt_file(dataset_path)
-
-    def dataset2tensor(self):
-        self.dataset = {}
-        for k in self.dataset_converted.keys():
-            if k not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq"]:
-                self.dataset[k] = torch.tensor(self.dataset_converted[k]).long().to(self.dataset_config["device"])
-            else:
-                self.dataset[k] = torch.tensor(self.dataset_converted[k]).float().to(self.dataset_config["device"])
