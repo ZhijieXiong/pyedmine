@@ -4,7 +4,6 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
-from edmine.model.loss import binary_cross_entropy
 
 
 class qDKT(nn.Module, DLSequentialKTModel):
