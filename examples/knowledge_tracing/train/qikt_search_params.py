@@ -17,8 +17,8 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate_batch_size", type=int, default=128)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
-    parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--weight_decay", type=float, default=0.0001)
+    parser.add_argument("--learning_rate", type=float, default=0.0001)
+    parser.add_argument("--weight_decay", type=float, default=0.00001)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 模型参数
     parser.add_argument("--dim_emb", type=int, default=256)
@@ -39,10 +39,10 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        "weight_decay": [0.0001, 0.00001, 0],
+        "weight_decay": [0.00001, 0],
         "dim_emb": [64, 256],
+        "dropout": [0.1, 0.2, 0.3, 0.5],
         "weight_predict_q_all_loss": [0.5, 1, 2],
-        "weight_predict_q_next_loss": [0.5, 1, 2],
         "weight_predict_c_all_loss": [0.5, 1, 2],
         "weight_predict_c_next_loss": [0.5, 1, 2],
     }

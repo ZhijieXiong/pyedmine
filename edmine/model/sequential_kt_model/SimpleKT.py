@@ -108,22 +108,7 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
         return predict_score_batch[:, target_index-1]
 
     def get_knowledge_state(self, batch):
-        # todo: 
-        num_concept = self.params["models_config"]["DKT"]["embed_config"]["concept"]["num_item"]
-
-        self.encoder_layer.flatten_parameters()
-        batch_size = batch["correctness_seq"].shape[0]
-        first_index = torch.arange(batch_size).long().to(self.params["device"])
-        all_concept_id = torch.arange(num_concept).long().to(self.params["device"])
-        all_concept_emb = self.embed_layer.get_emb("concept", all_concept_id)
-
-        latent = self.get_latent(batch)
-        last_latent = latent[first_index, batch["seq_len"] - 2]
-        last_latent_expanded = last_latent.repeat_interleave(num_concept, dim=0).view(batch_size, num_concept, -1)
-        all_concept_emb_expanded = all_concept_emb.expand(batch_size, -1, -1)
-        predict_layer_input = torch.cat([last_latent_expanded, all_concept_emb_expanded], dim=-1)
-
-        return self.predict_layer(predict_layer_input).squeeze(dim=-1)
+        pass
 
 
 class Architecture(nn.Module):

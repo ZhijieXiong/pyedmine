@@ -113,7 +113,6 @@ class SparseKT(nn.Module, DLSequentialKTModel):
         return predict_score_batch[:, target_index-1]
 
     def get_knowledge_state(self, batch):
-        # todo: 
         pass
 
 

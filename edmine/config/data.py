@@ -7,6 +7,10 @@ from edmine.utils.use_torch import parse_q_table
 def config_q_table(local_params, global_params, global_objects):
     dataset_name = local_params["dataset_name"]
     q_table = global_objects["file_manager"].get_q_table(dataset_name)
+    config_q_table_(local_params, global_params, global_objects, q_table)
+    
+
+def config_q_table_(local_params, global_params, global_objects, q_table):
     local_params["num_question"], local_params["num_concept"] = q_table.shape[0], q_table.shape[1]
     q2c_table, q2c_mask_table = parse_q_table(q_table, global_params["device"])
     global_objects["dataset"] = {
