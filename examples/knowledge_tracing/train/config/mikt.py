@@ -20,19 +20,14 @@ FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
 MODELS_DIR = settings["MODELS_DIR"]
 
 
-def config_qikt(local_params):
-    model_name = "QIKT"
+def config_mikt(local_params):
+    model_name = "MIKT"
 
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
     config_logger(local_params, global_objects)
     config_general_dl_model(local_params, global_params)
-    global_params["loss_config"] = {
-        "q all loss": local_params["w_q_all_loss"],
-        "q next loss": local_params["w_q_next_loss"],
-        "c all loss": local_params["w_c_all_loss"],
-        "c next loss": local_params["w_c_next_loss"]
-    }
+    global_params["loss_config"] = {}
     config_epoch_trainer(local_params, global_params, model_name)
     config_sequential_kt_dataset(local_params, global_params)
     config_optimizer(local_params, global_params, model_name)
@@ -41,24 +36,12 @@ def config_qikt(local_params):
     # 模型参数
     global_params["models_config"] = {
         model_name: {
-            "embed_config": {
-                "question": {
-                    "num_item": local_params["num_question"],
-                    "dim_item": local_params["dim_emb"]
-                },
-                "concept": {
-                    "num_item": local_params["num_concept"],
-                    "dim_item": local_params["dim_emb"]
-                }
-            },
-            "rnn_type": local_params["rnn_type"],
-            "num_rnn_layer": local_params["num_rnn_layer"],
+            "num_concept": local_params["num_concept"],
+            "num_question": local_params["num_question"],
+            "dim_emb": local_params["dim_emb"],
+            "dim_state": local_params["dim_state"],
             "dropout": local_params["dropout"],
-            "num_mlp_layer": local_params["num_mlp_layer"],
-            "use_irt": local_params["use_irt"],
-            "lambda_q_all": local_params["lambda_q_all"],
-            "lambda_c_next": local_params["lambda_c_next"],
-            "lambda_c_all": local_params["lambda_c_all"],
+            "seq_len": local_params["seq_len"],
         }
     }
 

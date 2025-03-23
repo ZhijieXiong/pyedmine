@@ -31,7 +31,8 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 correctness_seq = batch["correctness_seq"]
                 mask_seq = torch.ne(batch["mask_seq"], 0)
                 question_seq = batch["question_seq"]
-                predict_score = model.get_predict_score(batch, seq_start)["predict_score"].detach().cpu().numpy()
+                predict_result = model.get_predict_score(batch, seq_start)
+                predict_score = predict_result["predict_score"].detach().cpu().numpy()
                 ground_truth = torch.masked_select(correctness_seq[:, seq_start-1:], mask_seq[:, seq_start-1:]).detach().cpu().numpy()
                 question_id = torch.masked_select(question_seq[:, seq_start-1:], mask_seq[:, seq_start-1:]).detach().cpu().numpy()
                 predict_score_all.append(predict_score)
@@ -40,7 +41,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
 
                 # 冷启动计算
                 question_seq = batch["question_seq"]
-                predict_score_batch = model.get_predict_score(batch)["predict_score_batch"]
+                predict_score_batch = predict_result["predict_score_batch"]
                 result_all_batch.append({
                     "question": question_seq[:, 1:].detach().cpu().numpy(),
                     "label": correctness_seq[:, 1:].detach().cpu().numpy(),

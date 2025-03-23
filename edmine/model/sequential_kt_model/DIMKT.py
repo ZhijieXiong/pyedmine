@@ -78,8 +78,8 @@ class DIMKT(nn.Module, DLSequentialKTModel):
 
     def get_predict_score(self, batch, seq_start=2):
         mask_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_batch = self.forward(batch)[:, seq_start-2:-1]
-        predict_score = torch.masked_select(predict_score_batch, mask_seq[:, seq_start-1:])
+        predict_score_batch = self.forward(batch)[:, :-1]
+        predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_seq[:, seq_start-1:])
 
         return {
             "predict_score": predict_score,

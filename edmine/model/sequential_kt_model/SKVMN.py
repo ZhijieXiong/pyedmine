@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from torch.nn import Module, Parameter, Linear, Dropout
 from torch.nn.init import kaiming_normal_
 
@@ -262,8 +261,8 @@ class SKVMN(Module, DLSequentialKTModel):
         mask_seq = torch.ne(batch["mask_seq"], 0)
         # predict_score_batch的shape必须为(batch_size, seq_len-1)，其中第二维的第一个元素为对序列第二题的预测分数
         # 如此设定是为了做cold start evaluation
-        predict_score_batch = self.forward(batch)[:, seq_start-1:]
-        predict_score = torch.masked_select(predict_score_batch, mask_seq[:, seq_start-1:])
+        predict_score_batch = self.forward(batch)[:, 1:]
+        predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_seq[:, seq_start-1:])
         return {
             "predict_score": predict_score,
             "predict_score_batch": predict_score_batch

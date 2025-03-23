@@ -35,11 +35,11 @@ if __name__ == "__main__":
     parser.add_argument("--lambda_c_all", type=int, default=1)
     parser.add_argument("--use_irt", type=str2bool, default=True)
     # 损失权重
-    parser.add_argument("--weight_predict_q_all_loss", type=float, default=1.5)
-    parser.add_argument("--weight_predict_q_next_loss", type=float, default=1,
+    parser.add_argument("--w_q_all_loss", type=float, default=1.5)
+    parser.add_argument("--w_q_next_loss", type=float, default=1,
                         help="当且仅当use_irt为False时生效")
-    parser.add_argument("--weight_predict_c_all_loss", type=float, default=2)
-    parser.add_argument("--weight_predict_c_next_loss", type=float, default=2)
+    parser.add_argument("--w_c_all_loss", type=float, default=2)
+    parser.add_argument("--w_c_next_loss", type=float, default=2)
     # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
     parser.add_argument("--use_wandb", type=str2bool, default=False)

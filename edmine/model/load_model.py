@@ -13,6 +13,9 @@ from edmine.model.sequential_kt_model.AKT import AKT
 from edmine.model.sequential_kt_model.DIMKT import DIMKT
 from edmine.model.sequential_kt_model.LPKT import LPKT
 from edmine.model.sequential_kt_model.LBKT import LBKT
+from edmine.model.sequential_kt_model.QIKT import QIKT
+from edmine.model.sequential_kt_model.QDCKT import QDCKT
+from edmine.model.sequential_kt_model.SKVMN import SKVMN
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT
@@ -20,6 +23,7 @@ from edmine.model.cognitive_diagnosis_model.MIRT import MIRT
 from edmine.model.cognitive_diagnosis_model.DINA import DINA
 from edmine.model.cognitive_diagnosis_model.RCD import RCD
 from edmine.model.cognitive_diagnosis_model.HyperCD import HyperCD
+from edmine.model.cognitive_diagnosis_model.HierCDF import HierCDF
 # ER
 from edmine.model.exercise_recommendation_model.KG4EX import KG4EX
 from edmine.model.sequential_kt_model.DKT_KG4EX import DKT_KG4EX
@@ -36,12 +40,16 @@ model_table = {
     "DIMKT": DIMKT,
     "LPKT": LPKT,
     "LBKT": LBKT,
+    "QIKT": QIKT,
+    "QDCKT": QDCKT,
+    "SKVMN": SKVMN,
     "NCD": NCD,
     "IRT": IRT,
     "MIRT": MIRT,
     "DINA": DINA,
     "RCD": RCD,
     "HyperCD": HyperCD,
+    "HierCDF": HierCDF,
     "KG4EX": KG4EX
 }
 

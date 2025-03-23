@@ -32,19 +32,19 @@ if __name__ == "__main__":
     parser.add_argument("--lambda_c_all", type=int, default=1)
     parser.add_argument("--use_irt", type=str2bool, default=True)
     # 损失权重
-    parser.add_argument("--weight_predict_q_all_loss", type=float, default=1.5)
-    parser.add_argument("--weight_predict_q_next_loss", type=float, default=1)
-    parser.add_argument("--weight_predict_c_all_loss", type=float, default=2)
-    parser.add_argument("--weight_predict_c_next_loss", type=float, default=2)
+    parser.add_argument("--w_q_all_loss", type=float, default=1.5)
+    parser.add_argument("--w_q_next_loss", type=float, default=1)
+    parser.add_argument("--w_c_all_loss", type=float, default=2)
+    parser.add_argument("--w_c_next_loss", type=float, default=2)
 
     # 设置参数空间
     parameters_space = {
         "weight_decay": [0.00001, 0],
         "dim_emb": [64, 256],
         "dropout": [0.1, 0.2, 0.3, 0.5],
-        "weight_predict_q_all_loss": [0.5, 1, 2],
-        "weight_predict_c_all_loss": [0.5, 1, 2],
-        "weight_predict_c_next_loss": [0.5, 1, 2],
+        "w_q_all_loss": [0.5, 1, 2],
+        "w_c_all_loss": [0.5, 1, 2],
+        "w_c_next_loss": [0.5, 1, 2],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
