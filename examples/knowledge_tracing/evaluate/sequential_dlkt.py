@@ -31,6 +31,7 @@ if __name__ == "__main__":
     # 多步测试（参照PYKT-paper 4.1 Observation 5实现）
     parser.add_argument("--multi_step", type=int, default=1,
                         help="大于等于2则开启多步测试")
+    parser.add_argument("--multi_step_accumulate", type=str2bool, default=False)
     # core指标
     parser.add_argument("--use_core", type=str2bool, default=False)
     # ===========================================================================

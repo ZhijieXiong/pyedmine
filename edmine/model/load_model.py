@@ -14,6 +14,7 @@ from edmine.model.sequential_kt_model.DIMKT import DIMKT
 from edmine.model.sequential_kt_model.LPKT import LPKT
 from edmine.model.sequential_kt_model.LBKT import LBKT
 from edmine.model.sequential_kt_model.QIKT import QIKT
+from edmine.model.sequential_kt_model.SparseKT import SparseKT
 from edmine.model.sequential_kt_model.QDCKT import QDCKT
 from edmine.model.sequential_kt_model.SKVMN import SKVMN
 # CD
@@ -40,6 +41,7 @@ model_table = {
     "DIMKT": DIMKT,
     "LPKT": LPKT,
     "LBKT": LBKT,
+    "SparseKT": SparseKT,
     "QIKT": QIKT,
     "QDCKT": QDCKT,
     "SKVMN": SKVMN,

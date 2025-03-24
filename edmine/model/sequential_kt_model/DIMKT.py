@@ -41,7 +41,7 @@ class DIMKT(nn.Module, DLSequentialKTModel):
 
         latent = torch.zeros(batch_size, seq_len, dim_emb).to(self.params["device"])
         h_pre = nn.init.xavier_uniform_(torch.zeros(batch_size, dim_emb)).to(self.params["device"])
-        y = torch.zeros(batch_size, seq_len).to(self.params["device"])
+        y = torch.zeros(batch_size, seq_len-1).to(self.params["device"])
 
         for t in range(seq_len-1):
             input_x = torch.cat((
@@ -78,7 +78,7 @@ class DIMKT(nn.Module, DLSequentialKTModel):
 
     def get_predict_score(self, batch, seq_start=2):
         mask_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_batch = self.forward(batch)[:, :-1]
+        predict_score_batch = self.forward(batch)
         predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], mask_seq[:, seq_start-1:])
 
         return {
@@ -90,6 +90,8 @@ class DIMKT(nn.Module, DLSequentialKTModel):
         pass
 
     def get_predict_score_at_target_time(self, batch, target_index):
+        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
+        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
         predict_score_batch = self.forward(batch)
         return predict_score_batch[:, target_index-1]
 

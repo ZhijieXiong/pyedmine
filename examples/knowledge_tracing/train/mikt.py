@@ -13,11 +13,11 @@ from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args(), setup_grad_acc_args()], 
+    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args()], 
                                      add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=80)
-    parser.add_argument("--evaluate_batch_size", type=int, default=256)
+    parser.add_argument("--evaluate_batch_size", type=int, default=100)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.001)
@@ -26,6 +26,9 @@ if __name__ == "__main__":
     # 梯度裁剪
     parser.add_argument("--enable_clip_grad", type=str2bool, default=True)
     parser.add_argument("--grad_clipped", type=float, default=15.0)
+    # 梯度累计
+    parser.add_argument("--accumulation_step", type=int, default=1,
+                        help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
     parser.add_argument("--dim_emb", type=int, default=64)
     parser.add_argument("--dim_state", type=int, default=64)

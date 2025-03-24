@@ -14,10 +14,11 @@ class SequentialDLKTEvaluator(DLEvaluator):
     def inference(self, model, data_loader):
         evaluate_overall = self.params["sequential_dlkt"]["evaluate_overall"]
         seq_start = self.params["sequential_dlkt"]["seq_start"]
+        use_core = self.params["sequential_dlkt"]["use_core"]
         question_cold_start = self.params["sequential_dlkt"]["question_cold_start"]
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
-        use_core = self.params["sequential_dlkt"]["use_core"]
+        multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
 
         predict_score_all = []
         ground_truth_all = []
@@ -89,10 +90,10 @@ class SequentialDLKTEvaluator(DLEvaluator):
             inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
         
         if multi_step > 1:
-            inference_result["multi_step"] = {
-                "non-accumulate": self.multi_step_inference(model, data_loader, False),
-                "accumulate": self.multi_step_inference(model, data_loader, True)
-            }
+            if multi_step_accumulate:
+                inference_result["multi_step"]["accumulate"] = self.multi_step_inference(model, data_loader, True)
+            else:
+                inference_result["multi_step"]["non-accumulate"] = self.multi_step_inference(model, data_loader, False)
 
         return inference_result
 
@@ -133,10 +134,11 @@ class SequentialDLKTEvaluator(DLEvaluator):
     def log_inference_results(self):
         evaluate_overall = self.params["sequential_dlkt"]["evaluate_overall"]
         seq_start = self.params["sequential_dlkt"]["seq_start"]
+        use_core = self.params["sequential_dlkt"]["use_core"]
         question_cold_start = self.params["sequential_dlkt"]["question_cold_start"]
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
-        use_core = self.params["sequential_dlkt"]["use_core"]
+        multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
 
         for data_loader_name, inference_result in self.inference_results.items():
             if evaluate_overall:
@@ -175,14 +177,15 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
 
             if multi_step > 1:
-                performance = inference_result['multi_step']["accumulate"]
-                self.objects["logger"].info(
-                    f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, accumulative) are AUC: "
-                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
-
-                performance = inference_result['multi_step']["non-accumulate"]
-                self.objects["logger"].info(
-                    f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, non-accumulative) are AUC: "
-                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                if multi_step_accumulate:
+                    performance = inference_result['multi_step']["accumulate"]
+                    self.objects["logger"].info(
+                        f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, accumulative) are AUC: "
+                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                else:
+                    performance = inference_result['multi_step']["non-accumulate"]
+                    self.objects["logger"].info(
+                        f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, non-accumulative) are AUC: "
+                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")

@@ -18,14 +18,14 @@ if __name__ == "__main__":
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--weight_decay", type=float, default=0.0001)
+    parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 模型参数
     parser.add_argument("--dim_concept", type=int, default=64)
     parser.add_argument("--dim_correctness", type=int, default=64)
     parser.add_argument("--dim_latent", type=int, default=64)
     parser.add_argument("--dim_attention", type=int, default=64)
-    parser.add_argument("--dropout", type=float, default=0.1)
+    parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--epsilon", type=int, default=5)
     parser.add_argument("--w_adv_loss", type=float, default=0.1)
     parser.add_argument("--num_predict_layer", type=int, default=1)
@@ -34,14 +34,12 @@ if __name__ == "__main__":
 
     # 设置参数空间
     parameters_space = {
-        "weight_decay": [0.0001, 0.00001, 0],
-        "epsilon": [1, 2, 5, 10],
+        "epsilon": [2, 5, 10],
         "w_adv_loss": [0.1, 0.3, 0.5],
-        "dim_concept": [64, 128],
-        "dim_correctness": [64, 128],
-        "dim_latent": [128, 256],
-        "dim_attention": [128, 256],
-        "dropout": [0.1, 0.2, 0.3],
+        "dim_concept": [64, 256],
+        "dim_correctness": [64, 256],
+        "dim_latent": [64, 256],
+        "dim_attention": [64, 256],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
