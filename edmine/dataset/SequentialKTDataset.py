@@ -182,8 +182,8 @@ class LPKTDataset(BasicSequentialKTDataset):
     def convert_dataset(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
         self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
-        if "time_seq" in seq_keys:
-            self.dataset_converted["interval_time_seq"] = []
+        assert "time_seq" in seq_keys, "dataset must have timestamp info"
+        self.dataset_converted["interval_time_seq"] = []
         max_seq_len = len(self.dataset_original[0]["mask_seq"])
         for _, item_data in enumerate(self.dataset_original):
             seq_len = item_data["seq_len"]
@@ -218,3 +218,55 @@ class LBKTDataset(BasicSequentialKTDataset):
         file_name = self.dataset_config["file_name"]
         dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), "LBKT", file_name)
         self.dataset_original = read_kt_file(dataset_path)
+
+
+class DKTForgetDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(DKTForgetDataset, self).__init__(dataset_config, objects)
+
+    def convert_dataset(self):
+        q2c = self.objects["dataset"]["q2c"]
+        num_concept = self.objects["dataset"]["q_table"].shape[1]
+        id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
+        self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
+        assert "time_seq" in seq_keys, "dataset must have timestamp info"
+        self.dataset_converted["interval_time_seq"] = []
+        self.dataset_converted["repeat_interval_time_seq"] = []
+        self.dataset_converted["num_repeat_seq"] = []
+        max_seq_len = len(self.dataset_original[0]["mask_seq"])
+        for _, item_data in enumerate(self.dataset_original):
+            seq_len = item_data["seq_len"]
+            concept_exercised = {c: {"num_repeat": 0, "last_time": 0} for c in range(num_concept)}
+            repeat_interval_time_seq = []
+            num_repeat_seq = []
+            for i, q_id in enumerate(item_data["question_seq"]):
+                c_ids =q2c[q_id]
+                for c_id in c_ids:
+                    if concept_exercised[c_id]["num_repeat"] == 0:
+                        repeat_interval_time_seq.append(0)
+                        num_repeat_seq.append(0)
+                    else:
+                        repeate_interval_time = item_data["time_seq"][i] - concept_exercised[c_id]["last_time"]
+                        repeat_interval_time_seq.append(max(0, min(repeate_interval_time, 60 * 24 * 30)))
+                        num_repeat_seq.append(min(50, concept_exercised[c_id]["num_repeat"]))
+                    concept_exercised[c_id]["last_time"] = item_data["time_seq"][i]
+                    concept_exercised[c_id]["num_repeat"] += 1
+            self.dataset_converted["repeat_interval_time_seq"].append(repeat_interval_time_seq)
+            self.dataset_converted["num_repeat_seq"].append(num_repeat_seq)
+            for k in id_keys:
+                self.dataset_converted[k].append(item_data[k])
+            for k in seq_keys:
+                if k == "time_seq":
+                    interval_time_seq = [0]
+                    for time_i in range(1, seq_len):
+                        # 原始数据以s为单位
+                        interval_time_real = (item_data["time_seq"][time_i] - item_data["time_seq"][time_i - 1]) // 60
+                        interval_time_idx = max(0, min(interval_time_real, 60 * 24 * 7))
+                        interval_time_seq.append(interval_time_idx)
+                    interval_time_seq += [0] * (max_seq_len - seq_len)
+                    self.dataset_converted["interval_time_seq"].append(interval_time_seq)
+                else:
+                    self.dataset_converted[k].append(item_data[k])
+
+        if "time_seq" in self.dataset_converted.keys():
+            del self.dataset_converted["time_seq"]

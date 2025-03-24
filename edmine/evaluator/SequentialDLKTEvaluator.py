@@ -90,6 +90,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
             inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
         
         if multi_step > 1:
+            inference_result["multi_step"] = {}
             if multi_step_accumulate:
                 inference_result["multi_step"]["accumulate"] = self.multi_step_inference(model, data_loader, True)
             else:
