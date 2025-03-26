@@ -846,15 +846,16 @@ class KTDataProcessor:
     def process_ednet_kt1(self):
         data_dir = self.params["data_path"]
         # data_dir下每个文件存放了5000名学生（随机但每个文件下学生不重复）的记录，num_file指定要读取几个文件
-        # 这里随机选50000名学生
-        self.data_raw = load_ednet_kt1(data_dir, num_file=10)
+        # 这里随机选5000名学生
+        self.data_raw = load_ednet_kt1(data_dir, num_file=1)
         dataset_name = "ednet-kt1"
         rename_cols = CONSTANT.datasets_renamed()[dataset_name]
         self.data_raw.rename(columns=rename_cols, inplace=True)
 
         df = deepcopy(self.data_raw)
         df["use_time"] = df["use_time"].map(lambda t: max(1, int(t) // 1000))
-        self.process_raw_is_single_concept(df, c_id_is_num=True)
+        df["timestamp"] = df["timestamp"].map(lambda t: t // 1000)
+        self.process_raw_is_single_concept(df)
 
     def process_slepemapy_anatomy(self):
         data_path = self.params["data_path"]
@@ -940,17 +941,13 @@ class KTDataProcessor:
             Q_table[[question_id] * len(correspond_c), correspond_c] = [1] * len(correspond_c)
         self.Q_table = Q_table
 
-    def process_raw_is_single_concept(self, df, c_id_is_num=True):
+    def process_raw_is_single_concept(self, df):
         """
         处理像ednet-kt1、assist2009-full和kdd-cup这种数据，其每条记录是一道习题\n
-        这类数据统一先提取single concept 和 multi concept的Q table，然后生成single concept数据，再根据single concept和Q table生成only question和multi concept\n
         这类数据由分为两类，一类是concept id为数字（ednet-kt1、assist2009-full）；
-        另一类是concept id非数值（algebra2005、algebra2006、bridge2algebra2006、algebra2008、bridge2algebra2008）
-
-        :param df:
-        :param c_id_is_num:
-        :return:
+        todo: 另一类是concept id非数值（algebra2005、algebra2006、bridge2algebra2006、algebra2008、bridge2algebra2008）
         """
+        dataset_name = self.params["dataset_name"]
         # 习题id重映射
         question_ids = list(pd.unique(df["question_id"]))
         df["question_id"] = df["question_id"].map(
@@ -960,53 +957,10 @@ class KTDataProcessor:
             "mapped_id": range(len(question_ids))
         })
 
-        q2c_id_map = pd.DataFrame({
-            "question_id": map(int, df["question_id"].tolist()),
-            "concept_id": df["concept_id"].tolist()
-        })
-
-        if c_id_is_num:
-            self.process_c_id_num(df, q2c_id_map)
-        else:
-            self.process_c_id_not_num(df, q2c_id_map)
-
-    def process_c_id_num(self, df, q2c_id_map):
-        # 扩展为多知识点数据，即一条记录为一个知识点，而不是一道习题，类似skill_builder_data_corrected_collapsed.csv这种格式
-        dataset_name = self.params["dataset_name"]
-        # 多知识点之间的连接符，如ednet-kt1中"1_2"表示这道习题是知识点1和2
+        # 知识点id重映射
         split_table = {
             "ednet-kt1": "_",
             "assist2009-full": ";",
-        }
-        df["concept_id"] = df["concept_id"].str.split(split_table[dataset_name])
-        df = df.explode("concept_id").reset_index(drop=True)
-        self.data_preprocessed = df
-
-        concept_ids = []
-        question_concept_map = {}
-        for question_id, group_info in q2c_id_map[["question_id", "concept_id"]].groupby("question_id"):
-            correspond_cs = pd.unique(group_info["concept_id"]).tolist()[0]
-            c_ids = list(map(int, correspond_cs.split(split_table[dataset_name])))
-            concept_ids.extend(c_ids)
-            question_concept_map[question_id] = c_ids
-        concept_ids = sorted(list(set(concept_ids)))
-        concept_id_map = {c_id: i for i, c_id in enumerate(concept_ids)}
-        self.concept_id_map = pd.DataFrame({
-            "original_id": concept_id_map.keys(),
-            "mapped_id": concept_id_map.values()
-        })
-        for q_id, original_c_ids in question_concept_map.items():
-            question_concept_map[q_id] = list(map(lambda c: concept_id_map[c], original_c_ids))
-        Q_table = np.zeros((len(question_concept_map), len(concept_ids)), dtype=int)
-        for question_id, c_ids in question_concept_map.items():
-            Q_table[[question_id] * len(c_ids), c_ids] = [1] * len(c_ids)
-        self.Q_table = Q_table
-
-    def process_c_id_not_num(self, df_multi_concept, df_new):
-        # 扩展为多知识点数据，即一条记录为一个知识点，而不是一道习题，类似skill_builder_data_corrected_collapsed.csv这种格式
-        dataset_name = self.params["dataset_name"]
-        # 多知识点之间的连接符
-        split_table = {
             "algebra2005": "~~",
             "algebra2006": "~~",
             "algebra2008": "~~",
@@ -1014,38 +968,29 @@ class KTDataProcessor:
             "bridge2algebra2008": "~~",
             "slepemapy-anatomy": "@@"
         }
-        df_multi_concept["concept_id"] = df_multi_concept["concept_id"].str.split(split_table[dataset_name])
-        df_multi_concept = df_multi_concept.explode("concept_id").reset_index(drop=True)
-        self.statics_preprocessed = KTDataProcessor.get_basic_info(df_multi_concept)
-        self.data_preprocessed = df_multi_concept
-
-        question_ids = []
-        concept_ids = []
-        question_concept_map = {}
-        concept_id_map = {}
-        for question_id, group_info in df_new[["question_id", "concept_id"]].groupby("question_id"):
-            correspond_c = pd.unique(group_info["concept_id"]).tolist()
-            # c_ids为原始数据的id，非数值
-            c_ids = self.concept_id_map["single_concept"].loc[
-                self.concept_id_map["single_concept"]["concept_id_map"] == correspond_c[0], "concept_id"
-            ].iloc[0]
-            c_ids = c_ids.split(split_table[dataset_name])
-            # 这里就要转换为数值
+        df_ = df[~df.duplicated(subset=["question_id"])]
+        c_ids_strs = list(pd.unique(df_["concept_id"]))
+        concept_ids = set()
+        for c_ids_str in c_ids_strs:
+            c_ids = c_ids_str.split(split_table[dataset_name])
             for c_id in c_ids:
-                if c_id not in concept_id_map.keys():
-                    concept_id_map[c_id] = len(concept_id_map)
-            c_ids = list(map(lambda x: concept_id_map[x], c_ids))
-            question_ids.append(question_id)
-            concept_ids.extend(c_ids)
-            question_concept_map[question_id] = c_ids
-        concept_ids = list(set(concept_ids))
+                concept_ids.add(c_id)
+        c_id_map = {}
+        Q_table = np.zeros((len(df_), len(concept_ids)), dtype=int)
+        for q_id, c_ids_str in zip(df_["question_id"].tolist(), df_["concept_id"].tolist()):
+            c_ids = c_ids_str.split(split_table[dataset_name])
+            c_ids_mapped = []
+            for c_id in c_ids:
+                if c_id not in c_id_map:
+                    c_id_map[c_id] = len(c_id_map)
+                c_ids_mapped.append(c_id_map[c_id])
+            Q_table[[q_id] * len(c_ids_mapped), c_ids_mapped] = [1] * len(c_ids_mapped)
+        del df["concept_id"]
+        self.data_preprocessed = df
         self.concept_id_map = pd.DataFrame({
-            "original_id": concept_id_map.keys(),
-            "mapped_id": concept_id_map.values()
+            "original_id": c_id_map.keys(),
+            "mapped_id": c_id_map.values()
         })
-        Q_table = np.zeros((len(question_ids), len(concept_ids)), dtype=int)
-        for question_id, correspond_c in question_concept_map.items():
-            Q_table[[question_id] * len(correspond_c), correspond_c] = [1] * len(correspond_c)
         self.Q_table = Q_table
 
     def uniform_raw_is_single_concept(self):

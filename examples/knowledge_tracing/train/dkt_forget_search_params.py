@@ -5,7 +5,7 @@ from set_params import *
 from config.dkt_forget import config_dkt_forget
 from utils import get_objective_func
 
-from edmine.model.sequential_kt_model.DKTForget import DKTDKTForget
+from edmine.model.sequential_kt_model.DKTForget import DKTForget
 
 
 if __name__ == "__main__":
@@ -54,4 +54,4 @@ if __name__ == "__main__":
     else:
         max_evals = num
     current_best_performance = 0
-    fmin(get_objective_func(parser, config_dkt_forget, "DKTDKTForget", DKTDKTForget), space, algo=tpe.suggest, max_evals=max_evals)
+    fmin(get_objective_func(parser, config_dkt_forget, "DKTForget", DKTForget), space, algo=tpe.suggest, max_evals=max_evals)

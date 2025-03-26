@@ -246,7 +246,7 @@ class DKTForgetDataset(BasicSequentialKTDataset):
                         repeat_interval_time_seq.append(0)
                         num_repeat_seq.append(0)
                     else:
-                        repeate_interval_time = item_data["time_seq"][i] - concept_exercised[c_id]["last_time"]
+                        repeate_interval_time = (item_data["time_seq"][i] - concept_exercised[c_id]["last_time"])  // 60
                         repeat_interval_time_seq.append(max(0, min(repeate_interval_time, 60 * 24 * 30)))
                         num_repeat_seq.append(min(50, concept_exercised[c_id]["num_repeat"]))
                     concept_exercised[c_id]["last_time"] = item_data["time_seq"][i]
