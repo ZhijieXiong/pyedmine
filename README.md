@@ -3,11 +3,11 @@
 [![PyPi Latest Release](https://img.shields.io/pypi/v/recbole)]()
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-[文档] | [数据集信息] | [相关论文] | [模型榜单]
+[文档] | [数据集信息] | [教育数据挖掘论文列表] | [模型榜单]
 
 [文档]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
 [数据集信息]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
-[相关论文]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
+[教育数据挖掘论文列表]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
 [模型榜单]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
 
 PyEdmine 是一个面向研究者的，易于开发与复现的**教育领域数据挖掘**代码库。
