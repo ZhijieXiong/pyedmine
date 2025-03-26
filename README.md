@@ -1,7 +1,6 @@
 # PyEdmine
 
-[![PyPi Latest Release](https://img.shields.io/pypi/v/recbole)]()
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[<svg xmlns="http://www.w3.org/2000/svg" width="78" height="20" role="img" aria-label="pypi: v1.0.0"><script xmlns="" id="argent-x-extension" data-extension-id="dlcobpjiigpikoobohmabehhmhfoodbb"/><title>pypi: v1.2.1</title><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="78" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="33" height="20" fill="#555"/><rect x="33" width="45" height="20" fill="#007ec6"/><rect width="78" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="175" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="230">pypi</text><text x="175" y="140" transform="scale(.1)" fill="#fff" textLength="230">pypi</text><text aria-hidden="true" x="545" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="350">v1.2.1</text><text x="545" y="140" transform="scale(.1)" fill="#fff" textLength="350">v0.1.0</text></g></svg>](https://pypi.org/project/edmine/)
 
 [文档] | [数据集信息] | [教育数据挖掘论文列表] | [模型榜单]
 
@@ -25,16 +24,10 @@ PyEdmine 是一个面向研究者的，易于开发与复现的**教育领域数
 
 ## 安装
 
-### 从Conda安装
-
-```bash
-conda install -c aibox recbole
-```
-
 ### 从pip安装
 
 ```bash
-pip install recbole
+pip install edmine
 ```
 
 ### 从源文件安装
@@ -43,7 +36,7 @@ git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-## 快速上手
+## 快速开始
 如果你从GitHub下载了PyEdmine的源码，你可以使用`examples`里提供的脚本进行数据预处理、数据集划分、模型训练和模型评估：
 
 ### 配置数据和模型的存放目录
@@ -150,7 +143,7 @@ python data_preprocess/kt_data.py
 
 注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用随机抽选的5000名用户的数据
 
-或者你可以直接下载已处理好的[数据集文件]()
+或者你可以直接下载已处理好的[数据集文件](https://www.alipan.com/s/WGGnC3uqgq6)
 
 ### 数据集划分
 你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/settings/setting_name`下
@@ -159,7 +152,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追�
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的[数据集文件]()，然后将其存放在对应的目录下
+你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), [CD](), [ER](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER]()），然后将其存放在对应的目录下
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
 ### 训练模型

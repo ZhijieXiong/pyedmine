@@ -39,5 +39,7 @@ if __name__ == "__main__":
             term_data["seq_len"] = len(term_data["correctness_seq"])
             if term_data["seq_len"] > 1:
                 kt_data.append(term_data)
+    else:
+        kt_data = kt_data_
     cd_data = kt_data2cd_data(kt_data)
     n_fold_split(params["dataset_name"], cd_data, setting, file_manager, write_cd_file, "cd")

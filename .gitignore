@@ -17,4 +17,6 @@ script_result
 /examples/knowledge_tracing/data_analysis
 /dataset
 /models
-
+/save_models
+/dist
+/README4PYPI.md
