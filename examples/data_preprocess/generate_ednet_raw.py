@@ -27,7 +27,7 @@ if __name__ == "__main__":
     data_dir = params["dataset_src_dir"]
     content_dir = params["contents_dir"]
     question_content_path = os.path.join(content_dir, "questions.csv")
-    save_path = os.path.join(file_manager.get_root_dir(), "lab/dataset_raw/ednet-kt1")
+    save_path = os.path.join(file_manager.get_root_dir(), "dataset/dataset_raw/ednet-kt1")
     question_content = pd.read_csv(question_content_path, usecols=["question_id", "correct_answer", "tags"])
     question_content['tags'] = question_content['tags'].apply(lambda x: x.replace(";", "_"))
     question_content = question_content[question_content['tags'] != '-1']

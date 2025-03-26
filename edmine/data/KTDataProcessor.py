@@ -403,7 +403,7 @@ class KTDataProcessor:
                 concept_id2name[int(c_id)] = c_name
             question_id2type[q_id] = q_type.strip()
 
-        self.process_raw_is_single_concept(df, c_id_is_num=True)
+        self.process_raw_is_single_concept(df)
 
         self.question_id_map["type"] = self.question_id_map["original_id"].map(lambda x: question_id2type.get(x, ""))
         self.concept_id_map["text"] = self.concept_id_map["original_id"].map(lambda x: concept_id2name.get(x, ""))
