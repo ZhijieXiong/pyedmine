@@ -1,6 +1,6 @@
 # PyEdmine
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="78" height="20" role="img" aria-label="pypi: v1.0.0"><script xmlns="" id="argent-x-extension" data-extension-id="dlcobpjiigpikoobohmabehhmhfoodbb"/><title>pypi: v1.2.1</title><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="78" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="33" height="20" fill="#555"/><rect x="33" width="45" height="20" fill="#007ec6"/><rect width="78" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><text aria-hidden="true" x="175" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="230">pypi</text><text x="175" y="140" transform="scale(.1)" fill="#fff" textLength="230">pypi</text><text aria-hidden="true" x="545" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="350">v1.2.1</text><text x="545" y="140" transform="scale(.1)" fill="#fff" textLength="350">v0.1.0</text></g></svg>](https://pypi.org/project/edmine/)
+[![](./asset/img/pypi_icon.png)](https://pypi.org/project/edmine/)
 
 [文档] | [数据集信息] | [教育数据挖掘论文列表] | [模型榜单]
 
@@ -152,7 +152,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追�
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), [CD](), [ER](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER]()），然后将其存放在对应的目录下
+你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), CD, [ER](https://www.alipan.com/s/BJQHQn3waA6), CD4ER），然后将其存放在对应的目录下
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
 ### 训练模型
@@ -202,7 +202,7 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 ## PyEdmine 重要发布
 | Releases | Date      |
 |----------|-----------|
-| v0.1.1   | 3/31/2025 |
+| v0.1.0   | 3/26/2025 |
 
 
 ## 贡献
