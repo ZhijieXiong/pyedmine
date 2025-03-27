@@ -18,7 +18,7 @@ PyEdmine 是一个面向研究者的，易于开发与复现的**教育领域数
 <p align="center">
   <img src="asset/img/ExperimentalFlowChart.jpg" alt="PeEdmine 实验流程图" width="600">
   <br>
-  <b>图片</b>: PeEdmine 实验流程图
+  <b>图片</b>: PyEdmine 实验流程图
 </p>
 
 
@@ -152,7 +152,8 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追�
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), CD, [ER](https://www.alipan.com/s/BJQHQn3waA6), CD4ER），然后将其存放在对应的目录下
+你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), [CD](https://www.alipan.com/s/ZVkqDhtdbpV), [ER](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER](https://www.alipan.com/s/YCojzoGtYPu)），然后将其存放在对应的目录下
+
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
 ### 训练模型
@@ -190,9 +191,9 @@ valid performances in best epoch by valid are main metric: 0.72902  , AUC: 0.729
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
-其中知识追踪和认知诊断模型处理常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启
+其中知识追踪和认知诊断模型除了常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启
 
-你也可以下载已经训练好的模型(如果有需要请邮件联系，模型太多，云盘无法直接生成分享链接)在我们提供的实验设置上进行模型评估
+你也可以下载已经[训练好的模型](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)在我们提供的实验设置上进行模型评估
 
 ### 自动调参
 PyEdmine还支持基于贝叶斯网络的自动调参功能，如
