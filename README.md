@@ -207,6 +207,13 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 |----------|-----------|
 | v0.1.0   | 3/26/2025 |
 
+## 参考代码库
+
+- [PYKT](https://github.com/pykt-team/pykt-toolkit)
+- [EduDATA](https://github.com/bigdata-ustc/EduData)
+- [EduKTM](https://github.com/bigdata-ustc/EduKTM)
+- [EduCDM](https://github.com/bigdata-ustc/EduCDM)
+- [RecBole](https://github.com/RUCAIBox/RecBole)
 
 ## 贡献
 
