@@ -41,27 +41,9 @@ class BasicSequentialKTDataset(Dataset):
     def convert_dataset(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
         self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
-        if "time_seq" in seq_keys:
-            self.dataset_converted["interval_time_seq"] = []
-        max_seq_len = len(self.dataset_original[0]["mask_seq"])
         for _, item_data in enumerate(self.dataset_original):
-            seq_len = item_data["seq_len"]
-            for k in id_keys:
+            for k in item_data.keys():
                 self.dataset_converted[k].append(item_data[k])
-            for k in seq_keys:
-                if k == "time_seq":
-                    interval_time_seq = [0]
-                    for time_i in range(1, seq_len):
-                        interval_time_real = (item_data["time_seq"][time_i] - item_data["time_seq"][time_i - 1]) // 60
-                        interval_time_idx = max(0, interval_time_real)
-                        interval_time_seq.append(interval_time_idx)
-                    interval_time_seq += [0] * (max_seq_len - seq_len)
-                    self.dataset_converted["interval_time_seq"].append(interval_time_seq)
-                else:
-                    self.dataset_converted[k].append(item_data[k])
-
-        if "time_seq" in self.dataset_converted.keys():
-            del self.dataset_converted["time_seq"]
 
     def dataset2tensor(self):
         self.dataset = {}
@@ -241,16 +223,22 @@ class DKTForgetDataset(BasicSequentialKTDataset):
             num_repeat_seq = []
             for i, q_id in enumerate(item_data["question_seq"]):
                 c_ids =q2c[q_id]
+                interval_times = []
+                num_repeats = []
                 for c_id in c_ids:
                     if concept_exercised[c_id]["num_repeat"] == 0:
-                        repeat_interval_time_seq.append(0)
-                        num_repeat_seq.append(0)
+                        interval_times.append(0)
+                        num_repeats.append(0)
                     else:
                         repeate_interval_time = (item_data["time_seq"][i] - concept_exercised[c_id]["last_time"])  // 60
-                        repeat_interval_time_seq.append(max(0, min(repeate_interval_time, 60 * 24 * 30)))
-                        num_repeat_seq.append(min(50, concept_exercised[c_id]["num_repeat"]))
+                        interval_times.append(max(0, min(repeate_interval_time, 60 * 24 * 30)))
+                        num_repeats.append(min(50, concept_exercised[c_id]["num_repeat"]))
                     concept_exercised[c_id]["last_time"] = item_data["time_seq"][i]
                     concept_exercised[c_id]["num_repeat"] += 1
+                # 对于多知识点数据集，一道习题可能有多个知识点，对每个知识点都查询最近一次练习间隔，然后选择最近一次作为习题的练习间隔
+                # 同理，对于num_repeat，选择累加
+                repeat_interval_time_seq.append(max(0, min(interval_times)))
+                num_repeat_seq.append(min(50, sum(num_repeats)))
             self.dataset_converted["repeat_interval_time_seq"].append(repeat_interval_time_seq)
             self.dataset_converted["num_repeat_seq"].append(num_repeat_seq)
             for k in id_keys:
