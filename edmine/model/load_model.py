@@ -18,6 +18,7 @@ from edmine.model.sequential_kt_model.SparseKT import SparseKT
 from edmine.model.sequential_kt_model.QDCKT import QDCKT
 from edmine.model.sequential_kt_model.SKVMN import SKVMN
 from edmine.model.sequential_kt_model.DKTForget import DKTForget
+from edmine.model.sequential_kt_model.MIKT import MIKT
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT
@@ -47,6 +48,7 @@ model_table = {
     "QDCKT": QDCKT,
     "SKVMN": SKVMN,
     "DKTForget": DKTForget,
+    "MIKT": MIKT,
     "NCD": NCD,
     "IRT": IRT,
     "MIRT": MIRT,
