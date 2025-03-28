@@ -237,7 +237,7 @@ class DKTForgetDataset(BasicSequentialKTDataset):
                     concept_exercised[c_id]["num_repeat"] += 1
                 # 对于多知识点数据集，一道习题可能有多个知识点，对每个知识点都查询最近一次练习间隔，然后选择最近一次作为习题的练习间隔
                 # 同理，对于num_repeat，选择累加
-                repeat_interval_time_seq.append(min(interval_times))
+                repeat_interval_time_seq.append(max(0, min(interval_times)))
                 num_repeat_seq.append(min(50, sum(num_repeats)))
             self.dataset_converted["repeat_interval_time_seq"].append(repeat_interval_time_seq)
             self.dataset_converted["num_repeat_seq"].append(num_repeat_seq)
