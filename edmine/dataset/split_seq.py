@@ -59,7 +59,7 @@ def truncate2multi_seq_(item_data, seq_keys, id_keys, max_seq_len):
                 # the last segment
                 pad_len = max_seq_len - (item_data["seq_len"] % max_seq_len)
                 for k in seq_keys:
-                    item_data_new[k] = item_data[k][start_index:] + [0] * pad_len
+                    item_data_new[k] = item_data[k][start_index:start_index+(item_data["seq_len"] % max_seq_len)] + [0] * pad_len
                 item_data_new["seq_len"] = item_data["seq_len"] % max_seq_len
                 item_data_new["mask_seq"] = [1] * (max_seq_len - pad_len) + [0] * pad_len
             else:
