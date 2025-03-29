@@ -373,6 +373,7 @@ class KTDataProcessor:
         self.statics_raw = self.get_basic_info(self.data_raw)
 
         df = deepcopy(self.data_raw)
+        df = df[~df['concept_name'].isnull()]
 
         # 只有8条数据use_time_first_attempt为nan，没有数据num_attempt为nan或者小于0，没有数据answer_type为nan
         df.dropna(subset=["user_id", "question_id", "concept_id", "use_time_first_attempt"], inplace=True)
