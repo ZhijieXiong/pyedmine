@@ -52,6 +52,42 @@ def config_lbkt(global_params, global_objects):
     q_matrix[q_matrix > 1] = 1
     
     
+def config_qdckt(global_params, global_objects, setting_name, train_file_name):
+    # 读取diff数据
+    setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
+    dimkt_dir = os.path.join(setting_dir, "QDCKT")
+    diff_path = os.path.join(dimkt_dir, train_file_name + "_qdckt_diff.json")
+    diff = read_json(diff_path)
+    question_difficulty = {}
+    for k, v in diff["question_difficulty"].items():
+        question_difficulty[int(k)] = v
+    num_que_diff = diff["num_question_diff"]
+    global_objects["qdckt"] = {
+        "question_difficulty": question_difficulty,
+        "num_question_diff": num_que_diff
+    }
+    w_size = global_params["models_config"]["QDCKT"]["window_size"]
+    assert (w_size % 2 == 1) and (w_size >= 1), "window_size must an odd number greater than or equal to 1"
+    q2diff_transfer_table = []
+    q2diff_weight_table = []
+    ws = [0.5 ** abs(i - w_size//2) for i in range(w_size)]
+    for q_diff in range(num_que_diff):
+        if q_diff < (w_size / 2):
+            q2diff_transfer_table.append(list(range(w_size//2 + 1 + q_diff)) + [0] * (w_size // 2 - q_diff))
+            q2diff_weight_table.append(ws[-(w_size//2+1 + q_diff):] + [0] * (w_size // 2 - q_diff))
+        elif (num_que_diff - q_diff) < (w_size / 2):
+            q2diff_transfer_table.append(list(range(q_diff - w_size//2, num_que_diff)) + [0] * (w_size // 2 - (num_que_diff - q_diff) + 1))
+            q2diff_weight_table.append(ws[:-(w_size//2+1-(num_que_diff - q_diff))] + [0] * (w_size // 2 - (num_que_diff - q_diff) + 1))
+        else:
+            q2diff_transfer_table.append(list(range(q_diff-w_size//2, q_diff-w_size//2 + w_size)))
+            q2diff_weight_table.append(deepcopy(ws))
+    global_objects["qdckt"]["q2diff_transfer_table"] = torch.LongTensor(q2diff_transfer_table).to(global_params["device"])
+    q2diff_weight_table = torch.FloatTensor(q2diff_weight_table).to(global_params["device"])
+    # 按照论文中所说归一化
+    global_objects["qdckt"]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
+
+    
+    
 def select_dataset(model_name):
     if model_name == "DIMKT":
         return DIMKTDataset
@@ -59,6 +95,10 @@ def select_dataset(model_name):
         return LPKTDataset
     elif model_name == "LBKT":
         return LBKTDataset
+    elif model_name == "DKTForget":
+        return DKTForgetDataset
+    elif model_name == "QDCKT":
+        return QDCKTDataset
     else:
         return BasicSequentialKTDataset
     

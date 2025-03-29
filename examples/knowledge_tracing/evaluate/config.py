@@ -82,6 +82,8 @@ def config_sequential_dlkt(local_params):
         config_lpkt(global_params, global_objects)
     if model_name == "LBKT":
         config_lbkt(global_params, global_objects)
+    if model_name == "QDCKT":
+        config_qdckt(global_params, global_objects, setting_name, train_file_name)
     
     global_params["evaluator_config"] = {"model_name": model_name}
     global_objects["models"] = {model_name: model}
