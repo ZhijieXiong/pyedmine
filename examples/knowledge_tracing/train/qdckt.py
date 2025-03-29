@@ -53,7 +53,7 @@ if __name__ == "__main__":
     set_seed(params["seed"])
     global_params, global_objects = config_qdckt(params)
 
-    dataset_train = QDCKTDataset(global_params["datasets_config"]["train"], global_objects)
+    dataset_train = QDCKTDataset(global_params["datasets_config"]["train"], global_objects, train_mode=True)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
     dataset_valid = QDCKTDataset(global_params["datasets_config"]["valid"], global_objects, train_mode=False)
     dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)

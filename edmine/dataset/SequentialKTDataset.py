@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 
 from edmine.utils.data_io import read_kt_file
 from edmine.utils.parse import get_keys_from_kt_data
+from edmine.dataset.split_seq import truncate2multi_seq
 
 
 class BasicSequentialKTDataset(Dataset):
@@ -83,7 +84,7 @@ class DIMKTDataset(BasicSequentialKTDataset):
 
 
 class QDCKTDataset(BasicSequentialKTDataset):
-    def __init__(self, dataset_config, objects, train_mode=True):
+    def __init__(self, dataset_config, objects, train_mode=False):
         self.train_mode = train_mode
         if train_mode:
             q_table = objects["dataset"]["q_table"]
@@ -258,3 +259,25 @@ class DKTForgetDataset(BasicSequentialKTDataset):
 
         if "time_seq" in self.dataset_converted.keys():
             del self.dataset_converted["time_seq"]
+            
+class GRKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(GRKTDataset, self).__init__(dataset_config, objects)
+
+    def convert_dataset(self):
+        id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
+        self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
+        self.dataset_converted["time_seq"] = []
+        for _, item_data in enumerate(self.dataset_original):
+            no_time = "time_seq" not in item_data
+            for k in id_keys:
+                self.dataset_converted[k].append(item_data[k])
+            for k in seq_keys:
+                if k == "time_seq":
+                    self.dataset_converted[k].append(list(map(lambda x: x // 60, item_data["time_seq"])))
+                else:
+                    self.dataset_converted[k].append(item_data[k])
+            if no_time:
+                max_seq_len = len(item_data["correctness_seq"])
+                seq_len = item_data["seq_len"]
+                self.dataset_converted["time_seq"].append(list(range(seq_len)) + [0] * (max_seq_len - seq_len))
