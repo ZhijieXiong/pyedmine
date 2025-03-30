@@ -96,7 +96,7 @@ class AKT(nn.Module, DLSequentialKTModel):
         
     def get_predict_loss(self, batch, seq_start=2):
         mask_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_result = self.get_predict_score(batch)
+        predict_score_result = self.get_predict_score(batch, seq_start)
         predict_score = predict_score_result["predict_score"]
         ground_truth = torch.masked_select(batch["correctness_seq"][:, seq_start-1:], mask_seq[:, seq_start-1:])
         predict_loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
@@ -137,12 +137,6 @@ class AKT(nn.Module, DLSequentialKTModel):
         predict_layer_input = torch.cat((target_latent_extend, question_emb), dim=2)
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
         return predict_score
-
-    def get_predict_score_at_target_time(self, batch, target_index):
-        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
-        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index]
 
     def get_knowledge_state(self, batch):
         pass

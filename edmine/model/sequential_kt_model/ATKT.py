@@ -173,12 +173,6 @@ class ATKT(nn.Module, DLSequentialKTModel):
         predict_layer_input = torch.cat((target_latent_extend, target_question_emb), dim=2)
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
         return predict_score
-    
-    def get_predict_score_at_target_time(self, batch, target_index):
-        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
-        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index-1]
 
     def get_knowledge_state(self, batch):
         pass

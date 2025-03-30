@@ -103,10 +103,6 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
         predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
         return predict_score
 
-    def get_predict_score_at_target_time(self, batch, target_index):
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index]
-
     def get_knowledge_state(self, batch):
         pass
 

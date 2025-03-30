@@ -16,7 +16,7 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         :return: A dictionary containing: total_loss, losses_value (A dictionary with detailed loss information), predict_score (The predicted scores for the batch), predict_score_batch (the predicted scores reshaped to match the batch structure)
         """
         mask_seq = torch.ne(batch["mask_seq"], 0)
-        predict_score_result = self.get_predict_score(batch)
+        predict_score_result = self.get_predict_score(batch, seq_start)
         predict_score = predict_score_result["predict_score"]
         ground_truth = torch.masked_select(batch["correctness_seq"][:, seq_start-1:], mask_seq[:, seq_start-1:])
         predict_loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
@@ -54,7 +54,6 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         """
         pass
 
-    @abstractmethod
     def get_predict_score_at_target_time(self, batch, target_index):
         """
         Predicts the probability of a user answering the next exercise correctly at a specified time step.
@@ -62,5 +61,8 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         :param target_index: An integer specifying the time step (index) for which to make the prediction.
         :return:
         """
-        pass
+        # self.get_predict_score(batch)["predict_score_batch"]输出的是从第2（自然数）个时刻开始的预测结果
+        # target_index是从0开始的，所以要-1
+        predict_score_batch = self.get_predict_score(batch)["predict_score_batch"]
+        return predict_score_batch[:, target_index-1]
 

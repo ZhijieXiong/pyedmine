@@ -96,12 +96,6 @@ class qDKT(nn.Module, DLSequentialKTModel):
 
         return predict_score
 
-    def get_predict_score_at_target_time(self, batch, target_index):
-        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
-        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index-1]
-
     def get_knowledge_state(self, batch):
         num_concept = self.params["models_config"]["qDKT"]["embed_config"]["concept"]["num_item"]
         dim_question = self.params["models_config"]["qDKT"]["embed_config"]["question"]["dim_item"]

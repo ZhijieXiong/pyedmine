@@ -43,6 +43,9 @@ def get_objective_func(parser, config_func, model_name, model_class):
         elif model_name == "DKTForget":
             dataset_train = DKTForgetDataset(global_params["datasets_config"]["train"], global_objects)
             dataset_valid = DKTForgetDataset(global_params["datasets_config"]["valid"], global_objects)
+        elif model_name == "ATDKT":
+            dataset_train = ATDKTDataset(global_params["datasets_config"]["train"], global_objects, train_mode=True)
+            dataset_valid = ATDKTDataset(global_params["datasets_config"]["valid"], global_objects, train_mode=False)
         else:
             dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
             dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)

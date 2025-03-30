@@ -1,12 +1,13 @@
 import torch
 
-from torch.nn import Module, Embedding, Linear, Dropout, ModuleList, Sequential, CosineSimilarity
-from torch.nn.functional import binary_cross_entropy, cross_entropy
+from torch.nn import Module, Linear, Dropout, ModuleList, Sequential, CosineSimilarity
+from torch.nn.functional import cross_entropy
 from torch.nn.modules.activation import GELU
 
 from edmine.model.module.Transformer import TransformerLayer4CLKT
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.loss import binary_cross_entropy
 
 
 class Similarity(Module):
@@ -101,22 +102,22 @@ class CLKT(Module, DLSequentialKTModel):
 
         return model_output
 
-    def get_predict_loss(self, batch):
+    def get_predict_loss(self, batch, seq_start=2):
         weight_cl_loss = self.params["loss_config"]["cl loss"]
         concept_seq, correctness_seq = batch["concept_seq"], batch["correctness_seq"]
 
         loss = 0.
         mask_seq = torch.ne(batch["mask_seq"], 0)
         predict_score_batch = self.forward(concept_seq, correctness_seq)[:, 1:]
-        predict_score = torch.masked_select(predict_score_batch, batch["mask_seq"][:, 1:].bool())
-        ground_truth = torch.masked_select(correctness_seq[:, 1:].long(), mask_seq[:, 1:])
-        predict_loss = binary_cross_entropy(predict_score.double(), ground_truth.double())
+        predict_score = torch.masked_select(predict_score_batch[:, seq_start-2:], batch["mask_seq"][:, seq_start-1:].bool())
+        ground_truth = torch.masked_select(correctness_seq[:, seq_start-1:].long(), mask_seq[:, seq_start-1:])
+        predict_loss = binary_cross_entropy(predict_score, ground_truth, self.params["device"])
         loss = loss + predict_loss
 
         cl_loss = self.get_cl_loss(batch)
         loss = loss + cl_loss * weight_cl_loss
 
-        num_sample = torch.sum(batch["mask_seq"][:, 1:]).item()
+        num_sample = torch.sum(batch["mask_seq"][:, seq_start-1:]).item()
         num_seq = batch["mask_seq"].shape[0]
         return {
             "total_loss": loss,
@@ -189,12 +190,6 @@ class CLKT(Module, DLSequentialKTModel):
 
     def get_predict_score_on_target_question(self, batch, target_index, target_question):
         pass
-
-    def get_predict_score_at_target_time(self, batch, target_index):
-        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
-        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index]
 
     def get_knowledge_state(self, batch):
         pass

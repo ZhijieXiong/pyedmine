@@ -48,7 +48,7 @@ class BasicSequentialKTDataset(Dataset):
     def dataset2tensor(self):
         self.dataset = {}
         for k in self.dataset_converted.keys():
-            if k not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq"]:
+            if k not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq", "history_acc_seq"]:
                 self.dataset[k] = torch.tensor(self.dataset_converted[k]).long().to(self.dataset_config["device"])
             else:
                 self.dataset[k] = torch.tensor(self.dataset_converted[k]).float().to(self.dataset_config["device"])
@@ -280,3 +280,32 @@ class GRKTDataset(BasicSequentialKTDataset):
                 max_seq_len = len(item_data["correctness_seq"])
                 seq_len = item_data["seq_len"]
                 self.dataset_converted["time_seq"].append(list(range(seq_len)) + [0] * (max_seq_len - seq_len))
+
+
+class ATDKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects, train_mode=False):
+        self.train_mode = train_mode
+        super(ATDKTDataset, self).__init__(dataset_config, objects)
+        
+    def process_dataset(self):
+        self.load_dataset()
+        if self.train_mode:
+            self.convert_dataset_()
+        else:
+            self.convert_dataset()
+        self.dataset2tensor()
+
+    def convert_dataset_(self):
+        id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
+        self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
+        self.dataset_converted["history_acc_seq"] = []
+        for _, item_data in enumerate(self.dataset_original):
+            for k in item_data.keys():
+                self.dataset_converted[k].append(item_data[k])
+            history_acc_seq = []
+            right, total = 0, 0
+            for correctness in item_data["correctness_seq"]:
+                right += correctness
+                total += 1
+                history_acc_seq.append(right / total)
+            self.dataset_converted["history_acc_seq"].append(history_acc_seq)

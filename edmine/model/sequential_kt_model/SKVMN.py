@@ -271,11 +271,5 @@ class SKVMN(Module, DLSequentialKTModel):
     def get_predict_score_on_target_question(self, batch, target_index, target_question):
         pass
 
-    def get_predict_score_at_target_time(self, batch, target_index):
-        # get_predict_score中predict_score_batch如果从1开始（即forward输出的是0~T的预测），则target_index
-        # 如果从0开始（即forward输出的是1~T的预测），则target_index-1
-        predict_score_batch = self.forward(batch)
-        return predict_score_batch[:, target_index]
-
     def get_knowledge_state(self, batch):
         pass
