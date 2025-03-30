@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
-from edmine.model.module.Attention import MultiHeadAttention4Dtransformer
+from edmine.model.module.MultiHeadAttention import MultiHeadAttention4Dtransformer
 
 
 class TransformerLayer4Dtransformer(nn.Module):
