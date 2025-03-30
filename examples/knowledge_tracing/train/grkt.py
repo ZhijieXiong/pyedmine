@@ -16,8 +16,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args()], 
                                      add_help=False)
     # batch size
-    parser.add_argument("--train_batch_size", type=int, default=16)
-    parser.add_argument("--evaluate_batch_size", type=int, default=64)
+    parser.add_argument("--train_batch_size", type=int, default=8)
+    parser.add_argument("--evaluate_batch_size", type=int, default=32)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.005)
@@ -25,9 +25,9 @@ if __name__ == "__main__":
     parser.add_argument("--momentum", type=float, default=0.9)
     # 梯度裁剪（由于序列长度较长，存在梯度爆炸问题）
     parser.add_argument("--enable_clip_grad", type=str2bool, default=True)
-    parser.add_argument("--grad_clipped", type=float, default=1.0)
+    parser.add_argument("--grad_clipped", type=float, default=100.0)
     # 梯度累计
-    parser.add_argument("--accumulation_step", type=int, default=8,
+    parser.add_argument("--accumulation_step", type=int, default=16,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
     parser.add_argument("--dim_hidden", type=int, default=128, help="Dimension # of embedding and hidden states")

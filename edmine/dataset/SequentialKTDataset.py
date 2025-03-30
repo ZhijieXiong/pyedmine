@@ -6,7 +6,6 @@ from torch.utils.data import Dataset
 
 from edmine.utils.data_io import read_kt_file
 from edmine.utils.parse import get_keys_from_kt_data
-from edmine.dataset.split_seq import truncate2multi_seq
 
 
 class BasicSequentialKTDataset(Dataset):

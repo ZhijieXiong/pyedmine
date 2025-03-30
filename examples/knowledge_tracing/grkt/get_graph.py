@@ -23,22 +23,21 @@ def get_graph(kt_data_, num_c, q2c_):
         question_seq = user_data["question_seq"][:seq_len]
         correctness_seq = user_data["correctness_seq"][:seq_len]
         for q_id, corr in zip(question_seq, correctness_seq):
-            knows = q2c_[q_id]
-            for know in knows:
-                if corr:
-                    tt[:, know] += t
-                    tt[know, :] += t
-                    ft[:, know] += f
-                    tf[know, :] += f
-                else:
-                    ff[:, know] += f
-                    ff[know, :] += f
-                    tf[:, know] += t
-                    ft[know, :] += t
-                if corr:
-                    t[know] += 1
-                else:
-                    f[know] += 1
+            know = q2c_[q_id][0]
+            if corr:
+                tt[:, know] += t
+                tt[know, :] += t
+                ft[:, know] += f
+                tf[know, :] += f
+            else:
+                ff[:, know] += f
+                ff[know, :] += f
+                tf[:, know] += t
+                ft[know, :] += t
+            if corr:
+                t[know] += 1
+            else:
+                f[know] += 1
     cold_thresh = 5
     rel_filt = (tt + ff + tf + ft) >= 4*cold_thresh
     pre_filt = (tf + ft) >= 2*cold_thresh

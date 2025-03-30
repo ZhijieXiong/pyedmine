@@ -59,9 +59,9 @@ class SingleModelEpochTrainer(ABC):
                         self.train_record.add_loss(loss_name, loss_info["value"], loss_info["num_sample"])
                 loss = loss_result["total_loss"] / accumulation_step
                 loss.backward()
-                if grad_clip_config["use_clip"]:
-                    nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip_config["grad_clipped"])
                 if (batch_i + 1) % accumulation_step == 0:
+                    if grad_clip_config["use_clip"]:
+                        nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip_config["grad_clipped"])
                     optimizer.step()
                     if hasattr(model, 'apply_clipper') and callable(getattr(model, 'apply_clipper')):
                         model.apply_clipper()
