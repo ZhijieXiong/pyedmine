@@ -1,12 +1,10 @@
 import random
 import math
 import numpy as np
-
 from collections import defaultdict
-from copy import deepcopy
 
 
-class CL4KTSampker:
+class CLKTSampker:
     def __init__(self, data_uniformed):
         self.easier_concepts = None
         self.harder_concepts = None
@@ -47,7 +45,6 @@ class CL4KTSampker:
         self.harder_concepts = harder_concepts
 
     def replace_seq(self, sample, replace_prob):
-        sample = deepcopy(sample)
         seq_len = sample["seq_len"]
         replace_idx = random.sample(list(range(seq_len)), k=max(1, int(seq_len * replace_prob)))
         for i in replace_idx:
@@ -70,29 +67,26 @@ class CL4KTSampker:
     def mask_seq(sample, mask_prob, mask_min_seq_len=10):
         seq_len = sample["seq_len"]
         if seq_len < mask_min_seq_len:
-            return deepcopy(sample)
+            return
 
         seq_keys = []
         for k in sample.keys():
             if type(sample[k]) == list:
                 seq_keys.append(k)
 
-        sample_new = deepcopy(sample)
         mask_idx = random.sample(list(range(seq_len)), k=max(1, int(seq_len * mask_prob)))
         for i in mask_idx:
             for k in seq_keys:
-                sample_new[k][i] = -1
+                sample[k][i] = -1
         for k in seq_keys:
-            sample_new[k] = list(filter(lambda x: x != -1, sample_new[k]))
-        sample_new["seq_len"] = len(sample_new["correctness_seq"])
-
-        return sample_new
+            sample[k] = list(filter(lambda x: x != -1, sample[k]))
+        sample["seq_len"] = len(sample["correctness_seq"])
 
     @staticmethod
     def permute_seq(sample, perm_prob, perm_min_seq_len=10):
         seq_len = sample["seq_len"]
         if seq_len < perm_min_seq_len:
-            return deepcopy(sample)
+            return
 
         seq_keys = []
         for k in sample.keys():
@@ -111,22 +105,19 @@ class CL4KTSampker:
             if start_pos + reorder_seq_len < seq_len:
                 break
         if not_permute:
-            return deepcopy(sample)
+            return
 
-        sample_new = deepcopy(sample)
         perm = np.random.permutation(reorder_seq_len)
         for k in seq_keys:
-            seq = sample_new[k]
-            sample_new[k] = seq[:start_pos] + np.asarray(seq[start_pos:start_pos + reorder_seq_len])[perm]. \
+            seq = sample[k]
+            sample[k] = seq[:start_pos] + np.asarray(seq[start_pos:start_pos + reorder_seq_len])[perm]. \
                 tolist() + seq[start_pos + reorder_seq_len:]
-
-        return sample_new
 
     @staticmethod
     def crop_seq(sample, crop_prob, crop_min_seq_len=10):
         seq_len = sample["seq_len"]
         if seq_len < crop_min_seq_len:
-            return deepcopy(sample)
+            return
 
         seq_keys = []
         for k in sample.keys():
@@ -144,21 +135,17 @@ class CL4KTSampker:
             if start_pos + cropped_seq_len < seq_len:
                 break
         if not_crop:
-            return deepcopy(sample)
+            return sample
 
-        sample_new = deepcopy(sample)
         for k in seq_keys:
-            sample_new[k] = sample_new[k][start_pos: start_pos + cropped_seq_len]
-        sample_new["seq_len"] = len(sample_new["correctness_seq"])
-
-        return sample_new
+            sample[k] = sample[k][start_pos: start_pos + cropped_seq_len]
+        sample["seq_len"] = len(sample["correctness_seq"])
 
     @staticmethod
     def negative_seq(correctness_seq, neg_prob):
-        correctness_seq_neg = deepcopy(correctness_seq)
         seq_len = len(correctness_seq)
         negative_idx = random.sample(list(range(seq_len)), k=int(seq_len * neg_prob))
         for i in negative_idx:
-            correctness_seq_neg[i] = 1 - correctness_seq_neg[i]
+            correctness_seq[i] = 1 - correctness_seq[i]
 
-        return correctness_seq_neg
+        return correctness_seq

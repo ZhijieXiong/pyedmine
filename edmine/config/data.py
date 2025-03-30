@@ -49,6 +49,32 @@ def config_cd_dataset(local_params, global_params, global_objects):
     config_sequential_kt_dataset(local_params, global_params)
 
 
+def config_clkt_dataset(local_params, global_params):
+    setting_name = local_params["setting_name"]
+    train_file_name = local_params["train_file_name"]
+    valid_file_name = local_params["valid_file_name"]
+    global_params["datasets_config"] = {
+        "train": {
+            "setting_name": setting_name,
+            "file_name": train_file_name,
+            "device": global_params["device"],
+            "num_aug": 2,
+            "aug_order": ['mask', 'crop', 'permute', 'replace'],
+            "mask_prob": local_params["mask_prob"],
+            "replace_prob": local_params["replace_prob"],
+            "crop_prob": local_params["crop_prob"],
+            "permute_prob": local_params["permute_prob"],
+            "hard_neg_prob": 1
+        },
+        "valid": {
+            "setting_name": setting_name,
+            "file_name": valid_file_name,
+            "device": global_params["device"]
+        },
+    }
+
+
+
 def config_kg4ex_dataset(local_params, global_params):
     setting_name = local_params["setting_name"]
     train_file_name = local_params["train_file_name"]

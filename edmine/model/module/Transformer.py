@@ -2,9 +2,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 
-from edmine.model.module.Attention import MultiHeadAttention4SimpleKT
-from edmine.model.module.Attention import MultiHeadAttention4AKT
-from edmine.model.module.Attention import MultiHeadAttention4SparseKT
+from edmine.model.module.Attention import *
 
 
 class TransformerLayer4SimpleKT(nn.Module):
@@ -164,3 +162,57 @@ class TransformerLayer4SparseKT(nn.Module):
             query = query + self.dropout2(query2)  # 残差
             query = self.layer_norm2(query)  # lay norm
         return query, _
+    
+
+class TransformerLayer4CLKT(nn.Module):
+    def __init__(self, params):
+        super(TransformerLayer4CLKT, self).__init__()
+        self.params = params
+
+        model_config = params["models_config"]["CLKT"]
+        dim_model = model_config["dim_model"]
+        dim_ff = model_config["dim_ff"]
+        dropout = model_config["dropout"]
+
+        # Multi-Head Attention Block
+        self.masked_attn_head = MultiHeadAttention4CLKT(params)
+
+        # Two layer norm and two dropout layers
+        self.dropout1 = nn.Dropout(dropout)
+        self.layer_norm1 = nn.LayerNorm(dim_model)
+
+        self.linear1 = nn.Linear(dim_model, dim_ff)
+        self.activation = nn.GELU()
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_ff, dim_model)
+        self.dropout2 = nn.Dropout(dropout)
+        self.layer_norm2 = nn.LayerNorm(dim_model)
+
+    def forward(self, mask, query, key, values, apply_pos=True):
+        # mask: 0 means that it can peek (留意) only past values. 1 means that block can peek current and past values
+
+        batch_size, seq_len = query.size(0), query.size(1)
+        # 从输入矩阵中抽取上三角矩阵，k表示从第几条对角线开始
+        upper_tri_mask = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask).astype("uint8")
+        src_mask = (torch.from_numpy(upper_tri_mask) == 0).to(self.params["device"])
+        bert_mask = torch.ones_like(src_mask).bool()
+
+        if mask == 0:
+            # 单向的attention，只看过去
+            query2, attn = self.masked_attn_head(query, key, values, mask=src_mask, zero_pad=True)
+        elif mask == 1:
+            # 单向的attention，包括当前
+            query2, attn = self.masked_attn_head(query, key, values, mask=src_mask, zero_pad=False)
+        else:
+            # 双向的attention
+            query2, attn = self.masked_attn_head(query, key, values, mask=bert_mask, zero_pad=False)
+
+        query = query + self.dropout1(query2)
+        query = self.layer_norm1(query)
+
+        if apply_pos:
+            query2 = self.linear2(self.dropout(self.activation(self.linear1(query))))
+            query = query + self.dropout2(query2)
+            query = self.layer_norm2(query)
+
+        return query, attn
