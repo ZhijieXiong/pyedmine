@@ -259,6 +259,7 @@ class DKTForgetDataset(BasicSequentialKTDataset):
         if "time_seq" in self.dataset_converted.keys():
             del self.dataset_converted["time_seq"]
             
+            
 class GRKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects):
         super(GRKTDataset, self).__init__(dataset_config, objects)
@@ -309,3 +310,24 @@ class ATDKTDataset(BasicSequentialKTDataset):
                 total += 1
                 history_acc_seq.append(right / total)
             self.dataset_converted["history_acc_seq"].append(history_acc_seq)
+
+
+class DTransformerDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(DTransformerDataset, self).__init__(dataset_config, objects)
+        
+    def process_dataset(self):
+        self.load_dataset()
+        self.add_concept_seq()
+        self.convert_dataset()
+        self.dataset2tensor()
+        
+    def add_concept_seq(self):
+        q2c = self.objects["dataset"]["q2c"]
+        for user_data in self.dataset_original:
+            user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))
+            max_seq_len = len(user_data["concept_seq"])
+            seq_len = user_data["seq_len"]
+            for k in user_data.keys():
+                if k in ["question_seq", "concept_seq", "correctness_seq"]:
+                    user_data[k] = user_data[k][:seq_len] + [-1] * (max_seq_len-seq_len)

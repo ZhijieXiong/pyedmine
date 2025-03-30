@@ -2,6 +2,7 @@ import torch
 import math
 import numpy as np
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 def attention4simple_kt(q, k, v, dim_head, mask, dropout, zero_pad, device="cpu"):
@@ -30,7 +31,7 @@ def attention4akt(q, k, v, dim_head, mask, dropout, zero_pad, gamma=None, pdiff=
     with torch.no_grad():
         scores_ = scores.masked_fill(mask == 0, -1e32)
         # batch_size, num_head, seq_len, seq_len
-        scores_ = nn.functional.softmax(scores_, dim=-1)
+        scores_ = F.softmax(scores_, dim=-1)
         scores_ = scores_ * mask.float().to(device)
         distance_cumulative = torch.cumsum(scores_, dim=-1)
         distance_total = torch.sum(scores_, dim=-1, keepdim=True)
@@ -58,7 +59,7 @@ def attention4akt(q, k, v, dim_head, mask, dropout, zero_pad, gamma=None, pdiff=
 
     scores.masked_fill_(mask == 0, -1e32)
     # batch_size, num_head, seq_len, seq_len
-    scores = nn.functional.softmax(scores, dim=-1)
+    scores = F.softmax(scores, dim=-1)
 
     if zero_pad:
         pad_zero = torch.zeros(batch_size, num_head, 1, seq_len).to(device)
@@ -75,7 +76,7 @@ def attention4sparse_kt(q, k, v, dim_head, mask, dropout, zero_pad, k_index, dev
     scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(dim_head)
     bs, head, seq_len = scores.size(0), scores.size(1), scores.size(2)
     scores.masked_fill_(mask == 0, -1e32)
-    scores = nn.functional.softmax(scores, dim=-1)  # BS,8,seq_len,seq_len
+    scores = F.softmax(scores, dim=-1)  # BS,8,seq_len,seq_len
 
     # sorted_attention：只用top-k，因为从论文消融实验来看top-k效果更好，并且原代码默认使用top-k
     if k_index + 1 >= seq_len:
@@ -91,7 +92,7 @@ def attention4sparse_kt(q, k, v, dim_head, mask, dropout, zero_pad, k_index, dev
             scores_b - scores_t >= 0, scores_b, torch.tensor(-1e16, dtype=torch.float32, device=device)
         ).reshape(bs, head, seq_len - k_index - 1, -1)
         # BS,8,seq_len,seq_len
-        scores_b = nn.functional.softmax(scores_b, dim=-1)
+        scores_b = F.softmax(scores_b, dim=-1)
         scores = torch.cat([scores_a, scores_b], dim=2)
 
     if zero_pad:
@@ -114,7 +115,7 @@ def attention4clkt(q, k, v, d_k, mask, dropout, device, gamma=None, zero_pad=Tru
 
     with torch.no_grad():
         scores_ = scores.masked_fill(mask == 0, -1e32)
-        scores_ = nn.functional.softmax(scores_, dim=-1)
+        scores_ = F.softmax(scores_, dim=-1)
         scores_ = scores_ * mask.float()
 
         distance_cum_scores = torch.cumsum(scores_, dim=-1)
@@ -140,7 +141,7 @@ def attention4clkt(q, k, v, d_k, mask, dropout, device, gamma=None, zero_pad=Tru
     scores = scores * total_effect
 
     scores.masked_fill_(mask == 0, -1e32)
-    scores = nn.functional.softmax(scores, dim=-1)
+    scores = F.softmax(scores, dim=-1)
 
     attn_scores = scores
 
@@ -152,3 +153,49 @@ def attention4clkt(q, k, v, d_k, mask, dropout, device, gamma=None, zero_pad=Tru
     scores = dropout(scores)
     output = torch.matmul(scores, v)
     return output, attn_scores
+
+
+def attention4DTransformer(q, k, v, mask, gamma=None, max_out=False):
+    dim_head = k.size(-1)
+    # attention score with scaled dot production
+    scores = torch.matmul(q, k.transpose(-2, -1)) / torch.tensor(dim_head).float().sqrt().to(gamma.device)
+    batch_size, num_head, seq_len, _ = scores.size()
+
+    # temporal effect, i.e., time with exponential decay
+    if gamma is not None:
+        x1 = torch.arange(seq_len).float().expand(seq_len, -1).to(gamma.device)
+        x2 = x1.transpose(0, 1).contiguous()
+
+        with torch.no_grad():
+            scores_ = scores.masked_fill(mask == 0, -1e32)
+            scores_ = F.softmax(scores_, dim=-1)
+
+            distance_cumulative = torch.cumsum(scores_, dim=-1)
+            distance_total = torch.sum(scores_, dim=-1, keepdim=True)
+            position_effect = torch.abs(x1 - x2)[None, None, :, :]
+            # AKT论文中计算gamma_{t,t'}的公式
+            dist_scores = torch.clamp(
+                (distance_total - distance_cumulative) * position_effect, min=0.0
+            )
+            dist_scores = dist_scores.sqrt().detach()
+
+        gamma = -1.0 * gamma.abs().unsqueeze(0)
+        total_effect = torch.clamp((dist_scores * gamma).exp(), min=1e-5, max=1e5)
+        # AKT论文中公式(1)
+        scores *= total_effect
+
+    # normalize attention score
+    scores.masked_fill_(mask == 0, -1e32)
+    scores = F.softmax(scores, dim=-1)
+    # set to hard zero to avoid leakage
+    scores = scores.masked_fill(mask == 0, 0)
+
+    # max-out scores (batch_size, num_head, seq_len, seq_len)
+    if max_out:
+        # 关注
+        scale = torch.clamp(1.0 / scores.max(dim=-1, keepdim=True)[0], max=5.0)
+        scores *= scale
+
+    # calculate output
+    output = torch.matmul(scores, v)
+    return output, scores

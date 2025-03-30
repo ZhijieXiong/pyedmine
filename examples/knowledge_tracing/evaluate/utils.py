@@ -3,6 +3,7 @@ import torch
 
 from edmine.utils.data_io import read_json
 from edmine.dataset.SequentialKTDataset import *
+from edmine.dataset.SequentialKTDatasetWithSample import *
 
 
 def get_model_info(model_dir_name):
@@ -86,6 +87,16 @@ def config_qdckt(global_params, global_objects, setting_name, train_file_name):
     # 按照论文中所说归一化
     global_objects["qdckt"]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
 
+
+def config_grkt(global_objects, setting_name, train_file_name):
+    setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
+    grkt_dir = os.path.join(setting_dir, "GRKT")
+    rel_map_path = os.path.join(grkt_dir, train_file_name + "_grkt_rel_map.npy")
+    pre_map_path = os.path.join(grkt_dir, train_file_name + "_grkt_pre_map.npy")
+    global_objects["GRKT"] = {
+        "rel_map": np.load(rel_map_path),
+        "pre_map": np.load(pre_map_path)
+    }
     
     
 def select_dataset(model_name):
@@ -99,6 +110,14 @@ def select_dataset(model_name):
         return DKTForgetDataset
     elif model_name == "QDCKT":
         return QDCKTDataset
+    elif model_name == "ATDKT":
+        return ATDKTDataset
+    elif model_name == "CLKT":
+        return CLKTDataset
+    elif model_name == "DTransformer":
+        return DTransformerDataset
+    elif model_name == "GRKT":
+        return GRKTDataset
     else:
         return BasicSequentialKTDataset
     

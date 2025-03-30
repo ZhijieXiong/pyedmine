@@ -292,3 +292,58 @@ class MultiHeadAttention4CLKT(nn.Module):
         output = self.out_proj(concat)
 
         return output, attn_scores
+
+
+class MultiHeadAttention4Dtransformer(nn.Module):
+    def __init__(self, params, bias=True):
+        super().__init__()
+        self.params = params
+
+        model_config = self.params["models_config"]["DTransformer"]
+        dim_model = model_config["dim_model"]
+        num_head = model_config["num_head"]
+        key_query_same = model_config["key_query_same"]
+
+        self.query_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        if key_query_same:
+            self.key_linear = self.query_linear
+        else:
+            self.key_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        self.value_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        self.out_proj = nn.Linear(dim_model, dim_model, bias=bias)
+        self.gammas = nn.Parameter(torch.zeros(num_head, 1, 1))
+        torch.nn.init.xavier_uniform_(self.gammas)
+
+    def forward(self, q, k, v, mask, max_out=False):
+        model_config = self.params["models_config"]["DTransformer"]
+        dim_model = model_config["dim_model"]
+        num_head = model_config["num_head"]
+        dim_head = dim_model // num_head
+
+        batch_size = q.size(0)
+        # perform linear operation and split into num_head
+        q = self.query_linear(q).view(batch_size, -1, num_head, dim_head)
+        k = self.key_linear(k).view(batch_size, -1, num_head, dim_head)
+        v = self.value_linear(v).view(batch_size, -1, num_head, dim_head)
+
+        # transpose to get dimensions batch_size * num_head * seq_len * dim_head
+        k = k.transpose(1, 2)
+        q = q.transpose(1, 2)
+        v = v.transpose(1, 2)
+
+        # calculate attention using function we will define next
+        v_, scores = attention4DTransformer(
+            q,
+            k,
+            v,
+            mask,
+            self.gammas,
+            max_out,
+        )
+
+        # concatenate heads and put through final linear layer
+        concat = v_.transpose(1, 2).contiguous().view(batch_size, -1, dim_model)
+
+        output = self.out_proj(concat)
+
+        return output, scores
