@@ -25,10 +25,10 @@ if __name__ == "__main__":
     parser.add_argument("--momentum", type=float, default=0.9)
     # 学习率衰减
     parser.add_argument("--enable_scheduler", type=str2bool, default=True)
-    parser.add_argument("--scheduler_type", type=str, default="StepLR",
+    parser.add_argument("--scheduler_type", type=str, default="MultiStepLR",
                         choices=("StepLR", "MultiStepLR"))
     parser.add_argument("--scheduler_step", type=int, default=10)
-    parser.add_argument("--scheduler_milestones", type=str, default="[10, 20, 30]")
+    parser.add_argument("--scheduler_milestones", type=str, default="[10, 20]")
     parser.add_argument("--scheduler_gamma", type=float, default=0.5)
     parser.add_argument("--scheduler_T_max", type=int, default=10)
     parser.add_argument("--scheduler_eta_min", type=float, default=0.0001)
