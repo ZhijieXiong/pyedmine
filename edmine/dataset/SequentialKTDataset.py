@@ -379,3 +379,20 @@ class CKTDataset(BasicSequentialKTDataset):
     
     def add_float_tensor(self):
         self.float_tensor += ["cqc_seq"]
+
+
+class HDLPKTDataset(LPKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(HDLPKTDataset, self).__init__(dataset_config, objects)
+        
+    def process_dataset(self):
+        self.load_dataset()
+        self.add_concept_seq()
+        self.convert_dataset()
+        self.dataset2tensor()
+        
+    def add_concept_seq(self):
+        q2c = self.objects["dataset"]["q2c"]
+        for user_data in self.dataset_original:
+            user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))
+            
