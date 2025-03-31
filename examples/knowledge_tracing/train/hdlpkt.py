@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate_batch_size", type=int, default=8)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
-    parser.add_argument("--learning_rate", type=float, default=0.0001)
+    parser.add_argument("--learning_rate", type=float, default=0.01)
     parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 梯度累计

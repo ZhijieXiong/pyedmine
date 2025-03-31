@@ -41,6 +41,15 @@ def config_lpkt(global_params, global_objects):
     ).float().to(global_params["device"]) + 0.03
     q_matrix = global_objects["LPKT"]["q_matrix"]
     q_matrix[q_matrix > 1] = 1
+    
+
+def config_hdlpkt(global_params, global_objects):
+    global_objects["HDLPKT"] = {}
+    global_objects["HDLPKT"]["q_matrix"] = torch.from_numpy(
+        global_objects["dataset"]["q_table"]
+    ).float().to(global_params["device"]) + 0.03
+    q_matrix = global_objects["HDLPKT"]["q_matrix"]
+    q_matrix[q_matrix > 1] = 1
 
 
 def config_lbkt(global_params, global_objects):
@@ -118,6 +127,10 @@ def select_dataset(model_name):
         return DTransformerDataset
     elif model_name == "GRKT":
         return GRKTDataset
+    elif model_name == "CKT":
+        return CKTDataset
+    elif model_name == "HDLPKT":
+        return HDLPKTDataset
     else:
         return BasicSequentialKTDataset
     
