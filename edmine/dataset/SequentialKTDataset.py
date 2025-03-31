@@ -16,6 +16,7 @@ class BasicSequentialKTDataset(Dataset):
         self.dataset_original = None
         self.dataset_converted = None
         self.dataset = None
+        self.float_tensor = ["answer_score_seq"]
         self.process_dataset()
 
     def __len__(self):
@@ -30,6 +31,7 @@ class BasicSequentialKTDataset(Dataset):
     def process_dataset(self):
         self.load_dataset()
         self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
 
     def load_dataset(self):
@@ -44,11 +46,14 @@ class BasicSequentialKTDataset(Dataset):
         for _, item_data in enumerate(self.dataset_original):
             for k in item_data.keys():
                 self.dataset_converted[k].append(item_data[k])
+                
+    def add_float_tensor(self):
+        pass
 
     def dataset2tensor(self):
         self.dataset = {}
         for k in self.dataset_converted.keys():
-            if k not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq", "history_acc_seq"]:
+            if k not in self.float_tensor:
                 self.dataset[k] = torch.tensor(self.dataset_converted[k]).long().to(self.dataset_config["device"])
             else:
                 self.dataset[k] = torch.tensor(self.dataset_converted[k]).float().to(self.dataset_config["device"])
@@ -146,7 +151,7 @@ class QDCKTDataset(BasicSequentialKTDataset):
                     #     similar_q_id = similar_q_ids[idx]
 
         for key, value in result.items():
-            if key not in ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "answer_score_seq"]:
+            if key not in self.float_tensor:
                 result[key] = torch.tensor(value).long().to(self.dataset_config["device"])
             else:
                 result[key] = torch.tensor(value).float().to(self.dataset_config["device"])
@@ -200,6 +205,9 @@ class LBKTDataset(BasicSequentialKTDataset):
         file_name = self.dataset_config["file_name"]
         dataset_path = os.path.join(self.objects["file_manager"].get_setting_dir(setting_name), "LBKT", file_name)
         self.dataset_original = read_kt_file(dataset_path)
+        
+    def add_float_tensor(self):
+        self.float_tensor += ["hint_factor_seq", "attempt_factor_seq", "time_factor_seq"]
 
 
 class DKTForgetDataset(BasicSequentialKTDataset):
@@ -294,7 +302,11 @@ class ATDKTDataset(BasicSequentialKTDataset):
             self.convert_dataset_()
         else:
             self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
+        
+    def add_float_tensor(self):
+        self.float_tensor += ["history_acc_seq"]
 
     def convert_dataset_(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
@@ -331,3 +343,39 @@ class DTransformerDataset(BasicSequentialKTDataset):
             for k in user_data.keys():
                 if k in ["question_seq", "concept_seq", "correctness_seq"]:
                     user_data[k] = user_data[k][:seq_len] + [-1] * (max_seq_len-seq_len)
+
+
+class CKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(CKTDataset, self).__init__(dataset_config, objects)
+
+    def convert_dataset(self):
+        q2c = self.objects["dataset"]["q2c"]
+        num_concept = self.objects["dataset"]["q_table"].shape[1]
+        id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
+        self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
+        self.dataset_converted["cqc_seq"] = []
+        for _, user_data in enumerate(self.dataset_original):
+            concept_exercised = {c: {"num_repeat": 0, "num_correct": 0} for c in range(num_concept)}
+            cqc_seq = []
+            for q_id, correctness in zip(user_data["question_seq"], user_data["correctness_seq"]):
+                cqc = []
+                for c_id in range(num_concept):
+                    num_correct = concept_exercised[c_id]["num_correct"]
+                    num_repeat = concept_exercised[c_id]["num_repeat"]
+                    if num_repeat != 0:
+                        cqc.append(num_correct / num_repeat)
+                    else:
+                        cqc.append(0)
+                cqc_seq.append(cqc)
+                
+                c_ids =q2c[q_id]
+                for c_id in c_ids:
+                    concept_exercised[c_id]["num_repeat"] += 1
+                    concept_exercised[c_id]["num_correct"] += correctness
+            self.dataset_converted["cqc_seq"].append(cqc_seq)
+            for k in user_data.keys():
+                self.dataset_converted[k].append(user_data[k])
+    
+    def add_float_tensor(self):
+        self.float_tensor += ["cqc_seq"]
