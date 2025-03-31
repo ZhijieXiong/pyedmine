@@ -10,7 +10,7 @@
 [Model Leaderboard]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
 
 PyEdmine is a researcher-oriented, easy-to-develop and reproducible code library for educational data mining.
-It currently implements 15 knowledge tracing models, 7 cognitive diagnosis models, and 3 exercise recommendation models.
+It currently implements 20+ knowledge tracing models, 7 cognitive diagnosis models, and 3 exercise recommendation models.
 We have defined a unified and user-friendly data file format and support 14 benchmark datasets.
 Additionally, we designed a unified experimental setup where knowledge tracing models and cognitive diagnosis models can be evaluated on exercise recommendation tasks.
 
@@ -204,6 +204,10 @@ This script uses the *parameters_space* variable defined in the code to set the 
 | Releases | Date      |
 |----------|-----------|
 | v0.1.0   | 3/26/2025 |
+| v0.1.1   | 3/31/2025 |
+
+- `v0.1.0` Initial release version
+- `v0.1.1` Fixed some bugs and added 5 knowledge tracking models, namely ATDKT, CLKT, DTransformer, GRKT and HDLPKT
 
 ## Reference Code
 
