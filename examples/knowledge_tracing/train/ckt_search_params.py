@@ -14,7 +14,7 @@ if __name__ == "__main__":
                                      add_help=False)
     # batch size
     parser.add_argument("--train_batch_size", type=int, default=32)
-    parser.add_argument("--evaluate_batch_size", type=int, default=256)
+    parser.add_argument("--evaluate_batch_size", type=int, default=64)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.005)

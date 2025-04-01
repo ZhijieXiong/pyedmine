@@ -1,7 +1,7 @@
 from edmine.utils.parse import get_keys_from_kt_data
 
 
-def truncate2one_seq(data_uniformed, min_seq_len=2, max_seq_len=200, from_start=True):
+def truncate2one_seq(data_uniformed, min_seq_len=2, max_seq_len=200, from_start=True, padding=True):
     """
     截断数据，取最前面或者最后面一段，不足的在后面补0
     :param data_uniformed:
@@ -21,12 +21,16 @@ def truncate2one_seq(data_uniformed, min_seq_len=2, max_seq_len=200, from_start=
             end_index = max_seq_len
         if seq_len > max_seq_len and not from_start:
             start_index = end_index - max_seq_len
-        pad_len = max_seq_len - end_index + start_index
-        for k in seq_keys:
+        if not padding:
+            pad_len = 0
+        else:
+            pad_len = max_seq_len - end_index + start_index
+        for k in seq_keys:    
             item_data_new[k] = item_data[k][start_index:end_index] + [0] * pad_len
         item_data_new["seq_len"] = end_index - start_index
-        item_data_new["mask_seq"] = [1] * item_data_new["seq_len"] + \
-                                    [0] * (max_seq_len - item_data_new["seq_len"])
+        if padding:
+            item_data_new["mask_seq"] = [1] * item_data_new["seq_len"] + \
+                                        [0] * (max_seq_len - item_data_new["seq_len"])
         result.append(item_data_new)
     return result
 
