@@ -32,6 +32,12 @@ def config_sequential_dlkt(local_params):
                                 f"evaluate_log@{get_now_time().replace(' ', '@').replace(':', '-')}.txt")
     else:
         log_path = None
+    if local_params.get("save_all_sample", False):
+        all_sample_path = os.path.join(MODEL_DIR, local_params["model_dir_name"],
+                                       f"all_sample_evaluation.txt")
+    else:
+        all_sample_path = None
+    global_params["all_sample_path"] = all_sample_path
     config_logger(local_params, global_objects, log_path)
     config_general_dl_model(local_params, global_params)
     check_kt_seq_start(local_params.get("seq_start", 2))

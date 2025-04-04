@@ -15,3 +15,4 @@ def config_logger(local_params, global_objects, log_path=None):
         fh = logging.FileHandler(log_path)
         fh.setLevel(logging.INFO)
         global_objects["logger"].addHandler(fh)
+        
