@@ -10,10 +10,13 @@
 [模型榜单]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
 [English]: README_EN.md
 
-PyEdmine 是一个面向研究者的，易于开发与复现的**教育领域数据挖掘**代码库。
-目前已实现了20+个知识追踪模型、7个认知诊断模型、3个习题推荐模型。
-我们约定了一个统一、易用的数据文件格式，并已支持 14 个 benchmark dataset。
-此外，我们设计了一个统一的实验设置，该设置下，知识追踪模型和认知诊断模型可以在习题推荐任务上进行评估。
+PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
+
+目前已实现了30+个知识追踪模型、7个认知诊断模型、3个习题推荐模型
+
+我们约定了一个统一、易用的数据文件格式，并已支持 14 个 benchmark dataset
+
+此外，我们设计了一个统一的实验设置，该设置下，知识追踪模型和认知诊断模型可以在习题推荐任务上进行评估
 
 
 <p align="center">
@@ -140,20 +143,20 @@ python examples/set_up.py
 ```bash
 python data_preprocess/kt_data.py
 ```
-该脚本会生成数据集经过统一格式处理后的文件（位于`/path/to/save/data/dataset_preprocessed`）
+该脚本会生成数据集经过统一格式处理后的文件（位于`/path/to/save/data/dataset/dataset_preprocessed`）
 
 注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用随机抽选的5000名用户的数据
 
 或者你可以直接下载已处理好的[数据集文件](https://www.alipan.com/s/WGGnC3uqgq6)
 
 ### 数据集划分
-你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/settings/setting_name`下
+你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/dataset/settings/[setting_name]`下
 ```bash
 python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追踪
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的数据集文件（[KT](https://www.alipan.com/s/Lek2EDxPfUJ), [CD](https://www.alipan.com/s/ZVkqDhtdbpV), [ER](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER](https://www.alipan.com/s/YCojzoGtYPu)），然后将其存放在对应的目录下
+你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://www.alipan.com/s/ZVkqDhtdbpV), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://www.alipan.com/s/YCojzoGtYPu)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
 
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
@@ -219,14 +222,15 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 - [EduKTM](https://github.com/bigdata-ustc/EduKTM)
 - [EduCDM](https://github.com/bigdata-ustc/EduCDM)
 - [RecBole](https://github.com/RUCAIBox/RecBole)
+- [其它论文代码仓库](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
 
 ## 贡献
 
 如果您遇到错误或有任何建议，请通过 [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe) 进行反馈
 
-我们欢迎关于修复错误、添加新特性的任何贡献。
+我们欢迎关于修复错误、添加新特性的任何贡献
 
-如果想贡献代码，请先在issue中提出问题，然后再提PR。
+如果想贡献代码，请先在issue中提出问题，然后再提PR
 
 ## 免责声明
-PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的。
+PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的

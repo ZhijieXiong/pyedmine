@@ -9,10 +9,13 @@
 [EDM Papers]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
 [Model Leaderboard]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
 
-PyEdmine is a researcher-oriented, easy-to-develop and reproducible code library for educational data mining.
-It currently implements 20+ knowledge tracing models, 7 cognitive diagnosis models, and 3 exercise recommendation models.
-We have defined a unified and user-friendly data file format and support 14 benchmark datasets.
-Additionally, we designed a unified experimental setup where knowledge tracing models and cognitive diagnosis models can be evaluated on exercise recommendation tasks.
+PyEdmine is a researcher-oriented, easy-to-develop and reproducible code library for educational data mining
+
+It currently implements 30+ knowledge tracing models, 7 cognitive diagnosis models, and 3 exercise recommendation models
+
+We have defined a unified and user-friendly data file format and support 14 benchmark datasets
+
+Additionally, we designed a unified experimental setup where knowledge tracing models and cognitive diagnosis models can be evaluated on exercise recommendation tasks
 
 <p align="center">
   <img src="asset/img/ExperimentalFlowChart.jpg" alt="PeEdmine 实验流程图" width="600">
@@ -49,7 +52,7 @@ Then run the script:
 ```bash
 python examples/set_up.py
 ```
-This will automatically generate directories for raw dataset files (located at `/path/to/save/data/dataset_raw`) and directories for uniformly processed files. The raw dataset directories are structured as follows:
+This will automatically generate directories for raw dataset files (located at `/path/to/save/data/dataset/dataset_raw`) and directories for uniformly processed files. The raw dataset directories are structured as follows:
 ```
 .
 ├── SLP
@@ -137,22 +140,22 @@ You can use our dataset preprocessing script:
 ```bash
 python data_preprocess/kt_data.py
 ```
-This script will generate uniformly formatted dataset files (located at `/path/to/save/data/dataset_preprocessed`).
+This script will generate uniformly formatted dataset files (located at `/path/to/save/data/dataset/dataset_preprocessed`)
 
-Note: For the `Ednet-kt1` dataset, due to the large number of raw data files, you need to first use the script `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5000. Additionally, because this dataset is too large, the preprocessing defaults to using only randomly selected data from 5000 users.
+Note: For the `Ednet-kt1` dataset, due to the large number of raw data files, you need to first use the script `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5000. Additionally, because this dataset is too large, the preprocessing defaults to using only randomly selected data from 5000 users
 
 Alternatively, you can directly download the preprocessed [dataset files](https://www.alipan.com/s/WGGnC3uqgq6)
 
 ### Dataset Splitting
-You can use our dataset splitting scripts. The split dataset files will be saved under `/path/to/save/data/settings/setting_name`:
+You can use our dataset splitting scripts. The split dataset files will be saved under `/path/to/save/data/dataset/settings/[setting_name]`:
 ```bash
 python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # Knowledge Tracing
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # Cognitive Diagnosis
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # Exercise Recomme
 ```
-You can also directly download the split dataset files ([KT](https://www.alipan.com/s/Lek2EDxPfUJ), [CD](https://www.alipan.com/s/ZVkqDhtdbpV), [ER](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER](https://www.alipan.com/s/YCojzoGtYPu)) and place them in the corresponding directories.
+You can also directly download the split dataset files ([pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://www.alipan.com/s/ZVkqDhtdbpV), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://www.alipan.com/s/YCojzoGtYPu)) and place them in `/path/to/save/data/dataset/settings`
 
-Alternatively, you can refer to our dataset splitting scripts to design your own experimental processing pipeline.
+Alternatively, you can refer to our dataset splitting scripts to design your own experimental processing pipeline
 
 ### Model Training
 For models that do not require generating additional information, simply run the training code, e.g.:
@@ -189,16 +192,16 @@ If the *save_model* parameter is set during model training, the model parameter 
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
-In addition to conventional metric evaluation, knowledge tracing and cognitive diagnosis models can also undergo fine-grained evaluations, such as cold-start evaluation and multi-step prediction for knowledge tracing. These evaluations can be enabled by setting the corresponding parameters.
+In addition to conventional metric evaluation, knowledge tracing and cognitive diagnosis models can also undergo fine-grained evaluations, such as cold-start evaluation and multi-step prediction for knowledge tracing. These evaluations can be enabled by setting the corresponding parameters
 
-You can also download [pre-trained models](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html) to evaluate them on our provided experimental settings.
+You can also download [pre-trained models](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html) to evaluate them on our provided experimental settings
 
 ### Automatic Hyperparameter Tuning
 PyEdmine also supports automatic hyperparameter tuning based on Bayesian networks, e.g.:
 ```bash
 python examples/cognitive_diagnosis/train/ncd_search_params.py
 ```
-This script uses the *parameters_space* variable defined in the code to set the search space.
+This script uses the *parameters_space* variable defined in the code to set the search space
 
 ## PyEdmine Major Releases
 | Releases | Date      |
@@ -216,13 +219,14 @@ This script uses the *parameters_space* variable defined in the code to set the 
 - [EduKTM](https://github.com/bigdata-ustc/EduKTM)
 - [EduCDM](https://github.com/bigdata-ustc/EduCDM)
 - [RecBole](https://github.com/RUCAIBox/RecBole)
+- [Other Papers' Code Repository](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
 
 ## Contribution
-If you encounter any errors or have suggestions, please provide feedback via [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe).
+If you encounter any errors or have suggestions, please provide feedback via [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe)
 
-We welcome any contributions for bug fixes or adding new features.
+We welcome any contributions for bug fixes or adding new features
 
-If you would like to contribute code, please first raise the issue and then submit a PR.
+If you would like to contribute code, please first raise the issue and then submit a PR
 
 ## Disclaimer
-PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project can only be used for academic purposes.
+PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project can only be used for academic purposes
