@@ -347,14 +347,26 @@ class DTransformerDataset(BasicSequentialKTDataset):
 
 class CKTDataset(BasicSequentialKTDataset):
     def __init__(self, dataset_config, objects):
+        self.cqc_seq = []
         super(CKTDataset, self).__init__(dataset_config, objects)
+        
+    def __getitem__(self, index):
+        result = dict()
+        cqc_seq = self.cqc_seq[index]
+        for key in self.dataset.keys():
+            result[key] = self.dataset[key][index]
+        result["cqc_seq"] = torch.tensor(cqc_seq).float().to(self.dataset_config["device"])
+        return result
+        
+    def process_dataset(self):
+        self.load_dataset()
+        self.get_cqc_seq()
+        self.convert_dataset()
+        self.dataset2tensor()
 
-    def convert_dataset(self):
+    def get_cqc_seq(self):
         q2c = self.objects["dataset"]["q2c"]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
-        id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
-        self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
-        self.dataset_converted["cqc_seq"] = []
         for _, user_data in enumerate(self.dataset_original):
             concept_exercised = {c: {"num_repeat": 0, "num_correct": 0} for c in range(num_concept)}
             cqc_seq = []
@@ -373,12 +385,7 @@ class CKTDataset(BasicSequentialKTDataset):
                 for c_id in c_ids:
                     concept_exercised[c_id]["num_repeat"] += 1
                     concept_exercised[c_id]["num_correct"] += correctness
-            self.dataset_converted["cqc_seq"].append(cqc_seq)
-            for k in user_data.keys():
-                self.dataset_converted[k].append(user_data[k])
-    
-    def add_float_tensor(self):
-        self.float_tensor += ["cqc_seq"]
+            self.cqc_seq.append(cqc_seq)
 
 
 class HDLPKTDataset(LPKTDataset):
