@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from edmine.evaluator.DLEvaluator import DLEvaluator
 from edmine.metric.knowledge_tracing import get_kt_metric, core_metric
+from edmine.utils.data_io import write_kt_file
 
 
 class SequentialDLKTEvaluator(DLEvaluator):
@@ -19,6 +20,8 @@ class SequentialDLKTEvaluator(DLEvaluator):
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
+        all_sample_path = self.params["all_sample_path"]
+        save_all_sample = all_sample_path is not None
 
         predict_score_all = []
         ground_truth_all = []
@@ -27,7 +30,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         # result_all_batch是batch格式，即(num_batch * batch_size, seq_len)
         result_all_batch = []
         inference_result = {}
-        if evaluate_overall or (question_cold_start >= 0) or (user_cold_start >= 1):
+        if evaluate_overall or (question_cold_start >= 0) or (user_cold_start >= 1) or save_all_sample:
             for batch in tqdm(data_loader, desc="one step inference"):
                 correctness_seq = batch["correctness_seq"]
                 mask_seq = torch.ne(batch["mask_seq"], 0)
@@ -44,8 +47,10 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 question_seq = batch["question_seq"]
                 predict_score_batch = predict_result["predict_score_batch"]
                 result_all_batch.append({
+                    "user_id": batch["user_id"].detach().cpu().numpy(),
+                    "seq_len": batch["seq_len"].detach().cpu().numpy(),
                     "question": question_seq[:, 1:].detach().cpu().numpy(),
-                    "label": correctness_seq[:, 1:].detach().cpu().numpy(),
+                    "correctness": correctness_seq[:, 1:].detach().cpu().numpy(),
                     "predict_score": predict_score_batch.detach().cpu().numpy(),
                     "mask": batch["mask_seq"][:, 1:].detach().cpu().numpy()
                 })
@@ -57,6 +62,20 @@ class SequentialDLKTEvaluator(DLEvaluator):
             ground_truth_all = np.concatenate(ground_truth_all, axis=0)
             inference_result.update(get_kt_metric(ground_truth_all, predict_score_all))
 
+        if save_all_sample:
+            all_sample_result = []
+            for batch in result_all_batch:
+                for i, (user_id, seq_len) in enumerate(zip(batch["user_id"], batch["seq_len"])):
+                    seq_len = int(seq_len)
+                    user_result = {
+                        "user_id": int(user_id),
+                        "seq_len": seq_len,
+                        "correctness_seq": [-1] + batch["correctness"][i][:seq_len-1].tolist(),
+                        "predict_score_seq": [-1] + batch["predict_score"][i][:seq_len-1].tolist()
+                    }
+                    all_sample_result.append(user_result)
+            write_kt_file(all_sample_result, all_sample_path)
+        
         if use_core:
             inference_result["core"] = {
                 "repeated": core_metric(predict_score_all, ground_truth_all, np.concatenate(question_all, axis=0), True),
@@ -73,7 +92,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 cold_start_mask[:, user_cold_start:] = 0
                 mask = np.logical_and(cold_start_mask, batch_result["mask"])
                 predict_score_cold_start_u.append(batch_result["predict_score"][mask])
-                ground_truth_cold_start_u.append(batch_result["label"][mask])
+                ground_truth_cold_start_u.append(batch_result["correctness"][mask])
             predict_score_cold_start_u = np.concatenate(predict_score_cold_start_u, axis=0)
             ground_truth_cold_start_u = np.concatenate(ground_truth_cold_start_u, axis=0)
             inference_result["user_cold_start"] = get_kt_metric(ground_truth_cold_start_u, predict_score_cold_start_u)

@@ -181,7 +181,9 @@ def read_kt_file(data_path):
             if i % num_key == 0:
                 item_data = {}
             current_key = keys[int(i % num_key)]
-            if current_key in ["time_factor_seq", "hint_factor_seq", "attempt_factor_seq", "answer_score_seq"]:
+            # todo: 是否能有一种方法在不改变数据文件结构的情况下自动识别数据是int类型还是float类型
+            # 因为有的数据中某个样本的一个字段虽然是flaot，但是特殊情况下这个样本的该字段中全是整数，所以简单判断一行中是否有.号不能保证读取成功
+            if current_key in ["time_factor_seq", "hint_factor_seq", "attempt_factor_seq", "answer_score_seq", "predict_score_seq"]:
                 line_content = list(map(float, line_str.strip().split(",")))
             else:
                 line_content = list(map(int, line_str.strip().split(",")))

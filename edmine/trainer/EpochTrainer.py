@@ -50,6 +50,7 @@ class SingleModelEpochTrainer(ABC):
         scheduler = self.objects["schedulers"][model_name]
         model = self.objects["models"][model_name]
 
+        self.objects["logger"].info(f"{get_now_time()} start training")
         for epoch in range(1, max_epoch + 1):
             model.train()
             for batch_i, batch in enumerate(train_loader):

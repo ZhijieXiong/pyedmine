@@ -64,6 +64,7 @@ class SingleModelStepTrainer(ABC):
         log_loss_step = 100
 
         best_index = 0
+        self.objects["logger"].info(f"{get_now_time()} start training")
         for step in range(1, max_step + 1):
             model.train()
             optimizer.zero_grad()
