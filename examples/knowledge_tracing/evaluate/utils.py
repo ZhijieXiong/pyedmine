@@ -107,6 +107,16 @@ def config_grkt(global_objects, setting_name, train_file_name):
         "pre_map": np.load(pre_map_path)
     }
     
+
+def config_abqr(local_params, global_params, global_objects, setting_name):
+    setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
+    abqr_dir = os.path.join(setting_dir, "ABQR")
+    dataset_name = local_params["dataset_name"]
+    graph_path = os.path.join(abqr_dir, f"abqr_graph_{dataset_name}.pt")
+    global_objects["ABQR"] = {
+        "gcn_adj": torch.load(graph_path).to(global_params["device"])
+    }
+    
     
 def select_dataset(model_name):
     if model_name == "DIMKT":

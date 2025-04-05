@@ -98,9 +98,6 @@ class QDCKTDataset(BasicSequentialKTDataset):
                 q_table_ = q_table - np.tile(q_table[q_id], (q_table.shape[0], 1))
                 q_table_sum = q_table_.sum(axis=1)
                 self.q_with_same_concepts[q_id] = list(set(np.nonzero(q_table_sum == 0)[0]) - {q_id})
-            self.radom_num = 10000
-            self.randoms = [random.choice(100) for _ in range(self.radom_num)]
-            self.random_index = 0
         super(QDCKTDataset, self).__init__(dataset_config, objects)
 
     def __len__(self):
