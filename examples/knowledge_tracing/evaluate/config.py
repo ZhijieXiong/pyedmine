@@ -77,7 +77,11 @@ def config_sequential_dlkt(local_params):
                 if num_question <= local_params["question_cold_start"]:
                     global_objects["cold_start_question"].append(question_id)
             write_json(global_objects["cold_start_question"], cold_start_question_path)
-            
+    
+    # ABQR的config必须放在load_dl_model前面，因为初始化模型是需要gcn_adj
+    if model_name == "ABQR":
+        config_abqr(local_params, global_params, global_objects, setting_name)
+        
     model_dir = os.path.join(MODEL_DIR, local_params["model_dir_name"])
     model = load_dl_model(global_params, global_objects,
                           model_dir, local_params["model_name"], local_params["model_name_in_ckt"])
@@ -94,8 +98,6 @@ def config_sequential_dlkt(local_params):
         config_qdckt(global_params, global_objects, setting_name, train_file_name)
     if model_name == "GRKT":
         config_grkt(global_objects, global_objects, setting_name, train_file_name)
-    if model_name == "ABQR":
-        config_abqr(local_params, global_params, global_objects, setting_name)
     
     global_params["evaluator_config"] = {"model_name": model_name}
     global_objects["models"] = {model_name: model}

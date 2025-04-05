@@ -22,14 +22,14 @@ if __name__ == "__main__":
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.001)
-    parser.add_argument("--weight_decay", type=float, default=0.000001)
+    parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 模型参数
     parser.add_argument("--dim_emb", type=int, default=100)
     parser.add_argument("--agg_hops", type=int, default=3)
     parser.add_argument("--rank_k", type=int, default=10)
-    parser.add_argument("--dropout4gru", type=float, default=0.3)
-    parser.add_argument("--dropout4gnn", type=float, default=0.3)
+    parser.add_argument("--dropout4gru", type=float, default=0.5)
+    parser.add_argument("--dropout4gnn", type=float, default=0.5)
     # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
     parser.add_argument("--use_wandb", type=str2bool, default=False)

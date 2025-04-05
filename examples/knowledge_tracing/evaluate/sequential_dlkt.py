@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_all_sample", type=str2bool, default=False)
     # 是否保存测试结果
     parser.add_argument("--save_log", type=str2bool, default=False)
-    # 随机种子（有些指标带有随机性）
+    # 随机种子（CORE指标带有随机性）
     parser.add_argument("--seed", type=int, default=0)
 
     args = parser.parse_args()
