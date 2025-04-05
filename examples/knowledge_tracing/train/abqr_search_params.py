@@ -3,10 +3,10 @@ from hyperopt import fmin, tpe, hp
 
 from set_params import *
 from edmine.utils.parse import str2bool
-from config.dkt import config_dkt
+from config.abqr import config_abqr
 from utils import get_objective_func
 
-from edmine.model.sequential_kt_model.DKT import DKT
+from edmine.model.sequential_kt_model.ABQR import ABQR
 
 
 if __name__ == "__main__":
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     else:
         max_evals = num
     current_best_performance = 0
-    fmin(get_objective_func(parser, config_dkt, "DKT", DKT), space, algo=tpe.suggest, max_evals=max_evals)
+    fmin(get_objective_func(parser, config_abqr, "ABQR", ABQR), space, algo=tpe.suggest, max_evals=max_evals)

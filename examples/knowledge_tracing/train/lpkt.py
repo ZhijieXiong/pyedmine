@@ -7,6 +7,7 @@ from config.lpkt import config_lpkt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
+from edmine.utils.log import get_now_time
 from edmine.dataset.SequentialKTDataset import LPKTDataset
 from edmine.model.sequential_kt_model.LPKT import LPKT
 from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     set_seed(params["seed"])
     global_params, global_objects = config_lpkt(params)
 
+    global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
     dataset_train = LPKTDataset(global_params["datasets_config"]["train"], global_objects)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
     dataset_valid = LPKTDataset(global_params["datasets_config"]["valid"], global_objects)

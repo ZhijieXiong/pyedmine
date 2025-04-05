@@ -8,6 +8,7 @@ from set_params import *
 from edmine.utils.data_io import read_kt_file, read_mlkc_data
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
+from edmine.utils.log import get_now_time
 from edmine.dataset.KG4EXDataset import *
 from edmine.model.exercise_recommendation_model.KG4EX import KG4EX
 from edmine.trainer.ExerciseRecommendationTrainer import ExerciseRecommendationTrainer
@@ -55,6 +56,7 @@ if __name__ == "__main__":
 
     global_params, global_objects = config_kg4ex(params)
 
+    global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
     setting_name = params["setting_name"]
     setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
     kg4ex_dir = os.path.join(setting_dir, "kg4ex")

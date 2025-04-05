@@ -7,6 +7,7 @@ from config.clkt import config_clkt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
+from edmine.utils.log import get_now_time
 from edmine.dataset.SequentialKTDatasetWithSample import CLKTDataset
 from edmine.model.sequential_kt_model.CLKT import CLKT
 from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
@@ -48,6 +49,7 @@ if __name__ == "__main__":
     set_seed(params["seed"])
     global_params, global_objects = config_clkt(params)
 
+    global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
     dataset_train = CLKTDataset(global_params["datasets_config"]["train"], global_objects, train_mode=True)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
     dataset_valid = CLKTDataset(global_params["datasets_config"]["valid"], global_objects, train_mode=False)

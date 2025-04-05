@@ -7,6 +7,7 @@ from config.hier_cdf import config_hier_cdf
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
+from edmine.utils.log import get_now_time
 from edmine.dataset.CognitiveDiagnosisDataset import BasicCognitiveDiagnosisDataset
 from edmine.model.cognitive_diagnosis_model.HierCDF import HierCDF
 from edmine.trainer.DLCognitiveDiagnosisTrainer import DLCognitiveDiagnosisTrainer
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     set_seed(params["seed"])
     global_params, global_objects = config_hier_cdf(params)
 
+    global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
     dataset_train = BasicCognitiveDiagnosisDataset(global_params["datasets_config"]["train"], global_objects)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
     dataset_valid = BasicCognitiveDiagnosisDataset(global_params["datasets_config"]["valid"], global_objects)

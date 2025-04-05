@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import torch
+import random
 from copy import deepcopy
 from torch.utils.data import Dataset
 
@@ -97,6 +98,9 @@ class QDCKTDataset(BasicSequentialKTDataset):
                 q_table_ = q_table - np.tile(q_table[q_id], (q_table.shape[0], 1))
                 q_table_sum = q_table_.sum(axis=1)
                 self.q_with_same_concepts[q_id] = list(set(np.nonzero(q_table_sum == 0)[0]) - {q_id})
+            self.radom_num = 10000
+            self.randoms = [random.choice(100) for _ in range(self.radom_num)]
+            self.random_index = 0
         super(QDCKTDataset, self).__init__(dataset_config, objects)
 
     def __len__(self):
@@ -122,33 +126,34 @@ class QDCKTDataset(BasicSequentialKTDataset):
                     result["similar_question_diff_seq"].append(0)
                     result["similar_question_mask_seq"].append(0)
                 else:
+                    # 不知道什么原因，在习题数量大的数据集上程序会被kill
                     similar_q_ids = self.q_with_same_concepts[q_id]
                     if len(similar_q_ids) == 0:
-                        result["similar_question_seq"].append(0)
-                        result["similar_question_diff_seq"].append(0)
-                        result["similar_question_mask_seq"].append(0)
+                        similar_q_id = 0
+                        similar_q_mask = 0
                     else:
-                        similar_q_id = np.random.choice(similar_q_ids)
-                        result["similar_question_seq"].append(similar_q_id)
-                        result["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
-                        result["similar_question_mask_seq"].append(1)
+                        similar_q_id = random.choice(similar_q_ids)
+                        similar_q_mask = 1
                     # elif len(similar_q_ids) <= 100:
-                    #     similar_q_id = np.random.choice(similar_q_ids)
-                    #     result["similar_question_seq"].append(similar_q_id)
-                    #     result["similar_question_diff_seq"].append(question_difficulty[similar_q_id])
-                    #     result["similar_question_mask_seq"].append(1)
+                    #     similar_q_id = random.choice(similar_q_ids)
+                    #     similar_q_mask = 1
                     # else:
                     #     num_similar_q = len(similar_q_ids)
                     #     idx = 0
                     #     num1 = num_similar_q // 100
-                    #     n1 = np.random.choice(list(range(num1)))
+                    #     n1 = random.choice(list(range(num1)))
                     #     idx += n1 * 100
                     #     num2 = num_similar_q % 100
                     #     if num2 == 0:
-                    #         idx += np.random.choice(list(range(100)))
+                    #         idx += random.choice(100)
                     #     else:
-                    #         idx += np.random.choice(list(range(num2)))
+                    #         idx += random.choice(list(range(num2)))
                     #     similar_q_id = similar_q_ids[idx]
+                    #     similar_q_mask = 1
+                    similar_q_diff = question_difficulty[similar_q_id]
+                    result["similar_question_seq"].append(similar_q_id)
+                    result["similar_question_diff_seq"].append(similar_q_diff)
+                    result["similar_question_mask_seq"].append(similar_q_mask)
 
         for key, value in result.items():
             if key not in self.float_tensor:
