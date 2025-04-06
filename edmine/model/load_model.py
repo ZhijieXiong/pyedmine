@@ -25,6 +25,10 @@ from edmine.model.sequential_kt_model.DTransformer import DTransformer
 from edmine.model.sequential_kt_model.GRKT import GRKT
 from edmine.model.sequential_kt_model.CKT import CKT
 from edmine.model.sequential_kt_model.HDLPKT import HDLPKT
+from edmine.model.sequential_kt_model.ABQR import ABQR
+from edmine.model.non_sequential_kt_model.DyGKT import DyGKT
+from edmine.model.sequential_kt_model.GIKT import GIKT
+from edmine.model.sequential_kt_model.HawkesKT import HawkesKT
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT
@@ -61,6 +65,10 @@ model_table = {
     "GRKT": GRKT,
     "CKT": CKT,
     "HDLPKT": HDLPKT,
+    "ABQR": ABQR,
+    "DyGKT": DyGKT,
+    "GIKT": GIKT,
+    "HawkesKT": HawkesKT,
     "NCD": NCD,
     "IRT": IRT,
     "MIRT": MIRT,

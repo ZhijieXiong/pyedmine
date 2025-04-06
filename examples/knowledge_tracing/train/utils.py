@@ -49,6 +49,9 @@ def get_objective_func(parser, config_func, model_name, model_class):
         elif model_name == "CKT":
             dataset_train = CKTDataset(global_params["datasets_config"]["train"], global_objects)
             dataset_valid = CKTDataset(global_params["datasets_config"]["valid"], global_objects)
+        elif model_name in ["HawkesKT"]:
+            dataset_train = SingleConceptKTDataset(global_params["datasets_config"]["train"], global_objects)
+            dataset_valid = SingleConceptKTDataset(global_params["datasets_config"]["valid"], global_objects)
         else:
             dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
             dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)

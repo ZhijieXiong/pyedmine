@@ -78,6 +78,7 @@ class DIMKTDataset(BasicSequentialKTDataset):
         self.load_dataset()
         self.parse_difficulty()
         self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
 
     def parse_difficulty(self):
@@ -171,7 +172,7 @@ class LPKTDataset(BasicSequentialKTDataset):
     def convert_dataset(self):
         id_keys, seq_keys = get_keys_from_kt_data(self.dataset_original)
         self.dataset_converted = {k: [] for k in (id_keys + seq_keys)}
-        assert "time_seq" in seq_keys, "dataset must have timestamp info"
+        assert "time_seq" in seq_keys, "LPKT dataset must have timestamp info"
         self.dataset_converted["interval_time_seq"] = []
         max_seq_len = len(self.dataset_original[0]["mask_seq"])
         for _, item_data in enumerate(self.dataset_original):
@@ -284,7 +285,8 @@ class GRKTDataset(BasicSequentialKTDataset):
                 self.dataset_converted[k].append(item_data[k])
             for k in seq_keys:
                 if k == "time_seq":
-                    self.dataset_converted[k].append(list(map(lambda x: x // 60, item_data["time_seq"])))
+                    # 以天为单位
+                    self.dataset_converted[k].append(list(map(lambda x: x // (60 * 60 * 24), item_data["time_seq"])))
                 else:
                     self.dataset_converted[k].append(item_data[k])
             if no_time:
@@ -334,6 +336,7 @@ class DTransformerDataset(BasicSequentialKTDataset):
         self.load_dataset()
         self.add_concept_seq()
         self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
         
     def add_concept_seq(self):
@@ -364,6 +367,7 @@ class CKTDataset(BasicSequentialKTDataset):
         self.load_dataset()
         self.get_cqc_seq()
         self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
 
     def get_cqc_seq(self):
@@ -398,6 +402,7 @@ class HDLPKTDataset(LPKTDataset):
         self.load_dataset()
         self.add_concept_seq()
         self.convert_dataset()
+        self.add_float_tensor()
         self.dataset2tensor()
         
     def add_concept_seq(self):
@@ -405,3 +410,19 @@ class HDLPKTDataset(LPKTDataset):
         for user_data in self.dataset_original:
             user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))
             
+
+class SingleConceptKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(SingleConceptKTDataset, self).__init__(dataset_config, objects)
+        
+    def process_dataset(self):
+        self.load_dataset()
+        self.add_concept_seq()
+        self.convert_dataset()
+        self.add_float_tensor()
+        self.dataset2tensor()
+        
+    def add_concept_seq(self):
+        q2c = self.objects["dataset"]["q2c"]
+        for user_data in self.dataset_original:
+            user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))

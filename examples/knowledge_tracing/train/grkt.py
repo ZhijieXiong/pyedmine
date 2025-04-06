@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args(), setup_clip_args()], 
                                      add_help=False)
     # batch size
-    parser.add_argument("--train_batch_size", type=int, default=8)
+    parser.add_argument("--train_batch_size", type=int, default=16)
     parser.add_argument("--evaluate_batch_size", type=int, default=32)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--weight_decay", type=float, default=0.00001)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 梯度累计
-    parser.add_argument("--accumulation_step", type=int, default=16,
+    parser.add_argument("--accumulation_step", type=int, default=8,
                         help="1表示不使用，大于1表示使用accumulation_step的梯度累计")
     # 模型参数
     parser.add_argument("--dim_hidden", type=int, default=128, help="Dimension # of embedding and hidden states")
