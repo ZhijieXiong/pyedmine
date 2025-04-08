@@ -15,6 +15,7 @@ script_result
 /examples/settings.json
 /examples/knowledge_tracing/llm4kt
 /examples/knowledge_tracing/data_analysis
+/examples/knowledge_tracing/model_analysis
 /dataset
 /models
 /save_models

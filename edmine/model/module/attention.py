@@ -4,6 +4,8 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 
+from edmine.model.module.calculation import wasserstein_distance_matmul
+
 
 def attention4simple_kt(q, k, v, dim_head, mask, dropout, zero_pad, device="cpu"):
     # dim_head: 每一个head的dim
@@ -19,6 +21,7 @@ def attention4simple_kt(q, k, v, dim_head, mask, dropout, zero_pad, device="cpu"
     scores = dropout(scores)
     output = torch.matmul(scores, v)
     return output
+
 
 def attention4akt(q, k, v, dim_head, mask, dropout, zero_pad, gamma=None, pdiff=None, device="cpu"):
     # d_k: 每一个头的dim
@@ -70,6 +73,7 @@ def attention4akt(q, k, v, dim_head, mask, dropout, zero_pad, gamma=None, pdiff=
     output = torch.matmul(scores, v)
 
     return output
+
 
 def attention4sparse_kt(q, k, v, dim_head, mask, dropout, zero_pad, k_index, device="cpu"):
     # BS, 8, seq_len, seq_len
@@ -155,7 +159,7 @@ def attention4clkt(q, k, v, d_k, mask, dropout, device, gamma=None, zero_pad=Tru
     return output, attn_scores
 
 
-def attention4DTransformer(q, k, v, mask, gamma=None, max_out=False):
+def attention4d_transformer(q, k, v, mask, gamma=None, max_out=False):
     dim_head = k.size(-1)
     # attention score with scaled dot production
     scores = torch.matmul(q, k.transpose(-2, -1)) / torch.tensor(dim_head).float().sqrt().to(gamma.device)
@@ -199,3 +203,48 @@ def attention4DTransformer(q, k, v, mask, gamma=None, max_out=False):
     # calculate output
     output = torch.matmul(scores, v)
     return output, scores
+
+
+
+def attention4ukt(q_mean, q_cov, k_mean, k_cov, v_mean, v_cov, d_k, mask, dropout, zero_pad, gamma, device):
+    # d_k: 每一个头的dim
+    scores = (-wasserstein_distance_matmul(q_mean, q_cov, k_mean, k_cov))/ \
+        math.sqrt(d_k)  # BS, 8, seqlen, seqlen
+    bs, head, seqlen = scores.size(0), scores.size(1), scores.size(2)
+
+    x1 = torch.arange(seqlen).expand(seqlen, -1).to(device)
+    x2 = x1.transpose(0, 1).contiguous()
+
+    with torch.no_grad():
+        scores_ = scores.masked_fill(mask == 0, -1e32)
+        scores_ = F.softmax(scores_, dim=-1)  # BS,8,seqlen,seqlen
+        scores_ = scores_ * mask.float().to(device) # 结果和上一步一样
+        distcum_scores = torch.cumsum(scores_, dim=-1)  # bs, 8, sl, sl
+        disttotal_scores = torch.sum(
+            scores_, dim=-1, keepdim=True)  # bs, 8, sl, 1 全1
+        # print(f"distotal_scores: {disttotal_scores}")
+        position_effect = torch.abs(
+            x1-x2)[None, None, :, :].type(torch.FloatTensor).to(device)  # 1, 1, seqlen, seqlen 位置差值
+        # bs, 8, sl, sl positive distance
+        dist_scores = torch.clamp(
+            (disttotal_scores-distcum_scores)*position_effect, min=0.) # score <0 时，设置为0
+        dist_scores = dist_scores.sqrt().detach()
+    m = nn.Softplus()
+    gamma = -1. * m(gamma).unsqueeze(0)  # 1,8,1,1 一个头一个gamma参数， 对应论文里的theta
+    # Now after do exp(gamma*distance) and then clamp to 1e-5 to 1e5
+    total_effect = torch.clamp(torch.clamp(
+        (dist_scores*gamma).exp(), min=1e-5), max=1e5) # 对应论文公式1中的新增部分
+
+    scores = scores * total_effect
+    scores.masked_fill_(mask == 0, -1e32)
+    scores = F.softmax(scores, dim=-1)  # BS,8,seqlen,seqlen
+
+    if zero_pad:
+        pad_zero = torch.zeros(bs, head, 1, seqlen).to(device)
+        scores = torch.cat([pad_zero, scores[:, :, 1:, :]], dim=2) # 第一行score置0
+    scores = dropout(scores)
+
+    output_mean = torch.matmul(scores, v_mean)
+    output_cov = torch.matmul(scores ** 2, v_cov)
+
+    return output_mean, output_cov

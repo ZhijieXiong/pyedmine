@@ -31,7 +31,7 @@ class TransformerLayer4SimpleKT(nn.Module):
         self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, mask, query, key, values, apply_pos=True):
-        batch_size, seq_len = query.size(0), query.size(1)
+        seq_len = query.size(1)
         # 上三角和对角为1，其余为0的矩阵
         upper_triangle_ones = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask).astype('uint8')
         # 用于取矩阵下三角
@@ -77,7 +77,7 @@ class TransformerLayer4AKT(nn.Module):
         self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, query, key, value, question_difficulty_emb, apply_pos, mask_flag):
-        seq_len, batch_size = query.size(1), query.size(0)
+        seq_len = query.size(1)
         # 上三角和对角为1，其余为0的矩阵
         upper_triangle_ones = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask_flag).astype('uint8')
         src_mask = (torch.from_numpy(upper_triangle_ones) == 0).to(self.params["device"])
@@ -123,27 +123,8 @@ class TransformerLayer4SparseKT(nn.Module):
         self.layer_norm2 = nn.LayerNorm(dim_model)
         self.dropout2 = nn.Dropout(dropout)
 
-    def forward(
-        self,
-        mask,
-        query,
-        key,
-        values,
-        apply_pos=True,
-    ):
-        """
-        Input:
-            block : object of type BasicBlock(nn.Module). It contains masked_attn_head objects which is of type MultiHeadAttention(nn.Module).
-            mask : 0 means, it can peek only past values. 1 means, block can peek only current and pas values
-            query : Query. In transformer paper it is the input for both encoder and decoder
-            key : Keys. In transformer paper it is the input for both encoder and decoder
-            Values. In transformer paper it is the input for encoder and  encoded output for decoder (in masked attention part)
-
-        Output:
-            query: Input gets changed over the layer and returned.
-
-        """
-        seq_len, batch_size = query.size(1), query.size(0)
+    def forward( self, mask, query, key, values, apply_pos=True):
+        seq_len = query.size(1)
         no_peek_mask = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask).astype("uint8")
         src_mask = (torch.from_numpy(no_peek_mask) == 0).to(self.params["device"])
         if mask == 0:  # If 0, zero-padding is needed.
@@ -190,8 +171,7 @@ class TransformerLayer4CLKT(nn.Module):
 
     def forward(self, mask, query, key, values, apply_pos=True):
         # mask: 0 means that it can peek (留意) only past values. 1 means that block can peek current and past values
-
-        batch_size, seq_len = query.size(0), query.size(1)
+        seq_len = query.size(1)
         # 从输入矩阵中抽取上三角矩阵，k表示从第几条对角线开始
         upper_tri_mask = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask).astype("uint8")
         src_mask = (torch.from_numpy(upper_tri_mask) == 0).to(self.params["device"])
@@ -216,3 +196,64 @@ class TransformerLayer4CLKT(nn.Module):
             query = self.layer_norm2(query)
 
         return query, attn
+
+
+class TransformerLayer4UKT(nn.Module):
+    def __init__(self, params):
+        super().__init__()
+        self.params = params
+        
+        model_config = params["models_config"]["UKT"]
+        dim_model = model_config["dim_model"]
+        dim_ff = model_config["dim_ff"]
+        dropout = model_config["dropout"]
+        
+        self.masked_attn_head = MultiHeadAttention4UKT(params)
+        self.layer_norm1 = nn.LayerNorm(dim_model)
+        self.dropout1 = nn.Dropout(dropout)
+        self.mean_linear1 = nn.Linear(dim_model, dim_ff)
+        self.cov_linear1 = nn.Linear(dim_model, dim_ff)
+        self.activation = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        self.mean_linear2 = nn.Linear(dim_ff, dim_model)
+        self.cov_linear2 = nn.Linear(dim_ff, dim_model)
+        self.layer_norm2 = nn.LayerNorm(dim_model)
+        self.dropout2 = nn.Dropout(dropout)
+        self.activation2 = nn.ELU()
+
+    def forward(self, mask, query_mean, query_cov, key_mean, key_cov, values_mean, values_cov, apply_pos=True):
+        seq_len = query_mean.size(1)
+
+        nopeek_mask = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask).astype('uint8')
+
+        src_mask = (torch.from_numpy(nopeek_mask) == 0).to(self.params["device"])
+
+        if mask == 0:  
+            # If 0, zero-padding is needed.
+            # 只能看到之前的信息，当前的信息也看不到，此时会把第一行score全置0，表示第一道题看不到历史的interaction信息，第一题attn之后，对应value全0
+            query2_mean, query2_cov = self.masked_attn_head(
+                query_mean, query_cov, key_mean, key_cov, values_mean, values_cov, mask=src_mask, zero_pad=True 
+            )
+        else:
+            query2_mean, query2_cov = self.masked_attn_head(
+                query_mean, query_cov, key_mean, key_cov, values_mean, values_cov, mask=src_mask, zero_pad=False
+            )
+
+        query_mean = query_mean + self.dropout1((query2_mean))
+        query_cov = query_cov + self.dropout1((query2_cov))
+
+        query_mean = self.layer_norm1(query_mean)
+        query_cov = self.layer_norm1(self.activation2(query_cov) + 1)
+        # Equation (6)
+        if apply_pos:
+            query2_mean = self.mean_linear2(self.dropout( 
+                self.activation(self.mean_linear1(query_mean))))
+            query2_cov = self.cov_linear2(self.dropout( 
+                self.activation(self.cov_linear1(query_cov))))
+
+            query_mean = query_mean + self.dropout2((query2_mean))
+            query_cov = query_cov + self.dropout2((query2_cov)) 
+            query_mean = self.layer_norm2(query2_mean)
+            query_cov = self.layer_norm2(self.activation2(query2_cov)+1)
+
+        return query_mean, query_cov

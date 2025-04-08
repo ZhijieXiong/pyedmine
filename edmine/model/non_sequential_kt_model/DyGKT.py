@@ -7,12 +7,7 @@ from edmine.model.module.PredictorLayer import PredictorLayer
 
 
 class TimeDecayEncoder(nn.Module):
-    def __init__(self, time_dim: int, parameter_requires_grad: bool = True):
-        """
-        Time encoder.
-        :param time_dim: int, dimension of time encodings
-        :param parameter_requires_grad: boolean, whether the parameter in TimeEncoder needs gradient
-        """
+    def __init__(self, time_dim, parameter_requires_grad=True):
         super(TimeDecayEncoder, self).__init__()
         self.time_dim = time_dim
         self.w = nn.Linear(1, time_dim)
@@ -24,25 +19,14 @@ class TimeDecayEncoder(nn.Module):
             self.w.weight.requires_grad = False
             self.w.bias.requires_grad = False
 
-    def forward(self, timestamps: torch.Tensor):
-        """
-        compute time encodings of time in timestamps
-        :param timestamps: Tensor, shape (batch_size, seq_len)
-        :return:
-        """
+    def forward(self, timestamps):
         timestamps = timestamps.unsqueeze(dim=2)
-        # shape (batch_size, seq_len, time_dim)
         output = torch.exp(-1*self.f(self.w(timestamps)))
         return output
 
 
 class TimeDualDecayEncoder(nn.Module):
-    def __init__(self, time_dim: int, parameter_requires_grad: bool = True):
-        """
-        Time encoder.
-        :param time_dim: int, dimension of time encodings
-        :param parameter_requires_grad: boolean, whether the parameter in TimeEncoder needs gradient
-        """
+    def __init__(self, time_dim, parameter_requires_grad=True):
         super(TimeDualDecayEncoder, self).__init__()
         self.time_dim = time_dim
         self.o_encode = TimeDecayEncoder(time_dim)
@@ -65,12 +49,7 @@ class TimeDualDecayEncoder(nn.Module):
             self.w_long.bias.requires_grad = False
 
 
-    def forward(self, timestamps: torch.Tensor):
-        """
-        compute time encodings of time in timestamps
-        :param timestamps: Tensor, shape (batch_size, seq_len)
-        :return:
-        """
+    def forward(self, timestamps):
         timestamps = timestamps.unsqueeze(dim=2)
         timestamps_right = timestamps.clone()
         timestamps_right = torch.cat([timestamps_right[:,1:,:], timestamps_right[:,-1,:].unsqueeze(1)],dim=1)
@@ -96,7 +75,7 @@ class DyGKT(nn.Module, KnowledgeTracingModel):
         num_concept = model_config["num_concept"]
         dim_time = model_config["dim_time"]
         
-        # node_raw_features:每一个interaction中q所属的知识点（只能在单知识点数据集上跑）
+        # node_raw_features:每一个interaction中q所属的知识点
         self.node_raw_features = torch.from_numpy(node_raw_features.astype(np.float32))
         # edge_raw_features:每一个interaction的标签
         # self.edge_raw_features = torch.from_numpy(edge_raw_features.astype(np.float32))
@@ -177,13 +156,7 @@ class DyGKT(nn.Module, KnowledgeTracingModel):
         return nodes_neighbor_node_raw_features, nodes_edge_raw_features, nodes_neighbor_time_features
     
 class DyKT_Seq(nn.Module):
-    def __init__(self, edge_dim : int,node_dim: int):
-        """
-        GRU-based memory updater.
-        :param memory_bank: MemoryBank
-        :param message_dim: int, dimension of node messages
-        :param memory_dim: int, dimension of node memories
-        """
+    def __init__(self, edge_dim ,node_dim):
         super(DyKT_Seq,self).__init__()
         self.patch_enc_layer = nn.Linear(edge_dim, node_dim)
         self.hid_node_updater = nn.GRU(input_size=edge_dim, hidden_size=node_dim,batch_first=True)# LSTM
@@ -194,29 +167,14 @@ class DyKT_Seq(nn.Module):
 
 
 class MergeLayer(nn.Module):
-    def __init__(self, input_dim1: int, input_dim2: int, hidden_dim: int, output_dim: int):
-        """
-        Merge Layer to merge two inputs via: input_dim1 + input_dim2 -> hidden_dim -> output_dim.
-        :param input_dim1: int, dimension of first input
-        :param input_dim2: int, dimension of the second input
-        :param hidden_dim: int, hidden dimension
-        :param output_dim: int, dimension of the output
-        """
+    def __init__(self, input_dim1, input_dim2, hidden_dim, output_dim):
         super().__init__()
         self.fc1 = nn.Linear(input_dim1 + input_dim2, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, output_dim)
         self.act = nn.ReLU()
 
-    def forward(self, input_1: torch.Tensor, input_2: torch.Tensor):
-        """
-        merge and project the inputs
-        :param input_1: Tensor, shape (*, input_dim1)
-        :param input_2: Tensor, shape (*, input_dim2)
-        :return:
-        """
-        # Tensor, shape (*, input_dim1 + input_dim2)
-        # print(".shape.shape.shape.shape",input_1.shape, input_2.shape)
+    def forward(self, input_1, input_2):
         x = torch.cat([input_1, input_2], dim=1)
-        # Tensor, shape (*, output_dim)
         h = self.fc2(self.act(self.fc1(x)))
         return h
+    

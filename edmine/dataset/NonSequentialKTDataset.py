@@ -1,7 +1,5 @@
 import os
-import numpy as np
 import torch
-from copy import deepcopy
 from torch.utils.data import Dataset
 
 from edmine.utils.data_io import read_kt_file

@@ -426,3 +426,28 @@ class SingleConceptKTDataset(BasicSequentialKTDataset):
         q2c = self.objects["dataset"]["q2c"]
         for user_data in self.dataset_original:
             user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))
+
+
+class UKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects):
+        super(UKTDataset, self).__init__(dataset_config, objects)
+
+    def process_dataset(self):
+        self.load_dataset()
+        self.add_aug_seq()
+        self.convert_dataset()
+        self.add_float_tensor()
+        self.dataset2tensor()
+        
+    def add_aug_seq(self):
+        for user_data in self.dataset_original:
+            seq_len = user_data["seq_len"]
+            correctness_seq = user_data["correctness_seq"]
+            last_correctness = correctness_seq[seq_len - 1]
+            user_data["aug_correctness_seq"] = deepcopy(correctness_seq)
+            for i, correctness in enumerate(correctness_seq[:seq_len-1]):
+                if (last_correctness == 1) and (correctness == 1):
+                    user_data["aug_correctness_seq"][i] = 0
+                if (last_correctness == 0) and (correctness == 0):
+                    user_data["aug_correctness_seq"][i] = 1
+ 

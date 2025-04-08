@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument("--seq_start", type=int, default=2, help="序列中seq_start（自然序列，从1开始）之前的元素不参与评估")
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # 保存测试结果
-    parser.add_argument("--save_log", type=str2bool, default=True)
+    parser.add_argument("--save_log", type=str2bool, default=False)
 
     args = parser.parse_args()
     params = vars(args)

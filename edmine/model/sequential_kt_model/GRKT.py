@@ -189,10 +189,6 @@ class GRKT(nn.Module, DLSequentialKTModel):
         tau = model_config["tau"]
         q_table = self.objects["dataset"]["q_table_tensor"]
         
-        # knows (bs, seq_len, K) int
-        # corrs (bs, seq_len) bool
-        # probs (bs, seq_len) int
-        # times (bs, seq_len) int
         # K 数据集中一道习题对应知识点数目最大值
         corrs = torch.ne(batch["correctness_seq"], 0)
         probs = batch['question_seq']
@@ -441,7 +437,8 @@ class GRKT(nn.Module, DLSequentialKTModel):
                 learn_kernel_para_1 = learn_kernel_para.unsqueeze(0).expand(B, NK, KH)	# [B, NK, KH]
                 forget_kernel_para_1 = forget_kernel_para.unsqueeze(0).expand(B, NK, KH)# [B, NK, KH]
 
-                delta_time = (new_time - time).clamp(0).float()[:, None, None] # [B, 1, 1]
+                # 以天为单位，最大假设为7天
+                delta_time = (new_time - time).clamp(min=0,max=7).float()[:, None, None] # [B, 1, 1]
 
                 learn_exp = (-(learn_count[:, :, None].float() + 1)*delta_time*learn_kernel_para_1).exp()	# [B, NK, KH]
                 forget_exp = (-(learn_count[:, :, None].float() + 1)*delta_time*forget_kernel_para_1).exp()	# [B, NK, KH]

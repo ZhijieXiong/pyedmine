@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parameters_space = {
         "weight_decay": [0.0001, 0.00001, 0.000001, 0],
         "dim_emb": [64, 128, 256],
-        "time_log": [1, 2, 5, 10, 20]
+        "time_log": [2, 5, 10]
     }
     space = {
         param_name: hp.choice(param_name, param_space)

@@ -123,7 +123,7 @@ class Architecture(nn.Module):
         seq_len = model_config["seq_len"]
 
         self.blocks_2 = nn.ModuleList([TransformerLayer4SparseKT(params) for _ in range(num_block)])
-        self.position_emb = CosinePositionalEmbedding(d_model=dim_model, max_len=seq_len)
+        self.position_emb = CosinePositionalEmbedding(dim_model=dim_model, max_seq_len=seq_len)
 
     def forward(
         self,
