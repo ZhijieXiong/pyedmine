@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "edmine"
-version = "0.1.2"
+version = "0.2.0"
 description = "A library of algorithms for reproducing Knowledge Tracing, Cognitive Diagnosis, and Exercise Recommendation models."
 authors = [
     { name = "ZhijieXiong", email = "18800118477@163.com" },

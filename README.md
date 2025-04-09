@@ -12,7 +12,7 @@
 
 PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
 
-目前已实现了30+个知识追踪模型、7个认知诊断模型、3个习题推荐模型
+目前已实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型
 
 我们约定了一个统一、易用的数据文件格式，并已支持 14 个 benchmark dataset
 
@@ -211,10 +211,11 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 |----------|-----------|
 | v0.1.0   | 3/26/2025 |
 | v0.1.1   | 3/31/2025 |
+| v0.2.0   | 4/9/2025 |
 
 - `v0.1.0` 初始发布版本
 - `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
-- 
+- `v0.2.0` beat版本，但是GRKT模型训练会报错（NaN），尚未解决
 ## 参考代码库
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)
