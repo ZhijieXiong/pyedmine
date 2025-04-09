@@ -46,6 +46,7 @@ def config_sequential_dlkt(local_params):
         "question_cold_start": local_params.get("question_cold_start", -1),
         "user_cold_start": local_params.get("user_cold_start", 0),
         "multi_step_accumulate": local_params.get("multi_step_accumulate", False),
+        "multi_step_overall": local_params.get("multi_step_overall", False),
         "multi_step": local_params.get("multi_step", 1),
         "use_core": local_params.get("use_core", False),
         "evaluate_overall": local_params.get("evaluate_overall", True)

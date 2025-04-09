@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from copy import deepcopy
+from torch.utils.data import DataLoader
 
 from edmine.evaluator.DLEvaluator import DLEvaluator
 from edmine.metric.knowledge_tracing import get_kt_metric, core_metric
@@ -20,6 +21,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
+        multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
         all_sample_path = self.params["all_sample_path"]
         save_all_sample = all_sample_path is not None
 
@@ -110,21 +112,26 @@ class SequentialDLKTEvaluator(DLEvaluator):
         
         if multi_step > 1:
             inference_result["multi_step"] = {}
-            if multi_step_accumulate:
-                inference_result["multi_step"]["accumulate"] = self.multi_step_inference(model, data_loader, True)
+            non = "" if multi_step_accumulate else "non-"
+            if multi_step_overall:
+                inference_result["multi_step"][f"overall-{non}accumulate"] = self.multi_step_inference_overall(model, data_loader, multi_step_accumulate)
             else:
-                inference_result["multi_step"]["non-accumulate"] = self.multi_step_inference(model, data_loader, False)
+                inference_result["multi_step"][f"last-{non}accumulate"] = self.multi_step_inference_last(model, data_loader, multi_step_accumulate)
 
         return inference_result
 
-    def multi_step_inference(self, model, data_loader, use_accumulative=True):
+    def multi_step_inference_overall(self, model, data_loader, use_accumulative=True):
         seq_start = self.params["sequential_dlkt"]["seq_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
+        num_batch = len(data_loader)
+        temp_loader = DataLoader(dataset=data_loader.dataset, batch_size=1)
+        seq_len = next(iter(temp_loader))["correctness_seq"].shape[1]
 
         predict_score_all = []
         ground_truth_all = []
-        for batch in tqdm(data_loader, desc=f"multi step inference, {'accumulative' if use_accumulative else 'non-accumulative'}"):
-            seq_len = batch["correctness_seq"].shape[1]
+        progress_bar = tqdm(total=num_batch * (seq_len - multi_step - seq_start + 1), 
+                            desc=f"overall {'accumulative' if use_accumulative else 'non-accumulative'} multi step inference")
+        for batch in data_loader:
             for i in range(seq_start - 1, seq_len - multi_step):
                 if use_accumulative:
                     next_batch = deepcopy(batch)
@@ -146,7 +153,43 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     ground_truth = torch.masked_select(ground_truth_, mask).detach().cpu().numpy()
                     predict_score_all.append(predict_score)
                     ground_truth_all.append(ground_truth)
+                progress_bar.update(1)
+            
+        predict_score_all = np.concatenate(predict_score_all, axis=0)
+        ground_truth_all = np.concatenate(ground_truth_all, axis=0)
+        return get_kt_metric(ground_truth_all, predict_score_all)
+    
+    def multi_step_inference_last(self, model, data_loader, use_accumulative=True):
+        multi_step = self.params["sequential_dlkt"]["multi_step"]
+        temp_loader = DataLoader(dataset=data_loader.dataset, batch_size=1)
+        seq_len = next(iter(temp_loader))["correctness_seq"].shape[1]
 
+        predict_score_all = []
+        ground_truth_all = []
+        for batch in tqdm(temp_loader, desc=f"last {'accumulative' if use_accumulative else 'non-accumulative'} multi step inference"):
+            seq_len = batch["seq_len"][0]
+            i = seq_len - multi_step
+            if use_accumulative:
+                next_batch = deepcopy(batch)
+                for j in range(i, i + multi_step):
+                    next_score = model.get_predict_score_at_target_time(next_batch, j)
+                    mask = torch.ne(batch["mask_seq"][:, j], 0)
+                    predict_score = torch.masked_select(next_score, mask).detach().cpu().numpy()
+                    ground_truth_ = batch["correctness_seq"][:, j]
+                    ground_truth = torch.masked_select(ground_truth_, mask).detach().cpu().numpy()
+                    predict_score_all.append(predict_score)
+                    ground_truth_all.append(ground_truth)
+                    next_batch["correctness_seq"][:, i] = (next_score > 0.5).long()
+            else:
+                target_question = batch["question_seq"][:, i:i + multi_step]
+                mask = torch.ne(batch["mask_seq"][:, i:i + multi_step], 0)
+                predict_score_ = model.get_predict_score_on_target_question(batch, i, target_question)
+                predict_score = torch.masked_select(predict_score_, mask).detach().cpu().numpy()
+                ground_truth_ = batch["correctness_seq"][:, i:i + multi_step]
+                ground_truth = torch.masked_select(ground_truth_, mask).detach().cpu().numpy()
+                predict_score_all.append(predict_score)
+                ground_truth_all.append(ground_truth)
+            
         predict_score_all = np.concatenate(predict_score_all, axis=0)
         ground_truth_all = np.concatenate(ground_truth_all, axis=0)
         return get_kt_metric(ground_truth_all, predict_score_all)
@@ -159,6 +202,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
+        multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
 
         for data_loader_name, inference_result in self.inference_results.items():
             if evaluate_overall:
@@ -197,15 +241,27 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
 
             if multi_step > 1:
-                if multi_step_accumulate:
-                    performance = inference_result['multi_step']["accumulate"]
+                if multi_step_overall and multi_step_accumulate:
+                    performance = inference_result['multi_step']["overall-accumulate"]
                     self.objects["logger"].info(
-                        f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, accumulative) are AUC: "
+                        f"    overall accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
+                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                elif multi_step_overall and (not multi_step_accumulate):
+                    performance = inference_result['multi_step']["overall-non-accumulate"]
+                    self.objects["logger"].info(
+                        f"    overall non-accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
+                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                elif (not multi_step_overall) and (not multi_step_accumulate):
+                    performance = inference_result['multi_step']["last-non-accumulate"]
+                    self.objects["logger"].info(
+                        f"    last non-accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
                         f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
                 else:
-                    performance = inference_result['multi_step']["non-accumulate"]
+                    performance = inference_result['multi_step']["last-accumulate"]
                     self.objects["logger"].info(
-                        f"    multi step performances (seq_start {seq_start}, multi_step is {multi_step}, non-accumulative) are AUC: "
+                        f"    last accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
                         f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")

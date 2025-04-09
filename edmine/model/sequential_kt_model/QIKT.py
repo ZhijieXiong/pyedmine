@@ -205,9 +205,6 @@ class QIKT(nn.Module, DLSequentialKTModel):
             "predict_score": predict_score,
             "predict_score_batch": predict_score_batch
         }
-
-    def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        pass
-
+        
     def get_knowledge_state(self, batch):
         pass

@@ -397,8 +397,5 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         z2 = z2.unsqueeze(0).view(1, bs, seq_len, self.num_know, -1)
         return F.cosine_similarity(z1.mean(-2), z2.mean(-2), dim=-1) / temperature
 
-    def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        pass
-
     def get_knowledge_state(self, batch):
         pass

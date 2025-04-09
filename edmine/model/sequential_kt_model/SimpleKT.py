@@ -86,22 +86,6 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
             "predict_score": predict_score,
             "predict_score_batch": predict_score_batch
         }
-    
-    def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
-        q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        concept_emb = self.embed_layer.get_emb_fused1("concept", q2c_transfer_table, q2c_mask_table, target_question)
-        concept_variation_emb = self.embed_layer.get_emb_fused1("concept_var", q2c_transfer_table, q2c_mask_table, target_question)
-        question_difficulty_emb = self.embed_layer.get_emb("question_diff", target_question)
-        question_emb = concept_emb + question_difficulty_emb * concept_variation_emb
-        latent = self.get_latent(batch)
-        target_latent = latent[:, target_index-1]
-        num_question = target_question.shape[1]
-        batch_size = batch["correctness_seq"].shape[0]
-        target_latent_extend = target_latent.repeat_interleave(num_question, dim=0).view(batch_size, num_question, -1)
-        predict_layer_input = torch.cat((target_latent_extend, question_emb), dim=2)
-        predict_score = self.predict_layer(predict_layer_input).squeeze(dim=-1)
-        return predict_score
 
     def get_knowledge_state(self, batch):
         pass

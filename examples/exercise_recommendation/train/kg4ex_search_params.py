@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
         setting_name = params["setting_name"]
         setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
-        kg4ex_dir = os.path.join(setting_dir, "kg4ex")
+        kg4ex_dir = os.path.join(setting_dir, "KG4EX")
         dataset_head_train = KG4EXDataset(global_params["datasets_config"]["train"]["head"], global_objects)
         dataset_tail_train = KG4EXDataset(global_params["datasets_config"]["train"]["tail"], global_objects)
         dataloader_head_train = DataLoader(dataset_head_train, batch_size=params["train_batch_size"], shuffle=True)

@@ -1,4 +1,5 @@
 import torch
+from copy import deepcopy
 from abc import abstractmethod
 
 from edmine.model.KnowledgeTracingModel import KnowledgeTracingModel
@@ -43,7 +44,6 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         """
         pass
 
-    @abstractmethod
     def get_predict_score_on_target_question(self, batch, target_index, target_question):
         """
         Predicts the probability of a user answering a specific target question correctly at a given time step.
@@ -52,7 +52,16 @@ class DLSequentialKTModel(KnowledgeTracingModel):
         :param target_question: A tensor containing the IDs of the target questions for which predictions are to be made.
         :return:
         """
-        pass
+        # self.get_predict_score(batch)["predict_score_batch"]输出的是从第2（自然数）个时刻开始的预测结果
+        # target_index是从0开始的，所以要-1
+        # 该方法是使用统一接口get_predict_score实现的，效率很低，可以在模型内部重写，就像DKT和qDKT那样
+        batch_size, num_question = target_question.shape
+        predict_score = torch.zeros(batch_size, num_question).to(self.params["device"])
+        batch_ = deepcopy(batch)
+        for i in range(num_question):
+            batch_["question_seq"][:, target_index] = target_question[:, i]
+            predict_score[:, i] = self.get_predict_score(batch_)["predict_score_batch"][:, target_index-1]
+        return predict_score
 
     def get_predict_score_at_target_time(self, batch, target_index):
         """

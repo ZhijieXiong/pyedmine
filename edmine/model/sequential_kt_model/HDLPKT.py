@@ -224,9 +224,6 @@ class HDLPKT(nn.Module, DLSequentialKTModel):
         gumbel_softmax_reconstruct_score = gumbel_softmax_reconstruct_score.masked_fill(mask2 == 0, -np.inf)
 
         return element_wise_reconstruction_loss, gumbel_softmax_reconstruct_score
-    
-    def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        pass
 
     def get_knowledge_state(self, batch):
         pass

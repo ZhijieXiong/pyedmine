@@ -1,7 +1,9 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
+from copy import deepcopy
 
+from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.loss import binary_cross_entropy
 
@@ -10,7 +12,7 @@ def ut_mask(seq_len):
     return torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
 
 
-class ATDKT(nn.Module):
+class ATDKT(nn.Module, DLSequentialKTModel):
     model_name = "ATDKT"
 
     def __init__(self, params, objects):
@@ -127,9 +129,6 @@ class ATDKT(nn.Module):
             "predict_score": KT_predict_score_batch[mask_seq[:, seq_start-1:]],
             "predict_score_batch": KT_predict_score_batch
         }
-
-    def get_predict_score_on_target_question(self, batch, target_index, target_question):
-        pass
-
+        
     def get_knowledge_state(self, batch):
         pass
