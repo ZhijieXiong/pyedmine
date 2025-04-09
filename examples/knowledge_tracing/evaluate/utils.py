@@ -141,6 +141,10 @@ def select_dataset(model_name):
         return CKTDataset
     elif model_name == "HDLPKT":
         return HDLPKTDataset
+    elif model_name == "UKT":
+        return UKTDataset
+    elif model_name in ["ABQR"]:
+        return SingleConceptKTDataset
     else:
         return BasicSequentialKTDataset
     
