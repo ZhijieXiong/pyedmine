@@ -29,7 +29,7 @@ if __name__ == "__main__":
     parser.add_argument("--user_cold_start", type=int, default=0,
                         help="大于等于1则开启冷启动评估，即评估每个用户前k个预测结果")
     # 多步测试（参照PYKT-paper 4.1 Observation 5实现）
-    parser.add_argument("--multi_step", type=int, default=2,
+    parser.add_argument("--multi_step", type=int, default=1,
                         help="大于等于2则开启多步测试")
     parser.add_argument("--multi_step_overall", type=str2bool, default=False,
                         help="True：从seq_start开始，每一步都进行多步预测，False：只在倒数第multi_step步进行multi_step的预测")
