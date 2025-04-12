@@ -167,7 +167,9 @@ class SequentialDLKTEvaluator(DLEvaluator):
         predict_score_all = []
         ground_truth_all = []
         for batch in tqdm(temp_loader, desc=f"last {'accumulative' if use_accumulative else 'non-accumulative'} multi step inference"):
-            seq_len = batch["seq_len"][0]
+            seq_len = int(batch["seq_len"][0])
+            if seq_len <= (multi_step):
+                continue
             i = seq_len - multi_step
             if use_accumulative:
                 next_batch = deepcopy(batch)
