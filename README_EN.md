@@ -144,7 +144,7 @@ This script will generate uniformly formatted dataset files (located at `/path/t
 
 Note: For the `Ednet-kt1` dataset, due to the large number of raw data files, you need to first use the script `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5000. Additionally, because this dataset is too large, the preprocessing defaults to using only randomly selected data from 5000 users
 
-Alternatively, you can directly download the preprocessed [dataset files](https://www.alipan.com/s/WGGnC3uqgq6)
+Alternatively, you can directly download the preprocessed [dataset files](https://drive.google.com/drive/folders/1f5hw6PSKWDanVhVVqU1qS-_RxNYNdl9v?usp=sharing)
 
 ### Dataset Splitting
 You can use our dataset splitting scripts. The split dataset files will be saved under `/path/to/save/data/dataset/settings/[setting_name]`:
@@ -212,7 +212,7 @@ This script uses the *parameters_space* variable defined in the code to set the 
 
 - `v0.1.0` Initial release version
 - `v0.1.1` Fixed some bugs and added 5 knowledge tracking models, namely ATDKT, CLKT, DTransformer, GRKT and HDLPKT
-- `v0.2.0`beat version, but GRKT model training will report an error (NaN), which has not been resolved yet
+- `v0.2.0` beta version, but GRKT model training will report an error (NaN), which has not been resolved yet
 
 ## Reference Code
 

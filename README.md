@@ -147,7 +147,7 @@ python data_preprocess/kt_data.py
 
 注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用随机抽选的5000名用户的数据
 
-或者你可以直接下载已处理好的[数据集文件](https://www.alipan.com/s/WGGnC3uqgq6)
+或者你可以直接下载已处理好的[数据集文件](https://drive.google.com/drive/folders/1f5hw6PSKWDanVhVVqU1qS-_RxNYNdl9v?usp=sharing)
 
 ### 数据集划分
 你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/dataset/settings/[setting_name]`下
