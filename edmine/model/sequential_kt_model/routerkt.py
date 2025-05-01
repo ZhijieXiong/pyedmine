@@ -146,7 +146,7 @@ class RouterKT(nn.Module, DLSequentialKTModel):
         self.encoder_layer = RouterKTArchitecture(params)
         self.predict_layer = PredictorLayer(model_config["predictor_config"])
         self.separate_qa = model_config["separate_qa"]
-
+        
     def base_emb(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
@@ -330,7 +330,7 @@ class RouterTransformerLayer(nn.Module):
         key_query_same = model_config["key_query_same"]
         seq_len = model_config["seq_len"]
         routing_mode = model_config["routing_mode"]
-
+        
         # MoH attention layer
         self.attn = MoHAttention(
             d_model=dim_model,

@@ -41,11 +41,11 @@ if __name__ == "__main__":
     parser.add_argument("--activate_type", type=str, default="relu")
     parser.add_argument("--key_query_same", type=str2bool, default=True)
     parser.add_argument("--separate_qa", type=str2bool, default=False)
-    parser.add_argument("--routing_mode", type=str, default="dynamic", choices=("dynamic", "static"))
+    parser.add_argument("--routing_mode", type=str, default="dynamic", choices=("dynamic", "query_norm"))
     parser.add_argument("--balance_loss_weight", type=float, default=0.001)
     parser.add_argument("--w_rasch_loss", type=float, default=0.00001)
     # other
-    parser.add_argument("--save_model", type=str2bool, default=True)
+    parser.add_argument("--save_model", type=str2bool, default=False)
     parser.add_argument("--use_wandb", type=str2bool, default=False)
 
     args = parser.parse_args()
