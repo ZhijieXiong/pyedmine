@@ -30,7 +30,7 @@ from edmine.model.non_sequential_kt_model.DyGKT import DyGKT
 from edmine.model.sequential_kt_model.GIKT import GIKT
 from edmine.model.sequential_kt_model.HawkesKT import HawkesKT
 from edmine.model.sequential_kt_model.UKT import UKT
-from edmine.model.sequential_kt_model.routerkt import RouterKT
+from edmine.model.sequential_kt_model.RouterKT import RouterKT
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT

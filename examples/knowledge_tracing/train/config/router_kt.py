@@ -28,7 +28,8 @@ def config_routerkt(local_params):
     config_logger(local_params, global_objects)
     config_general_dl_model(local_params, global_params)
     global_params["loss_config"] = {
-        "rasch loss": local_params["w_rasch_loss"]
+        "rasch loss": local_params["w_rasch_loss"],
+        "balance loss": local_params["w_balance_loss"]
     }
     config_epoch_trainer(local_params, global_params, model_name)
     config_sequential_kt_dataset(local_params, global_params)
@@ -72,7 +73,7 @@ def config_routerkt(local_params):
             "key_query_same": local_params["key_query_same"],
             "separate_qa": local_params["separate_qa"],
             "routing_mode": local_params["routing_mode"],
-            "balance_loss_weight": local_params["balance_loss_weight"],
+            "balance_loss_weight": local_params["w_balance_loss"],
             "predictor_config": {
                 "type": "direct",
                 "dropout": local_params["dropout"],

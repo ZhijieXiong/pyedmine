@@ -3,13 +3,13 @@ import argparse
 from torch.utils.data import DataLoader
 
 from set_params import *
-from config.routerkt import config_routerkt
+from examples.knowledge_tracing.train.config.router_kt import config_routerkt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
 from edmine.utils.log import get_now_time
 from edmine.dataset.SequentialKTDataset import BasicSequentialKTDataset
-from edmine.model.sequential_kt_model.routerkt import RouterKT
+from edmine.model.sequential_kt_model.RouterKT import RouterKT
 from edmine.trainer.SequentialDLKTTrainer import SequentialDLKTTrainer
 
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("--key_query_same", type=str2bool, default=True)
     parser.add_argument("--separate_qa", type=str2bool, default=False)
     parser.add_argument("--routing_mode", type=str, default="dynamic", choices=("dynamic", "query_norm"))
-    parser.add_argument("--balance_loss_weight", type=float, default=0.001)
+    parser.add_argument("--w_balance_loss", type=float, default=0.001)
     parser.add_argument("--w_rasch_loss", type=float, default=0.00001)
     # other
     parser.add_argument("--save_model", type=str2bool, default=False)

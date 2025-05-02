@@ -17,7 +17,7 @@ if __name__ == "__main__":
     params = vars(args)
 
     setting = {
-        "name": "edmine_setting",
+        "name": "sfkt_setting",
         "max_seq_len": 200,
         "min_seq_len": 2,
         "test_radio": 0.2,
