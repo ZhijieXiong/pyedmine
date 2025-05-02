@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     setting = {
         "name": "sfkt_setting",
-        "max_seq_len": 200,
+        "max_seq_len": 2000,
         "min_seq_len": 2,
         "test_radio": 0.2,
         "valid_radio": 0.3,
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     file_manager = FileManager(config.FILE_MANAGER_ROOT)
     file_manager.add_new_setting(setting["name"], setting)
     data = read_kt_file(file_manager.get_preprocessed_path(params["dataset_name"]))
-    dataset = truncate2one_seq(data, 2, 2000, True, False)
+    dataset = truncate2one_seq(data, 2, 2000, True, True)
     test_radio = setting["test_radio"]
     valid_radio = setting["valid_radio"]
     dataset_train_valid, dataset_test = kt_select_test_data(dataset, test_radio, False)
