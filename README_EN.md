@@ -194,7 +194,7 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 ```
 In addition to conventional metric evaluation, knowledge tracing and cognitive diagnosis models can also undergo fine-grained evaluations, such as cold-start evaluation and multi-step prediction for knowledge tracing. These evaluations can be enabled by setting the corresponding parameters
 
-You can also download [pre-trained models](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html) to evaluate them on our provided experimental settings
+You can also download [pre-trained models](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing) to evaluate them on our provided experimental settings
 
 ### Automatic Hyperparameter Tuning
 PyEdmine also supports automatic hyperparameter tuning based on Bayesian networks, e.g.:

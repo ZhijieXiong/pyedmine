@@ -197,7 +197,7 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 ```
 其中知识追踪和认知诊断模型除了常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启
 
-你也可以下载已经[训练好的模型](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)在我们提供的实验设置上进行模型评估
+你也可以下载已经[训练好的模型](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing)在我们提供的实验设置上进行模型评估
 
 ### 自动调参
 PyEdmine还支持基于贝叶斯网络的自动调参功能，如
