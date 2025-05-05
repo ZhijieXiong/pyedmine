@@ -3,7 +3,7 @@ import argparse
 from torch.utils.data import DataLoader
 
 from set_params import *
-from examples.knowledge_tracing.train.config.router_kt import config_routerkt
+from config.router_kt import config_routerkt
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
