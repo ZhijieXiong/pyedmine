@@ -156,7 +156,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追�
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://www.alipan.com/s/ZVkqDhtdbpV), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://www.alipan.com/s/YCojzoGtYPu)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
+你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
 
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 

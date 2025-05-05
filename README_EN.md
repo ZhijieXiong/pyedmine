@@ -153,7 +153,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # Knowledge T
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # Cognitive Diagnosis
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # Exercise Recomme
 ```
-You can also directly download the split dataset files ([pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://www.alipan.com/s/ZVkqDhtdbpV), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://www.alipan.com/s/YCojzoGtYPu)) and place them in `/path/to/save/data/dataset/settings`
+You can also directly download the split dataset files ([pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)) and place them in `/path/to/save/data/dataset/settings`
 
 Alternatively, you can refer to our dataset splitting scripts to design your own experimental processing pipeline
 
