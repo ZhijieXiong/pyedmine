@@ -41,7 +41,7 @@ class RouterKT(nn.Module, DLSequentialKTModel):
         return concept_emb, interaction_emb
 
     def get_latent(self, batch):
-        separate_qa = self.separate_qa
+        separate_qa = self.params["models_config"]["RouterKT"]["separate_qa"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
 

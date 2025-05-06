@@ -497,8 +497,8 @@ class MultiHeadAttention4RouterKT(nn.Module):
         
         # Calculate routing scores for dynamic heads
         # Always use question information for routing
-        q4router = q4router.view(batch_size, q4router.size(2), num_head, dim_head)
-        q_for_routing = q4router.permute(0, 2, 1, 3).reshape(batch_size * q4router.size(2), num_head * dim_head)
+        q4router = q4router.view(batch_size, q4router.size(1), num_head, dim_head)
+        q_for_routing = q4router.permute(0, 2, 1, 3).reshape(batch_size * q4router.size(1), num_head * dim_head)
         logits = self.wg(q_for_routing)  # [bs*seq_len, n_dynamic_heads]
         gates = F.softmax(logits, dim=1)  # [bs*seq_len, n_dynamic_heads]
         
@@ -511,8 +511,8 @@ class MultiHeadAttention4RouterKT(nn.Module):
         self.head_selections = dynamic_mask.sum(dim=0)
         
         # Create routing mask
-        dynamic_scores_reshaped = (gates * dynamic_mask).view(batch_size, q4router.size(2), -1)
-        routing_mask = torch.zeros(batch_size, q4router.size(2), num_head).to(q4router.device)
+        dynamic_scores_reshaped = (gates * dynamic_mask).view(batch_size, q4router.size(1), -1)
+        routing_mask = torch.zeros(batch_size, q4router.size(1), num_head).to(q4router.device)
         routing_mask[:, :, :self.n_shared_heads] = 1.0  # Shared heads always active
         routing_mask[:, :, self.n_shared_heads:] = dynamic_scores_reshaped  # Add dynamic head weights
         
