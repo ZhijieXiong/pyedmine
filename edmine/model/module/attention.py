@@ -248,3 +248,29 @@ def attention4ukt(q_mean, q_cov, k_mean, k_cov, v_mean, v_cov, d_k, mask, dropou
     output_cov = torch.matmul(scores ** 2, v_cov)
 
     return output_mean, output_cov
+
+
+def attention4router_kt(q, k, v, dim_head, mask, dropout, zero_pad, routing_mask, device="cpu"):
+    # Calculate attention scores
+    scores = torch.matmul(q, k.transpose(-2, -1)) / torch.tensor(dim_head).float().sqrt().to(device)
+    batch_size, num_head, seq_len = scores.size(0), scores.size(1), scores.size(2)
+    scores.masked_fill_(mask == 0, -1e32)
+    
+    # Apply softmax
+    scores = torch.softmax(scores, dim=-1)
+    
+    # Apply zero padding if needed
+    if zero_pad:
+        pad_zero = torch.zeros(batch_size, num_head, 1, seq_len).to(device)
+        scores = torch.cat([pad_zero, scores[:, :, 1:, :]], dim=2)
+    
+    # Apply dropout
+    scores = dropout(scores)
+    
+    # Apply routing mask
+    scores = scores * routing_mask
+    
+    # Calculate output
+    output = torch.matmul(scores, v)
+    
+    return output
