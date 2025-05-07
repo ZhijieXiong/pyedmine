@@ -166,28 +166,28 @@ class RouterKTArchitecture(nn.Module):
     def forward(self, batch):
         x = batch["question_emb"]
         y = batch["interaction_emb"]
-        # question_difficulty_emb = batch["question_difficulty_emb"]
-        diff = batch["question_difficulty_emb"]
+        question_difficulty_emb = batch["question_difficulty_emb"]
         response = None
 
-        # 始终只使用 Question 信息做路由
         # Knowledge encoder
         for block in self.knowledge_encoder:
-            # Process interaction embeddings
-            y = block(y, y, y, mask_flag=True, diff=diff, response=response, apply_pos=True, q4router=x)
+            # 对0～t-1时刻前的qa信息进行编码, \hat{y_t}
+            y = block(query=y, key=y, values=y, diff=question_difficulty_emb, apply_pos=True, mask_flag=True, q4router=x)
 
-        # Question encoder with alternating self-attention and cross-attention
+
         flag_first = True
         for block in self.question_encoder:
             if flag_first:
-                # Self-attention on question embeddings
-                x = block(x, x, x, mask_flag=True, diff=diff, response=response, apply_pos=False, q4router=x)
+                # peek current question
+                # False: 没有FFN, 第一层只有self attention, \hat{x_t}
+                x = block(query=x, key=x, values=x, diff=question_difficulty_emb, apply_pos=False, mask_flag=True, q4router=x)
                 flag_first = False
             else:
-                # Cross-attention between question and interaction
-                x = block(x, x, y, mask_flag=False, diff=diff, response=response, apply_pos=True, q4router=x)
+                # don't peek current response
+                # True: +FFN+残差+layer norm 非第一层与0~t-1的的q的attention, 对应图中Knowledge Retriever
+                # mask=0，不能看到当前的response, 在Knowledge Retriever的value全为0，因此，实现了第一题只有question信息，无qa信息的目的
+                x = block(query=x, key=x, values=y, diff=question_difficulty_emb, apply_pos=True, mask_flag=False, q4router=x)
                 flag_first = True
 
+
         return x
-
-

@@ -284,11 +284,10 @@ class TransformerLayer4RouterKT(nn.Module):
         self.layer_norm2 = nn.LayerNorm(dim_model)
         self.dropout2 = nn.Dropout(dropout)
 
-    def forward(self, query, key, values, mask_flag, diff=None, response=None, apply_pos=True, q4router=None):
+    def forward(self, query, key, values, diff, apply_pos, mask_flag, q4router):
         seq_len = query.size(1)
         upper_triangle_ones = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask_flag).astype('uint8')
         src_mask = (torch.from_numpy(upper_triangle_ones) == 0).to(self.params["device"])
-        # Apply MoH attention
         if not mask_flag:
             attn_output = self.attn(query, key, values, src_mask, True, diff, q4router)
         else:
