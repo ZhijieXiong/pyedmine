@@ -257,3 +257,50 @@ class TransformerLayer4UKT(nn.Module):
             query_cov = self.layer_norm2(self.activation2(query2_cov)+1)
 
         return query_mean, query_cov
+
+class TransformerLayer4RouterKT(nn.Module):
+    def __init__(self, params):
+        super(TransformerLayer4RouterKT, self).__init__()
+        self.params = params
+
+        model_config = self.params["models_config"]["RouterKT"]
+        dim_model = model_config["dim_model"]
+        dim_ff = model_config["dim_ff"]
+        dropout = model_config["dropout"]
+        
+        # MoH attention layer - keep unchanged
+        self.attn = MultiHeadAttention4RouterKT(params)
+
+        # Two layer norm layer and two dropout layer
+        self.layer_norm1 = nn.LayerNorm(dim_model)
+        self.dropout1 = nn.Dropout(dropout)
+
+        # Feed-forward network components
+        self.linear1 = nn.Linear(dim_model, dim_ff)
+        self.activation = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_ff, dim_model)
+
+        self.layer_norm2 = nn.LayerNorm(dim_model)
+        self.dropout2 = nn.Dropout(dropout)
+
+    def forward(self, query, key, values, diff, apply_pos, mask_flag, q4router):
+        seq_len = query.size(1)
+        upper_triangle_ones = np.triu(np.ones((1, 1, seq_len, seq_len)), k=mask_flag).astype('uint8')
+        src_mask = (torch.from_numpy(upper_triangle_ones) == 0).to(self.params["device"])
+        if not mask_flag:
+            attn_output = self.attn(query, key, values, src_mask, True, diff, q4router)
+        else:
+            attn_output = self.attn(query, key, values, src_mask, False, diff, q4router)
+
+        # First residual connection and layer norm
+        query = query + self.dropout1(attn_output)
+        query = self.layer_norm1(query)
+
+        # Apply feed-forward network if needed
+        if apply_pos:
+            query2 = self.linear2(self.dropout(self.activation(self.linear1(query))))
+            query = query + self.dropout2(query2)
+            query = self.layer_norm2(query)
+
+        return query

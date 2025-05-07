@@ -416,3 +416,113 @@ class MultiHeadAttention4UKT(nn.Module):
         output_cov  = self.out_cov_proj(concat_cov)
 
         return output_mean, output_cov
+
+class MultiHeadAttention4RouterKT(nn.Module):
+    def __init__(self, params):
+        super().__init__()
+        self.params = params
+        
+        model_config = self.params["models_config"]["RouterKT"]
+        dim_model = model_config["dim_model"]
+        num_head = model_config["num_head"]
+        num_shared_heads = model_config["num_shared_heads"]
+        num_selected_heads = model_config["num_selected_heads"]
+        dropout = model_config["dropout"]
+        key_query_same = model_config["key_query_same"]
+        
+        self.dim_model = dim_model
+        self.num_head = num_head
+        self.n_shared_heads = num_shared_heads
+        self.n_selected_heads = num_selected_heads
+        self.key_query_same = key_query_same
+        
+        # Linear layers for Q, K, V
+        self.value_linear = nn.Linear(dim_model, dim_model)
+        self.key_linear = nn.Linear(dim_model, dim_model)
+        if not key_query_same:
+            self.query_linear = nn.Linear(dim_model, dim_model)
+            
+        # Router for dynamic heads
+        self.wg = nn.Linear(dim_model, num_head - num_shared_heads, bias=False)
+        
+        self.dropout = nn.Dropout(dropout)
+        self.out_proj = nn.Linear(dim_model, dim_model)
+        
+        # Track routing statistics for load balancing
+        self.register_buffer('head_selections', torch.zeros(num_head - num_shared_heads))
+        self.register_buffer('head_routing_probs', torch.zeros(num_head - num_shared_heads))
+        
+        self._reset_parameters()
+        
+    def _reset_parameters(self):
+        nn.init.xavier_uniform_(self.key_linear.weight)
+        nn.init.xavier_uniform_(self.value_linear.weight)
+        if not self.key_query_same:
+            nn.init.xavier_uniform_(self.query_linear.weight)
+            
+        nn.init.constant_(self.key_linear.bias, 0.)
+        nn.init.constant_(self.value_linear.bias, 0.)
+        if not self.key_query_same:
+            nn.init.constant_(self.query_linear.bias, 0.)
+        nn.init.constant_(self.out_proj.bias, 0.)
+        
+    def get_balance_loss(self):
+        # Calculate load balance loss for dynamic heads
+        f = self.head_selections / (self.head_selections.sum() + 1e-5)
+        P = self.head_routing_probs / (self.head_routing_probs.sum() + 1e-5)
+        balance_loss = (f * P).sum()
+        return balance_loss
+
+        
+    def forward(self, q, k, v, mask, zero_pad, question_difficulty_emb, q4router=None):
+        model_config = self.params["models_config"]["RouterKT"]
+        dim_model = model_config["dim_model"]
+        num_head = model_config["num_head"]
+        dim_head = dim_model // num_head
+        
+        batch_size = q.size(0)
+        
+        # Linear projections
+        k = self.key_linear(k).view(batch_size, -1, num_head, dim_head)
+        if self.key_query_same:
+            q = self.key_linear(q).view(batch_size, -1, num_head, dim_head)
+        else:
+            q = self.query_linear(q).view(batch_size, -1, num_head, dim_head)
+        v = self.value_linear(v).view(batch_size, -1, num_head, dim_head)
+        
+        # Transpose for attention computation
+        k = k.transpose(1, 2)
+        q = q.transpose(1, 2)
+        v = v.transpose(1, 2)
+        
+        # Calculate routing scores for dynamic heads
+        # Always use question information for routing
+        q4router = q4router.view(batch_size, q4router.size(1), num_head, dim_head)
+        q_for_routing = q4router.permute(0, 2, 1, 3).reshape(batch_size * q4router.size(1), num_head * dim_head)
+        logits = self.wg(q_for_routing)  # [bs*seq_len, n_dynamic_heads]
+        gates = F.softmax(logits, dim=1)  # [bs*seq_len, n_dynamic_heads]
+        
+        # Select top-k heads
+        _, indices = torch.topk(gates, k=self.n_selected_heads, dim=1)
+        dynamic_mask = torch.zeros_like(gates).scatter_(1, indices, 1.0)
+        
+        # Update routing statistics
+        self.head_routing_probs = gates.mean(dim=0)
+        self.head_selections = dynamic_mask.sum(dim=0)
+        
+        # Create routing mask
+        dynamic_scores_reshaped = (gates * dynamic_mask).view(batch_size, q4router.size(1), -1)
+        routing_mask = torch.zeros(batch_size, q4router.size(1), num_head).to(q4router.device)
+        routing_mask[:, :, :self.n_shared_heads] = 1.0  # Shared heads always active
+        routing_mask[:, :, self.n_shared_heads:] = dynamic_scores_reshaped  # Add dynamic head weights
+        
+        # Reshape routing mask to match attention dimensions
+        routing_mask = routing_mask.mean(dim=1).unsqueeze(-1).unsqueeze(-1)
+        
+        # Calculate attention using the attention function
+        scores = attention4router_kt(q, k, v, dim_head, mask, self.dropout, zero_pad, routing_mask, device=self.params["device"])
+        
+        # Combine heads
+        concat = scores.transpose(1, 2).contiguous().view(batch_size, -1, dim_model)
+        
+        return self.out_proj(concat)
