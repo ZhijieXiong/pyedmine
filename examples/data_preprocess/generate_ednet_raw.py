@@ -17,8 +17,8 @@ FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_src_dir", type=str, default="/Users/dream/Desktop/data/EdNet/EdNet-KT1/KT1")
-    parser.add_argument("--contents_dir", type=str, default="/Users/dream/Desktop/data/EdNet/EdNet-Contents/contents")
+    parser.add_argument("--dataset_src_dir", type=str, default="/Users/dream/Desktop/data/EdNet/KT1")
+    parser.add_argument("--contents_dir", type=str, default="/Users/dream/Desktop/data/EdNet/contents")
     args = parser.parse_args()
     params = vars(args)
 
@@ -37,21 +37,32 @@ if __name__ == "__main__":
     count = 0
     users5000_count = 0
     files = []
+    # 先排序
+    user_ids_ordered = []
     for uid in user_ids:
         str_unum = str(uid)
         df_path = os.path.join(data_dir, f"./u{uid}.csv")
         if os.path.exists(df_path):
             df = pd.read_csv(df_path)
-            df['user_id'] = uid
-            files.append(df)
-            count = count + 1
-            if (count % 5000) != 0:
-                continue
-            df_save = pd.concat(files, axis=0, ignore_index=True)
-            df_save = pd.merge(df_save, question_content, how="left", on="question_id")
-            df_save = df_save.dropna(subset=["user_id", "question_id", "elapsed_time", "timestamp", "tags", "user_answer"])
-            df_save['correct'] = (df_save['correct_answer'] == df_save['user_answer']).apply(int)
-            df_save = df_save[["timestamp", "question_id", "elapsed_time", "user_id", "tags", "correct"]]
-            df_save.to_csv(os.path.join(save_path, f"./users_{users5000_count}.csv"), index=False)
-            files = []
-            users5000_count += 1
+            seq_len = len(df)
+            user_ids_ordered.append((uid, seq_len))
+    user_ids_ordered.sort(key=lambda x: x[1], reverse=True)
+    user_ids = list(map(lambda x: x[0], user_ids_ordered))
+            
+    for uid in user_ids:
+        str_unum = str(uid)
+        df_path = os.path.join(data_dir, f"./u{uid}.csv")
+        df = pd.read_csv(df_path)
+        df['user_id'] = uid
+        files.append(df)
+        count = count + 1
+        if (count % 5000) != 0:
+            continue
+        df_save = pd.concat(files, axis=0, ignore_index=True)
+        df_save = pd.merge(df_save, question_content, how="left", on="question_id")
+        df_save = df_save.dropna(subset=["user_id", "question_id", "elapsed_time", "timestamp", "tags", "user_answer"])
+        df_save['correct'] = (df_save['correct_answer'] == df_save['user_answer']).apply(int)
+        df_save = df_save[["timestamp", "question_id", "elapsed_time", "user_id", "tags", "correct"]]
+        df_save.to_csv(os.path.join(save_path, f"./users_{users5000_count}.csv"), index=False)
+        files = []
+        users5000_count += 1

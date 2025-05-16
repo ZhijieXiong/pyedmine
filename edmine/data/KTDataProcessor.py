@@ -846,8 +846,8 @@ class KTDataProcessor:
 
     def process_ednet_kt1(self):
         data_dir = self.params["data_path"]
-        # data_dir下每个文件存放了5000名学生（随机但每个文件下学生不重复）的记录，num_file指定要读取几个文件
-        # 这里随机选5000名学生
+        # data_dir下每个文件存放了5000名学生的记录，num_file指定要读取几个文件
+        # 这里选序列长度最长的5000名学生
         self.data_raw = load_ednet_kt1(data_dir, num_file=1)
         dataset_name = "ednet-kt1"
         rename_cols = CONSTANT.datasets_renamed()[dataset_name]
