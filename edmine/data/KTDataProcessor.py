@@ -855,7 +855,7 @@ class KTDataProcessor:
 
         df = deepcopy(self.data_raw)
         df["use_time"] = df["use_time"].map(lambda t: max(1, int(t) // 1000))
-        df["timestamp"] = df["timestamp"].map(lambda t: t // 1000)
+        df["timestamp"] = df["timestamp"].map(int)
         self.process_raw_is_single_concept(df)
 
     def process_slepemapy_anatomy(self):

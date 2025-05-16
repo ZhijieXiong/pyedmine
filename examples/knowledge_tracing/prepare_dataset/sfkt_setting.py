@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import numpy as np
 
 import config
 
@@ -8,6 +9,7 @@ from edmine.data.FileManager import FileManager
 from edmine.dataset.split_seq import truncate2one_seq
 from edmine.dataset.split_dataset import kt_select_test_data
 from edmine.utils.data_io import write_kt_file, read_kt_file
+from edmine.utils.parse import get_kt_data_statics
 
 
 if __name__ == "__main__":
@@ -27,6 +29,18 @@ if __name__ == "__main__":
     file_manager = FileManager(config.FILE_MANAGER_ROOT)
     file_manager.add_new_setting(setting["name"], setting)
     data = read_kt_file(file_manager.get_preprocessed_path(params["dataset_name"]))
+    if params["dataset_name"] in ["junyi2015", "edi2020-task1"]:
+        # 只取长度最长的5000条序列
+        seq_lens = list(map(lambda x: x["seq_len"], data))
+        max_indices = np.argpartition(np.array(seq_lens), -5000)[-5000:]
+        data_ = []
+        for i in max_indices:
+            data_.append(data[i])
+        data = data_
+    q_table = file_manager.get_q_table(params["dataset_name"])
+    data_statics = get_kt_data_statics(data, q_table)
+    print(f"data statics: {data_statics}")
+    
     dataset = truncate2one_seq(data, 2, 2000, True, True)
     test_radio = setting["test_radio"]
     valid_radio = setting["valid_radio"]

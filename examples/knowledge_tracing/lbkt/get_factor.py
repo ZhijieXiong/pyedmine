@@ -68,6 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--statics_file_name", type=str, default="assist2009_train_fold_0_lbkt_statics.json")
     parser.add_argument("--target_file_name", type=str, default="assist2009_train_fold_0.txt")
+    parser.add_argument("--save_file_name", type=str, default="")
     args = parser.parse_args()
     params = vars(args)
     
@@ -75,7 +76,10 @@ if __name__ == "__main__":
     setting_dir = file_manager.get_setting_dir(params["setting_name"])
     lbkt_dir = os.path.join(setting_dir, "LBKT")
     target_file_name = params["target_file_name"]
-    save_path = os.path.join(lbkt_dir, target_file_name)
+    if params["save_file_name"] == "":
+        save_path = os.path.join(lbkt_dir, target_file_name)
+    else:
+        save_path = os.path.join(lbkt_dir, params["save_file_name"])
     if not os.path.exists(save_path):
         statics_path = os.path.join(lbkt_dir, params["statics_file_name"])
         statics = read_json(statics_path)
