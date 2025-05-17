@@ -40,8 +40,10 @@ git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-### 依赖注意事项
-`requirements.txt` 中的 dgl、hyperopt 和 wandb 都不是必需依赖。dgl 是部分认知诊断模型所需的；hyperopt 用于自动化参数调优；wandb 用于记录实验数据。
+### 主要依赖
+必须依赖：pandas、numpy、sklearn、torch
+
+非必需依赖：dgl 是部分认知诊断模型所需的；hyperopt 用于自动化参数调优；wandb 用于记录实验数据；tqdm 用于模型评估阶段。
 
 ## 快速开始
 请从 GitHub 下载 PyEdmine 的源代码，然后使用 `examples` 目录中提供的脚本完成数据预处理、数据集划分、模型训练与模型评估。PyEdmine 框架的基本流程如下，请按顺序执行：

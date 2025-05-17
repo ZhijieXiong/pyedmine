@@ -37,8 +37,10 @@ git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-### Dependency Notes
-The dependencies `dgl`, `hyperopt`, and `wandb` listed in `requirements.txt` are not mandatory. `dgl` is required only for certain cognitive diagnosis models; `hyperopt` is needed for automated hyperparameter tuning; and `wandb` is used for logging experimental data.
+### Main Dependencies
+Required dependencies: `pandas`, `numpy`, `sklearn`, `torch`
+
+Optional dependencies: `dgl` is required by some cognitive diagnosis models; `hyperopt` is used for automated parameter tuning; `wandb` is used for recording experimental data; `tqdm` is used during the model evaluation phase.
 
 ## Quick Start
 Please download the source code of PyEdmine from GitHub, and then use the scripts provided in the `examples` directory to perform data preprocessing, dataset splitting, model training, and model evaluation. The basic workflow of the PyEdmine framework is as follows—please follow the steps in order:
