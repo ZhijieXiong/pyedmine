@@ -34,16 +34,33 @@ PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖
 pip install edmine
 ```
 
-### 从源文件安装
+### 从源文件安装（推荐）
 ```bash
 git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-## 快速开始
-如果你从GitHub下载了PyEdmine的源码，你可以使用`examples`里提供的脚本进行数据预处理、数据集划分、模型训练和模型评估：
+### 依赖注意事项
+`requirements.txt` 中的 dgl、hyperopt 和 wandb 都不是必需依赖。dgl 是部分认知诊断模型所需的；hyperopt 用于自动化参数调优；wandb 用于记录实验数据。
 
-### 配置数据和模型的存放目录
+## 快速开始
+请从 GitHub 下载 PyEdmine 的源代码，然后使用 `examples` 目录中提供的脚本完成数据预处理、数据集划分、模型训练与模型评估。PyEdmine 框架的基本流程如下，请按顺序执行：
+
+1、目录配置：生成必要的目录，并通过 `settings.json` 文件配置数据与模型的存放路径；
+
+2、数据预处理：下载原始数据集并放置到指定位置，然后使用 `examples` 中提供的脚本进行数据预处理，以获得统一格式的数据文件。数据集信息可在 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html) 查看；
+
+3、数据集划分：基于统一格式的数据文件并结合特定实验设置进行数据集划分。PyEdmine 提供了四种实验设置：两种知识追踪任务的设置（分别借鉴 [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) 与 [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988)）、一种认知诊断任务的设置（借鉴 [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)）、以及一种习题推荐任务的设置；
+
+4、模型训练：`examples` 中提供了每个模型的训练启动脚本，更多信息可参考 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)；
+
+5、模型评估：`examples` 中也提供了每个模型的评估脚本，并根据不同任务实现了不同维度与粒度的评估指标，包括冷启动评估、无偏评估等；
+
+6、其它特性：（1）PyEdmine 针对部分模型实现了基于贝叶斯优化的自动参数调整方法；（2）PyEdmine 可通过参数设置启用 wandb 功能。
+
+每一步的具体操作说明，请参阅下文。
+
+### 目录配置
 在`examples`目录下创建`settings.json`文件，在该文件中配置数据目录和模型目录，格式如下
 ```json
 {
@@ -160,7 +177,7 @@ python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # �
 
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
-### 训练模型
+### 模型训练
 对于无需生成包含额外信息的模型，直接运行训练代码即可，如
 ```bash
 python examples/knowledge_tracing/train/dkt.py  # 使用默认参数训练DKT模型
@@ -190,7 +207,7 @@ valid performances in best epoch by valid are main metric: 0.72902  , AUC: 0.729
 ```
 如果训练模型时*use_wandb*参数为True，则可以在[wandb](https://wandb.ai/)上查看模型的损失变化和指标变化
 
-### 评估模型
+### 模型评估
 如果训练模型时*save_model*参数，则会将模型参数文件保存至`/path/to/save/model`目录下，那么可以使用测试集对模型进行评估，如
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
@@ -199,7 +216,7 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 
 你也可以下载已经[训练好的模型](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing)在我们提供的实验设置上进行模型评估
 
-### 自动调参
+### 模型自动调参
 PyEdmine还支持基于贝叶斯网络的自动调参功能，如
 ```bash
 python examples/cognitive_diagnosis/train/ncd_search_params.py
@@ -231,7 +248,7 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 
 我们欢迎关于修复错误、添加新特性的任何贡献
 
-如果想贡献代码，请先在issue中提出问题，然后再提PR
+如果您希望贡献代码，且所提交的代码没有冲突，可以直接创建 Pull Request；否则，请先在 issue 中描述问题，再提交 Pull Request。
 
 ## 免责声明
 PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的

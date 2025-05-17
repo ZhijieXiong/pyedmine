@@ -31,16 +31,33 @@ Additionally, we designed a unified experimental setup where knowledge tracing m
 pip install edmine
 ```
 
-### Install from source
+### Installation from source (Recommended)
 ```bash
 git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-## Quick Start
-If you have downloaded the PyEdmine source code from GitHub, you can use the scripts provided in the `examples` directory for data preprocessing, dataset splitting, model training, and model evaluation:
+### Dependency Notes
+The dependencies `dgl`, `hyperopt`, and `wandb` listed in `requirements.txt` are not mandatory. `dgl` is required only for certain cognitive diagnosis models; `hyperopt` is needed for automated hyperparameter tuning; and `wandb` is used for logging experimental data.
 
-### Configure Data and Model Directories
+## Quick Start
+Please download the source code of PyEdmine from GitHub, and then use the scripts provided in the `examples` directory to perform data preprocessing, dataset splitting, model training, and model evaluation. The basic workflow of the PyEdmine framework is as follows—please follow the steps in order:
+
+1. Directory Configuration: Create the required directories and configure the data and model storage paths using the settings.json file;
+
+2. Data Preprocessing: Download the raw dataset and place it in the specified location, then run the scripts in the `examples` directory to preprocess the data and obtain a standardized data file. Dataset details can be found [here](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html);
+
+3. Dataset Splitting: Split the standardized data file according to specific experimental settings. PyEdmine provides four experiment settings: two knowledge tracing tasks (following the setups from [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) and [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988) respectively), one cognitive diagnosis task (following [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)), and one exercise recommendation task;
+
+4. Model Training: Training scripts for each model are provided in the `examples` directory. For more details, please refer to this [documentation](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html);
+
+5. Model Evaluation: Evaluation scripts for each model are also provided in the `examples` directory. PyEdmine implements evaluation metrics from multiple perspectives and at different levels of granularity, including cold-start evaluation and unbiased evaluation;
+
+6. Other Features: (1)PyEdmine supports automatic hyperparameter optimization for some models using Bayesian optimization; (2) PyEdmine allows enabling wandb integration through parameter configuration.
+
+For detailed instructions on each step, please refer to the following sections.
+
+### Directory Configuration
 Create a `settings.json` file in the `examples` directory to configure the data and model directories, as shown below:
 ```json
 {
@@ -228,7 +245,7 @@ If you encounter any errors or have suggestions, please provide feedback via [Is
 
 We welcome any contributions for bug fixes or adding new features
 
-If you would like to contribute code, please first raise the issue and then submit a PR
+If you would like to contribute code and there are no conflicts, you may directly submit a pull request. Otherwise, please first open an issue to describe the problem before submitting a pull request.
 
 ## Disclaimer
 PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project can only be used for academic purposes
