@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 
 from set_params import *
 from config.hdlpkt import config_hdlpkt
+from utils import auto_clip_seq
 
 from edmine.utils.parse import str2bool
 from edmine.utils.use_torch import set_seed
@@ -37,6 +38,8 @@ if __name__ == "__main__":
     # 其它
     parser.add_argument("--save_model", type=str2bool, default=False)
     parser.add_argument("--use_wandb", type=str2bool, default=False)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     args = parser.parse_args()
     params = vars(args)
@@ -44,10 +47,14 @@ if __name__ == "__main__":
     global_params, global_objects = config_hdlpkt(params)
 
     global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
+    if params["auto_clip_seq"]:
+        collate_fn = auto_clip_seq
+    else:
+        collate_fn = None
     dataset_train = HDLPKTDataset(global_params["datasets_config"]["train"], global_objects)
-    dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
+    dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True, collate_fn=collate_fn)
     dataset_valid = HDLPKTDataset(global_params["datasets_config"]["valid"], global_objects)
-    dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
+    dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False, collate_fn=collate_fn)
 
     global_objects["data_loaders"] = {
         "train_loader": dataloader_train,

@@ -36,6 +36,8 @@ if __name__ == "__main__":
     parser.add_argument("--w_q_next_loss", type=float, default=1)
     parser.add_argument("--w_c_all_loss", type=float, default=2)
     parser.add_argument("--w_c_next_loss", type=float, default=2)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     # 设置参数空间
     parameters_space = {

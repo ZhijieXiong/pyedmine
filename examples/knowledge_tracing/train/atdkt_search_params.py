@@ -27,6 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("--IK_start", type=int, default=30)
     parser.add_argument("--w_QT_loss", type=float, default=1)
     parser.add_argument("--w_IK_loss", type=float, default=1)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     # 设置参数空间
     parameters_space = {

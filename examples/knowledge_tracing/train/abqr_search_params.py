@@ -26,6 +26,8 @@ if __name__ == "__main__":
     # 模型参数
     parser.add_argument("--dim_emb", type=int, default=128)
     parser.add_argument("--dropout", type=float, default=0.3)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     # 设置参数空间
     parameters_space = {

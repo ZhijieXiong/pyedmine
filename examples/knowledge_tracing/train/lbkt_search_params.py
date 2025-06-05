@@ -40,6 +40,8 @@ if __name__ == "__main__":
     parser.add_argument("--k", type=float, default=0.3)
     parser.add_argument("--b", type=float, default=0.7)
     parser.add_argument("--q_gamma", type=float, default=0.01)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     # 设置参数空间
     parameters_space = {

@@ -55,8 +55,12 @@ def get_objective_func(parser, config_func, model_name, model_class):
         else:
             dataset_train = BasicSequentialKTDataset(global_params["datasets_config"]["train"], global_objects)
             dataset_valid = BasicSequentialKTDataset(global_params["datasets_config"]["valid"], global_objects)
-        dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
-        dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
+        if params["auto_clip_seq"]:
+            collate_fn = auto_clip_seq
+        else:
+            collate_fn = None
+        dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True, collate_fn=collate_fn)
+        dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False, collate_fn=collate_fn)
 
         global_objects["data_loaders"] = {
             "train_loader": dataloader_train,
@@ -75,3 +79,11 @@ def get_objective_func(parser, config_func, model_name, model_class):
                     ", ".join(list(map(lambda s: f"{s}: {parameters[s]}", parameters.keys()))))
         return -performance_this
     return objective
+
+
+def auto_clip_seq(batch):
+    max_seq_len = batch["seq_len"].max().item() + 1
+    for k, v in batch.items():
+        if len(v.shape) >= 2:
+            batch[k] = v[:, :max_seq_len]
+    return batch

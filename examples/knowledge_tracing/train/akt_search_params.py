@@ -36,6 +36,8 @@ if __name__ == "__main__":
     parser.add_argument("--key_query_same", type=str2bool, default=True)
     parser.add_argument("--separate_qa", type=str2bool, default=False)
     parser.add_argument("--w_rasch_loss", type=float, default=0.00001)
+    # 是否自动裁剪batch序列
+    parser.add_argument("--auto_clip_seq", type=str2bool, default=False)
 
     # 设置参数空间
     parameters_space = {
