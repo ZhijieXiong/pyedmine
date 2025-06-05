@@ -82,8 +82,14 @@ def get_objective_func(parser, config_func, model_name, model_class):
 
 
 def auto_clip_seq(batch):
-    max_seq_len = batch["seq_len"].max().item() + 1
-    for k, v in batch.items():
-        if len(v.shape) >= 2:
-            batch[k] = v[:, :max_seq_len]
-    return batch
+    seq_len = list(map(lambda x: x["seq_len"], batch))
+    max_seq_len = max(seq_len).item() + 1
+    for item in batch:
+        for k, v in item.items():
+            if len(v.shape) >= 1:
+                item[k] = v[:max_seq_len]
+    result = {}
+    for key in batch[0]:
+        values = [item[key] for item in batch]
+        result[key] = torch.stack(values)
+    return result
