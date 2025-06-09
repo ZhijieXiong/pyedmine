@@ -164,7 +164,7 @@ python data_preprocess/kt_data.py
 ```
 该脚本会生成数据集经过统一格式处理后的文件（位于`/path/to/save/data/dataset/dataset_preprocessed`）
 
-注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用随机抽选的5000名用户的数据
+注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用交互序列最长5000名用户的数据
 
 或者你可以直接下载已处理好的[数据集文件](https://drive.google.com/drive/folders/1f5hw6PSKWDanVhVVqU1qS-_RxNYNdl9v?usp=sharing)
 
@@ -175,7 +175,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追�
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 ```
-你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
+你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ),[sfkt_setting](https://www.alipan.com/s/NfUiLwfoAsK), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
 
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
@@ -214,7 +214,28 @@ valid performances in best epoch by valid are main metric: 0.72902  , AUC: 0.729
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
-其中知识追踪和认知诊断模型除了常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启
+其中知识追踪和认知诊断模型除了常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启。
+
+以下是不同指标的含义，
+
+#### 知识追踪
+- overall 从序列的第2个交互开始预测
+- core 论文[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)提出的指标
+- user wram start, seqStart25 从序列的第25个交互开始预测
+- user cold start, seqEnd5 只预测序列的前5个交互
+- question cold start, queNum5 只预测训练集中出现次数小于等于5的习题
+- multi step 论文[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)中提到的两种多步预测
+- first trans 只预测每个学生交互序列中第一次接触到的知识点
+#### 认知诊断
+- overall 预测全部测试集
+- user cold start, userNum5 只预测训练集中出现次数小于等于5的学生
+- question cold start, questionNum5 只预测训练集中出现次数小于等于5的习题
+#### 习题推荐
+- KG4EX_ACC 论文[KG4Ex: An Explainable Knowledge Graph-Based Approach for Exercise Recommendation](https://dl.acm.org/doi/10.1145/3583780.3614943)中提出的指标，本榜单公布的结果基于DKT计算
+- KG4EX_NOV 同KG4EX_ACC
+- OFFLINE_ACC 将学生未来练习的习题作为标签，计算准确率
+- OFFLINE_NDCG 将学生未来练习的习题作为标签，计算NDCG
+- PERSONALIZATION_INDEX 计算给不同学生推荐习题的差异度，作为个性化的指标
 
 你也可以下载已经[训练好的模型](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing)在我们提供的实验设置上进行模型评估
 

@@ -161,7 +161,7 @@ python data_preprocess/kt_data.py
 ```
 This script will generate uniformly formatted dataset files (located at `/path/to/save/data/dataset/dataset_preprocessed`)
 
-Note: For the `Ednet-kt1` dataset, due to the large number of raw data files, you need to first use the script `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5000. Additionally, because this dataset is too large, the preprocessing defaults to using only randomly selected data from 5000 users
+Note: For the `Ednet-kt1` dataset, due to the large number of raw data files, you need to first use the script `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5000. Additionally, because this dataset is too large, the preprocessing defaults to using data from the 5000 longest users
 
 Alternatively, you can directly download the preprocessed [dataset files](https://drive.google.com/drive/folders/1f5hw6PSKWDanVhVVqU1qS-_RxNYNdl9v?usp=sharing)
 
@@ -172,7 +172,7 @@ python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # Knowledge T
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # Cognitive Diagnosis
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # Exercise Recomme
 ```
-You can also directly download the split dataset files ([pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)) and place them in `/path/to/save/data/dataset/settings`
+You can also directly download the split dataset files ([pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ),[sfkt_setting](https://www.alipan.com/s/NfUiLwfoAsK), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)) and place them in `/path/to/save/data/dataset/settings`
 
 Alternatively, you can refer to our dataset splitting scripts to design your own experimental processing pipeline
 
@@ -212,6 +212,31 @@ If the *save_model* parameter is set during model training, the model parameter 
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
 In addition to conventional metric evaluation, knowledge tracing and cognitive diagnosis models can also undergo fine-grained evaluations, such as cold-start evaluation and multi-step prediction for knowledge tracing. These evaluations can be enabled by setting the corresponding parameters
+
+Here describes the meaning of various evaluation metrics:
+
+#### Knowledge Tracing
+
+- overall: Prediction begins from the second interaction in each sequence.
+- core: A metric proposed in the paper *[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)*.
+- user warm start, seqStart25: Prediction starts from the 25th interaction in each sequence.
+- user cold start, seqEnd5: Only the first five interactions in each sequence are used for prediction.
+- question cold start, queNum5: Only questions that appear five times or fewer in the training set are used for prediction.
+- multi step: Two multi-step prediction tasks as described in the paper *[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)*.
+- first trans: Only predict a student's first interaction with each knowledge concept in their sequence.
+
+#### Cognitive Diagnosis
+- overall: Predict across the entire test set.
+- user cold start, userNum5: Only predict for students who appear five times or fewer in the training set.
+- question cold start, questionNum5: Only predict for questions that appear five times or fewer in the training set.
+
+#### Exercise Recommendation
+- KG4EX\_ACC: A metric proposed in the paper *[KG4Ex: An Explainable Knowledge Graph-Based Approach for Exercise Recommendation](https://dl.acm.org/doi/10.1145/3583780.3614943)*. The reported results are computed using the DKT model.
+- KG4EX\_NOV: Same as KG4EX\_ACC.
+- OFFLINE\_ACC: Accuracy is computed by comparing predicted exercises with those a student actually practiced in the future.
+- OFFLINE\_NDCG: NDCG is computed based on the student's actual future exercises as ground truth.
+- PERSONALIZATION\_INDEX: Measures the diversity of recommended exercises across different students as an indicator of personalization.
+
 
 You can also download [pre-trained models](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing) to evaluate them on our provided experimental settings
 

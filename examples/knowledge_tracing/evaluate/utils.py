@@ -114,7 +114,7 @@ def config_abqr(local_params, global_params, global_objects, setting_name):
     dataset_name = local_params["dataset_name"]
     graph_path = os.path.join(abqr_dir, f"abqr_graph_{dataset_name}.pt")
     global_objects["ABQR"] = {
-        "gcn_adj": torch.load(graph_path).to(global_params["device"])
+        "gcn_adj": torch.load(graph_path, weights_only=True).to(global_params["device"])
     }
     
     
