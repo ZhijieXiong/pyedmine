@@ -5,6 +5,7 @@ from set_params import *
 from config.qdkt import config_qdkt
 from utils import get_objective_func
 
+from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.qDKT import qDKT
 
 

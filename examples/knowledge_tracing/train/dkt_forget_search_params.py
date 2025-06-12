@@ -5,6 +5,7 @@ from set_params import *
 from config.dkt_forget import config_dkt_forget
 from utils import get_objective_func
 
+from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.DKTForget import DKTForget
 
 

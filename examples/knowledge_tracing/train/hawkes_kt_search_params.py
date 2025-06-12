@@ -5,6 +5,7 @@ from set_params import *
 from config.hawkes_kt import config_hawkes_kt
 from utils import get_objective_func
 
+from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.HawkesKT import HawkesKT
 
 

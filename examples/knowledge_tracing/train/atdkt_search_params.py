@@ -5,6 +5,7 @@ from set_params import *
 from config.atdkt import config_atdkt
 from utils import get_objective_func
 
+from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.ATDKT import ATDKT
 
 

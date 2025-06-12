@@ -45,7 +45,7 @@ Optional dependencies: `dgl` is required by some cognitive diagnosis models; `hy
 ## Quick Start
 Please download the source code of PyEdmine from GitHub, and then use the scripts provided in the `examples` directory to perform data preprocessing, dataset splitting, model training, and model evaluation. The basic workflow of the PyEdmine framework is as follows—please follow the steps in order:
 
-1. Directory Configuration: Create the required directories and configure the data and model storage paths using the settings.json file;
+1. Directory Configuration: Configure the storage paths for data and models via the `settings.json` file, then run `set_up.py` to create the necessary directories;
 
 2. Data Preprocessing: Download the raw dataset and place it in the specified location, then run the scripts in the `examples` directory to preprocess the data and obtain a standardized data file. Dataset details can be found [here](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html);
 

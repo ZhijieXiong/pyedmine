@@ -5,6 +5,7 @@ from set_params import *
 from config.dkvmn import config_dkvmn
 from utils import get_objective_func
 
+from edmine.utils.parse import str2bool
 from edmine.model.sequential_kt_model.DKVMN import DKVMN
 
 

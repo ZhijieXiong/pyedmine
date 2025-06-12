@@ -48,7 +48,7 @@ pip install -e .
 ## 快速开始
 请从 GitHub 下载 PyEdmine 的源代码，然后使用 `examples` 目录中提供的脚本完成数据预处理、数据集划分、模型训练与模型评估。PyEdmine 框架的基本流程如下，请按顺序执行：
 
-1、目录配置：生成必要的目录，并通过 `settings.json` 文件配置数据与模型的存放路径；
+1、目录配置：通过 `settings.json` 文件配置数据与模型的存放路径，然后运行`set_up.py`以生成必要的目录；
 
 2、数据预处理：下载原始数据集并放置到指定位置，然后使用 `examples` 中提供的脚本进行数据预处理，以获得统一格式的数据文件。数据集信息可在 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html) 查看；
 
