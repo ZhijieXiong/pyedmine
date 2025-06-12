@@ -16,6 +16,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
     def inference(self, model, data_loader):
         evaluate_overall = self.params["sequential_dlkt"]["evaluate_overall"]
         seq_start = self.params["sequential_dlkt"]["seq_start"]
+        que_start = self.params["sequential_dlkt"]["que_start"]
         use_core = self.params["sequential_dlkt"]["use_core"]
         question_cold_start = self.params["sequential_dlkt"]["question_cold_start"]
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
@@ -109,6 +110,17 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     predict_score_cold_start_q.append(ps)
                     ground_truth_cold_start_q.append(gt)
             inference_result["question_cold_start"] = get_kt_metric(ground_truth_cold_start_q, predict_score_cold_start_q)
+            
+        if que_start > 0:
+            predict_score_warm_start_q = []
+            ground_truth_warm_start_q = []
+            warm_start_question = self.objects["warm_start_question"]
+            print("calculating question warm start metric ...")
+            for q_id, ps, gt in zip(question_id, predict_score, ground_truth):
+                if q_id in warm_start_question:
+                    predict_score_warm_start_q.append(ps)
+                    ground_truth_warm_start_q.append(gt)
+            inference_result["question_warm_start"] = get_kt_metric(ground_truth_warm_start_q, predict_score_warm_start_q)
         
         if multi_step > 1:
             inference_result["multi_step"] = {}
@@ -199,6 +211,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
     def log_inference_results(self):
         evaluate_overall = self.params["sequential_dlkt"]["evaluate_overall"]
         seq_start = self.params["sequential_dlkt"]["seq_start"]
+        que_start = self.params["sequential_dlkt"]["que_start"]
         use_core = self.params["sequential_dlkt"]["use_core"]
         question_cold_start = self.params["sequential_dlkt"]["question_cold_start"]
         user_cold_start = self.params["sequential_dlkt"]["user_cold_start"]
@@ -214,6 +227,13 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     f"    overall performances (seq_start {seq_start}) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
                     f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+            
+                if que_start > 0:
+                    performance = inference_result["question_warm_start"]
+                    self.objects["logger"].info(
+                        f"    overall performances (seq_start {seq_start}, que_start {que_start}) are AUC: "
+                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
 
             if use_core:
                 performance = inference_result["core"]["repeated"]

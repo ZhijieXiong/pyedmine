@@ -12,13 +12,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 加载模型参数配置（如果不修改trainer中save代码，那么只需要修改model_dir_name参数）
     parser.add_argument("--model_dir_name", type=str, help="",
-                        default="DKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-06@02-12-29")
+                        default="qDKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-06@09-25-42")
     parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # 测试配置（通常只需要修改dataset_name和test_file_name参数）
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--test_file_name", type=str, help="文件名", default="assist2009_test.txt")
     parser.add_argument("--seq_start", type=int, default=2, help="序列中seq_start（自然序列，从1开始）之前的元素不参与评估")
+    parser.add_argument("--que_start", type=int, default=0, help="训练集中出现次数小于que_startd的习题不参与评估")
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # ===============================不同场景指标设置===============================
     # 常规测试

@@ -221,7 +221,8 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 #### 知识追踪
 - overall 从序列的第2个交互开始预测
 - core 论文[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)提出的指标
-- user wram start, seqStart25 从序列的第25个交互开始预测
+- user warm start, seqStart25 从序列的第25个交互开始预测
+- double warm start, seqStart5QueNum5 从序列的第5个交互开始预测，并且只预测训练中出现次数大于等于5的习题
 - user cold start, seqEnd5 只预测序列的前5个交互
 - question cold start, queNum5 只预测训练集中出现次数小于等于5的习题
 - multi step 论文[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)中提到的两种多步预测

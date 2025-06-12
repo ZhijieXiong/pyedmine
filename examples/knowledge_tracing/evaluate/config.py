@@ -43,6 +43,7 @@ def config_sequential_dlkt(local_params):
     check_kt_seq_start(local_params.get("seq_start", 2))
     global_params["sequential_dlkt"] = {
         "seq_start": local_params.get("seq_start", 2),
+        "que_start": local_params.get("que_start", 0),
         "question_cold_start": local_params.get("question_cold_start", -1),
         "user_cold_start": local_params.get("user_cold_start", 0),
         "multi_step_accumulate": local_params.get("multi_step_accumulate", False),
@@ -55,6 +56,7 @@ def config_sequential_dlkt(local_params):
     
     model_name, setting_name, train_file_name = get_model_info(local_params["model_dir_name"])
     setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
+    
     cold_start_dir = os.path.join(setting_dir, "data4cold_start")
     if not os.path.exists(cold_start_dir):
         os.mkdir(cold_start_dir)
@@ -75,9 +77,33 @@ def config_sequential_dlkt(local_params):
             global_objects["num_q_in_train"] = num_q_in_train
             global_objects["cold_start_question"] = []
             for question_id, num_question in num_q_in_train.items():
-                if num_question <= local_params["question_cold_start"]:
+                if num_question <= question_cold_start:
                     global_objects["cold_start_question"].append(question_id)
             write_json(global_objects["cold_start_question"], cold_start_question_path)
+            
+    warm_start_dir = os.path.join(setting_dir, "data4warm_start")
+    if not os.path.exists(warm_start_dir):
+        os.mkdir(warm_start_dir)
+    que_start = global_params["sequential_dlkt"]["que_start"]
+    if que_start > 0:
+        warm_start_question_path = os.path.join(warm_start_dir, f"warm_start_question_{que_start}.json")
+        if os.path.exists(warm_start_question_path):
+            global_objects["warm_start_question"] = read_json(warm_start_question_path)
+        else:
+            train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
+            train_data = read_kt_file(train_file_path)
+            num_q_in_train = defaultdict(int)
+            for item_data in train_data:
+                seq_len = item_data["seq_len"]
+                question_seq = item_data["question_seq"][:seq_len]
+                for question_id in question_seq:
+                    num_q_in_train[question_id] += 1
+            global_objects["num_q_in_train"] = num_q_in_train
+            global_objects["warm_start_question"] = []
+            for question_id, num_question in num_q_in_train.items():
+                if num_question >= que_start:
+                    global_objects["warm_start_question"].append(question_id)
+            write_json(global_objects["warm_start_question"], warm_start_question_path)
     
     # ABQR的config必须放在load_dl_model前面，因为初始化模型是需要gcn_adj
     if model_name == "ABQR":

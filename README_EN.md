@@ -220,6 +220,7 @@ Here describes the meaning of various evaluation metrics:
 - overall: Prediction begins from the second interaction in each sequence.
 - core: A metric proposed in the paper *[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)*.
 - user warm start, seqStart25: Prediction starts from the 25th interaction in each sequence.
+- double warm start, seqStart5QueNum5: Start making predictions from the 5th interaction in each sequence, and only include exercises that appear at least 5 times in the training data.
 - user cold start, seqEnd5: Only the first five interactions in each sequence are used for prediction.
 - question cold start, queNum5: Only questions that appear five times or fewer in the training set are used for prediction.
 - multi step: Two multi-step prediction tasks as described in the paper *[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)*.
