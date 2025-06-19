@@ -271,9 +271,13 @@ This script uses the *parameters_space* variable defined in the code to set the 
 ## Contribution
 If you encounter any errors or have suggestions, please provide feedback via [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe)
 
-We welcome any contributions for bug fixes or adding new features
+We welcome all kinds of contributions, including bug fixes, new features, and pre-trained model weights.
 
-If you would like to contribute code and there are no conflicts, you may directly submit a pull request. Otherwise, please first open an issue to describe the problem before submitting a pull request.
+If you'd like to contribute code and there are no merge conflicts, feel free to open a Pull Request directly. If there may be conflicts or the change is substantial, please first describe the issue via a GitHub issue before submitting a Pull Request.
+
+To share pre-trained model weights, please email 18800118477@163.com with the model files and training script attached, or provide an accessible link to them.
+
+If the model you’re contributing is not yet implemented in PyEdmine, please submit the model implementation via a Pull Request first, and then contact us by email.
 
 ## Disclaimer
 PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project can only be used for academic purposes

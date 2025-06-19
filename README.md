@@ -270,9 +270,13 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 
 如果您遇到错误或有任何建议，请通过 [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe) 进行反馈
 
-我们欢迎关于修复错误、添加新特性的任何贡献
+我们欢迎任何形式的贡献，包括修复 bug、添加新特性、或提供已训练的模型权重。
 
-如果您希望贡献代码，且所提交的代码没有冲突，可以直接创建 Pull Request；否则，请先在 issue 中描述问题，再提交 Pull Request。
+如果您希望贡献代码，且没有合并冲突，可以直接提交 Pull Request；若存在潜在冲突或重大更改，请先通过 issue 描述问题，再提交 Pull Request。
+
+如果您希望提供已训练模型的权重，请发送邮件至 18800118477@163.com，并附上模型权重和训练脚本，或包含这些内容的可访问链接。
+
+若您提供的是 PyEdmine 尚未实现的模型，请先通过 Pull Request 贡献模型实现代码，再通过邮件联系。
 
 ## 免责声明
 PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的
