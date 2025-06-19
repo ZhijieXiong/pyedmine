@@ -16,6 +16,8 @@ script_result
 /examples/knowledge_tracing/llm4kt
 /examples/knowledge_tracing/data_analysis
 /examples/knowledge_tracing/model_analysis
+/examples/knowledge_tracing/train/dygkt.py
+/examples/knowledge_tracing/train/config/dygkt.py
 /dataset
 /models
 /save_models

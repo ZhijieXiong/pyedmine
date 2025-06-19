@@ -72,7 +72,28 @@ def config_clkt_dataset(local_params, global_params):
             "device": global_params["device"]
         },
     }
-
+    
+    
+def config_dygkt_dataset(local_params, global_params):
+    setting_name = local_params["setting_name"]
+    train_file_name = local_params["train_file_name"]
+    valid_file_name = local_params["valid_file_name"]
+    global_params["datasets_config"] = {
+        "train": {
+            "setting_name": setting_name,
+            "file_names": [train_file_name],
+            "num_question": local_params["num_question"],
+            "num_neighbor": local_params["num_neighbor"],
+            "device": global_params["device"],
+        },
+        "valid": {
+            "setting_name": setting_name,
+            "file_names": [train_file_name, valid_file_name],
+            "num_question": local_params["num_question"],
+            "num_neighbor": local_params["num_neighbor"],
+            "device": global_params["device"],
+        },
+    }
 
 
 def config_kg4ex_dataset(local_params, global_params):
