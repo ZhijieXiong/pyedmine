@@ -257,6 +257,20 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 - `v0.1.0` 初始发布版本
 - `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
 - `v0.2.0` beat版本，但是GRKT模型训练会报错（NaN），尚未解决
+
+## 数据集扩展
+[edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。
+
+文本提取流程相对简化，主要包括：
+
+使用 OCR 工具识别图像中的文字；
+
+对于 OCR 无法有效识别的题目，使用多模态大模型生成文本描述；
+
+结合人工进行了简单核对与修正。
+
+尽管整体文本信息具有较高准确性，但仍可能存在个别提取错误。这是一个**非官方的扩展版本**，欢迎社区参考与使用，但建议在具体研究中结合自身需求进行验证与清洗。
+
 ## 参考代码库
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)

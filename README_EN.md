@@ -259,6 +259,20 @@ This script uses the *parameters_space* variable defined in the code to set the 
 - `v0.1.1` Fixed some bugs and added 5 knowledge tracking models, namely ATDKT, CLKT, DTransformer, GRKT and HDLPKT
 - `v0.2.0` beta version, but GRKT model training will report an error (NaN), which has not been resolved yet
 
+## Dataset Extension
+
+[edi2020-task-34-question.json](./edi2020-task34-question.json) is an unofficial extension of the **EDi2020 Task 3&4** dataset, which originally provides only images of math problems without accompanying text. To support research in knowledge tracing and text-based modeling, I extracted textual information from the problem images and organized the data in a format inspired by the [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) in Mathematics competition for ease of use.
+
+The text extraction process was relatively lightweight and included the following steps:
+
+Applying OCR to extract text from the images;
+
+For images where OCR failed or was insufficient, using a multimodal large model to generate textual descriptions;
+
+Performing light manual review to correct obvious errors.
+
+While the extracted text is generally accurate, some minor errors may remain. This is an **informal, community-supported extension**, and users are encouraged to verify and preprocess the data as needed for their specific research purposes.
+
 ## Reference Code
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)
