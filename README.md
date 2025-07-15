@@ -256,7 +256,7 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 
 - `v0.1.0` 初始发布版本
 - `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
-- `v0.2.0` beat版本，但是GRKT模型训练会报错（NaN），尚未解决
+- `v0.2.0` beta版本，但是GRKT模型训练会报错（NaN），尚未解决
 
 ## 数据集扩展
 [edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。
@@ -271,6 +271,10 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 
 尽管整体文本信息具有较高准确性，但仍可能存在个别提取错误。这是一个**非官方的扩展版本**，欢迎社区参考与使用，但建议在具体研究中结合自身需求进行验证与清洗。
 
+## 开发中
+
+### 学习路径规划任务
+
 ## 参考代码库
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)
@@ -284,7 +288,9 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 
 如果您遇到错误或有任何建议，请通过 [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe) 进行反馈
 
-我们欢迎任何形式的贡献，包括修复 bug、添加新特性、或提供已训练的模型权重。
+我们欢迎任何形式的贡献，包括推荐论文将其添加到[论文列表](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)中、修复 bug、添加新特性、或提供已训练的模型权重。
+
+如果您希望推荐论文，请在[Discussion](https://github.com/ZhijieXiong/pyedmine/discussions/7)中进行推荐。
 
 如果您希望贡献代码，且没有合并冲突，可以直接提交 Pull Request；若存在潜在冲突或重大更改，请先通过 issue 描述问题，再提交 Pull Request。
 

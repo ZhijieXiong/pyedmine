@@ -285,7 +285,9 @@ While the extracted text is generally accurate, some minor errors may remain. Th
 ## Contribution
 If you encounter any errors or have suggestions, please provide feedback via [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe)
 
-We welcome all kinds of contributions, including bug fixes, new features, and pre-trained model weights.
+We welcome all forms of contribution, including recommending papers to be added to our [paper collection](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html), fixing bugs, adding new features, or providing pretrained model weights.
+
+If you would like to recommend a paper, please do so in the [Discussion](https://github.com/ZhijieXiong/pyedmine/discussions/7).
 
 If you'd like to contribute code and there are no merge conflicts, feel free to open a Pull Request directly. If there may be conflicts or the change is substantial, please first describe the issue via a GitHub issue before submitting a Pull Request.
 
