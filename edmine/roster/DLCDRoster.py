@@ -19,4 +19,5 @@ class DLCDRoster:
         model = self.objects["models"][model_name]
         model.eval()
         batch = self.process_batch4cd_model(batch)
-        return model.get_knowledge_state(batch)
+        with torch.no_grad():
+            return model.get_knowledge_state(batch)

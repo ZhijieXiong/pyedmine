@@ -32,5 +32,5 @@ class DLKTRoster:
             batch = self.process_batch4sequential_kt_model(batch)
         else:
             pass
-
-        return model.get_knowledge_state(batch)
+        with torch.no_grad():
+            return model.get_knowledge_state(batch)

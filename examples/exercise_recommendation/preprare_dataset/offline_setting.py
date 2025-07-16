@@ -10,6 +10,9 @@ from edmine.utils.data_io import read_kt_file, write_kt_file, write_cd_file
 
 if __name__ == "__main__":
     # 选择知识追踪实验的测试集作为习题推荐的数据集，其中每个用户的前70%数据作为训练集，后30%数据作为测试集
+    # 实际上不应该用KTTest作为ERTrain，但是如果使用KTTrain作为ERTrain，一方面基于KT模型的推荐算法会存在过拟合风险，另一方面ERTrain数据量会太大
+    # 所以这里选择不那么规范的实验流程，就用KTTest的数据来做ER的全部数据
+    # 为了减少工作量，基于pykt_setting划分数据集
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     args = parser.parse_args()
