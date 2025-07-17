@@ -61,4 +61,4 @@ class DLEREvaluator(DLEvaluator):
                 performance_str = ""
                 for metric_name, metric_value in top_n_performance.items():
                     performance_str += f"{metric_name}: {metric_value:<9.5}, "
-                print(f"    top {top_n} performances are {performance_str}")
+                self.objects["logger"].info(f"    top {top_n} performances are {performance_str}")
