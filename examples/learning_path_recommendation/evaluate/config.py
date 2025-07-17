@@ -9,6 +9,7 @@ from edmine.agent.learning_path_recommendation.RandomSingleGoalAgent import Rand
 from edmine.utils.log import get_now_time
 from edmine.config.basic import config_logger
 from edmine.config.env import config_lpr_env
+from edmine.utils.data_io import read_edges
 
 
 current_file_name = inspect.getfile(inspect.currentframe())
@@ -70,3 +71,16 @@ def config_random_agent(local_params, global_params, global_objects):
             "max_attempt_per_concept": int(max_attempt_per_concept)
         }
     }
+    
+    if concept_rec_strategy.startswith("AStar-"):
+        file_manager = global_objects["file_manager"]
+        dataset_name = local_params["dataset_name"]
+        preprocessed_dir = file_manager.get_preprocessed_dir(dataset_name)
+        pre_relation_path = os.path.join(preprocessed_dir, "pre_relation.txt")
+        if not os.path.exists(pre_relation_path):
+            setting_dir = file_manager.get_setting_dir(local_params["setting_name"])
+            dlpr_dir = os.path.join(setting_dir, "DLPR")
+            pre_relation_path = os.path.join(dlpr_dir, f"{dataset_name}_pre_relation.txt")
+        global_objects["graph"] = {
+            "pre_relation_edges": read_edges(pre_relation_path, map_int=True)
+        }

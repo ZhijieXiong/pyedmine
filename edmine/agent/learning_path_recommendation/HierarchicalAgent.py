@@ -57,38 +57,7 @@ class HierarchicalAgent:
             "question_rec_history": deepcopy(self.question_rec_history)
         }
         
-    # def render(self, detail=False):
-    #     learning_goal = self.learning_goals[0]
-    #     state = self.state_history[0]
-    #     self.objects["logger"].info(f"learning goal: c{learning_goal:<4}, initial knowledge state of c{learning_goal}: {str(float(state[learning_goal]))[:4]}", end="")
-    #     master_th = self.params["evaluate_config"]["master_threshold"]
-    #     if float(state[learning_goal]) >= master_th:
-    #         self.objects["logger"].info("\n")
-    #     correctness_seq = self.history_data["correctness_seq"][self.initial_seq_len:]
-    #     i = 0
-    #     for rec_c, rec_qs in zip(self.concept_rec_history, self.question_rec_history):
-    #         state = self.state_history[i]
-    #         rec_c_state = float(state[rec_c])
-    #         self.objects["logger"].info(f"\n    learning c{rec_c} ({str(rec_c_state)[:4]}) : ", end="")
-    #         for q in rec_qs:
-    #             correctness = correctness_seq[i]
-    #             if detail:
-    #                 correctness_str = "correctly" if correctness else "incorrectly"
-    #             else:
-    #                 correctness_str = "r" if correctness else "w"
-    #             i += 1
-    #             state = self.state_history[i]
-    #             rec_c_state = float(state[rec_c])
-    #             if detail:
-    #                 self.objects["logger"].info(f"practice q{q} {correctness_str} --> knowledge state of c{rec_c} changes to {str(rec_c_state)[:4]} --> ", end="")
-    #             else:
-    #                 self.objects["logger"].info(f"q{q} ({correctness_str}) --> c{rec_c} ({str(rec_c_state)[:4]}) --> ", end="")
-    #         self.objects["logger"].info("end", end="")
-    #     if i > 0:
-    #         state = self.state_history[-1]
-    #         self.objects["logger"].info(f"\n    final knowledge state of c{learning_goal}: {str(float(state[learning_goal]))[:4]}\n")
-    
-    def render(self, detail=False):
+    def render(self):
         learning_goal = self.learning_goals[0]
         state = self.state_history[0]
         master_th = self.params["evaluate_config"]["master_threshold"]
@@ -139,7 +108,6 @@ class HierarchicalAgent:
             state = self.state_history[-1]
             final_ks = str(float(state[learning_goal]))[:4]
             self.objects["logger"].info(f"    final knowledge state of c{learning_goal}: {final_ks}\n")
-
     
     def achieve_goals(self):
         state = self.state_history[-1]

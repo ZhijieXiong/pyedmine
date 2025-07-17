@@ -99,16 +99,31 @@ class LPREvaluator:
 
     def log_inference_results(self):
         samples = list(filter(lambda x: len(x["state_history"]) > 1, self.all_learning_history))            
-        intial_scores = []
-        final_scores = []
-        path_lens = []
+        steps = [5, 10, 20, 50]
+        steps.sort()
+        data2evaluate = {
+            step: {
+                "intial_scores": [],
+                "final_scores": [],
+                "path_lens": [],
+            }
+            for step in steps
+        }
         for sample in samples:
             learning_goal = sample["learning_goals"][0]
-            intial_score = float(sample["state_history"][0][learning_goal])
-            final_score = float(sample["state_history"][-1][learning_goal])
-            path_len = len(sample["state_history"]) - 1
-
-            intial_scores.append(intial_score)
-            final_scores.append(final_score)
-            path_lens.append(path_len)
-        self.objects["logger"].info(promotion_report(intial_scores, final_scores, path_lens))  
+            states = list(map(lambda x: float(x[learning_goal]), sample["state_history"]))
+            for step in steps:
+                data2evaluate[step]["path_lens"].append(min(step, len(states)-1))
+                data2evaluate[step]["intial_scores"].append(states[0])
+                data2evaluate[step]["final_scores"].append(states[min(step, len(states)-1)])
+                if step > len(states):
+                    break
+        for step in steps:
+            intial_scores = data2evaluate[step]["intial_scores"]
+            final_scores = data2evaluate[step]["final_scores"]
+            path_lens = data2evaluate[step]["path_lens"]
+            step_performance = promotion_report(intial_scores, final_scores, path_lens)
+            performance_str = ""
+            for metric_name, metric_value in step_performance.items():
+                performance_str += f"{metric_name}: {metric_value:<9.5}, "
+            self.objects["logger"].info(f"step {step} performances are {performance_str}")

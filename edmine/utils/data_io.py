@@ -272,3 +272,24 @@ def read_cd_file(data_path):
             data.append(interaction_data)
 
     return data
+
+
+def write_edges(edges, save_path):
+    with open(save_path, "w") as f:
+        for from_id, to_id in edges:
+            f.write(f"{from_id},{to_id}\n")
+
+
+def read_edges(save_path, map_int=False):
+    edges = []
+    with open(save_path, "r") as f:
+        lines = f.readlines()
+        lines = list(map(lambda x: x.strip(), lines))
+        lines = list(filter(lambda x: len(x) > 0, lines))
+        for line in lines:
+            from_id, to_id = line.split(",")
+            if map_int:
+                edges.append((int(from_id.strip()), int(to_id.strip())))
+            else:
+                edges.append((from_id.strip(), to_id.strip()))
+    return edges

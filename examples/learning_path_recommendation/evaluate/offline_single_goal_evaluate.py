@@ -24,8 +24,10 @@ if __name__ == "__main__":
     # kt模型的batch大小
     parser.add_argument("--batch_size", type=int, default=64)
     # 智能体配置
-    parser.add_argument("--agent_dir_name", type=str, help="RandomAgent@@random-5@@10，random-5是rec concept的策略，10表示每个知识点最多推荐10道习题",
-                        default=r"RandomAgent@@random-5@@10")
+    parser.add_argument("--agent_dir_name", type=str, 
+                        help="RandomAgent@@random-5@@10，random-5是rec concept的策略，10表示每个知识点最多推荐10道习题"
+                        "RandomAgent@@AStar-5@@10，AStar-5是rec concept的策略，表示使用A*算法搜索最短学习路径，最多学习5个知识点，10表示每个知识点最多推荐10道习题",
+                        default=r"RandomAgent@@AStar-5@@10")
     # 随机种子
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--save_log", type=str2bool, default=False)
