@@ -111,7 +111,7 @@ def config_sequential_dlkt(local_params):
         
     model_dir = os.path.join(MODEL_DIR, local_params["model_dir_name"])
     model = load_dl_model(global_params, global_objects,
-                          model_dir, local_params["model_name"], local_params["model_name_in_ckt"])
+                          model_dir, local_params["model_file_name"], local_params["model_name_in_ckt"])
     
     if model_name == "DIMKT":
         config_dimkt(local_params, global_params, global_objects, setting_name, train_file_name)

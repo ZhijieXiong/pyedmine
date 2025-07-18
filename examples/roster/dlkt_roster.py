@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_dir_name", type=str,
                         default=r"DKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-01@21-47-09")
-    parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
+    parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     parser.add_argument("--dataset_name", type=str, default="assist2009", help="for Q table")
     args = parser.parse_args()

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_dir_name", type=str, 
                         default=r"NCD@@ncd_setting@@assist2009_train_fold_0@@seed_0@@2025-03-11@01-46-58")
-    parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
+    parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     args = parser.parse_args()
     params = vars(args)

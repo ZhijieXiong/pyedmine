@@ -23,12 +23,19 @@ def config_roster(local_params):
     config_general_dl_model(local_params, global_params)
     if local_params.get("dataset_name", False):
         config_q_table(local_params, global_params, global_objects)
-    model_name = local_params["model_dir_name"]
-    model_dir = os.path.join(MODEL_DIR, model_name)
+    model_dir_name = local_params["model_dir_name"]
+    model_name, _, _ = get_model_info(local_params["model_dir_name"])
+    model_dir = os.path.join(MODEL_DIR, model_dir_name)
     model = load_dl_model(global_params, global_objects,
-                          model_dir, local_params["model_name"], local_params["model_name_in_ckt"])
+                          model_dir, local_params["model_file_name"], local_params["model_name_in_ckt"])
     model.eval()
     global_params["roster_config"] = {"model_name": model_name}
     global_objects["models"] = {model_name: model}
 
     return global_params, global_objects
+
+
+def get_model_info(model_dir_name):
+    model_info = model_dir_name.split("@@")
+    model_name, setting_name, train_file_name = model_info[0], model_info[1], model_info[2]
+    return model_name, setting_name, train_file_name

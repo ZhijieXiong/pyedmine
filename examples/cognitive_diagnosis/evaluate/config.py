@@ -92,7 +92,7 @@ def config_dlcd(local_params):
         
     model_dir = os.path.join(MODEL_DIR, local_params["model_dir_name"])
     model = load_dl_model(global_params, global_objects,
-                          model_dir, local_params["model_name"], local_params["model_name_in_ckt"])
+                          model_dir, local_params["model_file_name"], local_params["model_name_in_ckt"])
     global_params["evaluator_config"] = {"model_name": model_name}
     global_objects["models"] = {model_name: model}
 
