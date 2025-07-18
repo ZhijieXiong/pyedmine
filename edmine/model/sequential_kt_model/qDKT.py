@@ -110,10 +110,7 @@ class qDKT(nn.Module, DLSequentialKTModel):
         last_latent = latent[first_index, batch["seq_len"] - 2]
         last_latent_expanded = last_latent.repeat_interleave(num_concept, dim=0).view(batch_size, num_concept, -1)
         all_concept_emb_expanded = all_concept_emb.expand(batch_size, -1, -1)
-        if self.params["device"] == "mps":
-            question_emb = torch.zeros((batch_size, num_concept, dim_question)).float().to(self.params["device"])
-        else:
-            question_emb = torch.zeros((batch_size, num_concept, dim_question)).double().to(self.params["device"])
+        question_emb = torch.zeros((batch_size, num_concept, dim_question)).float().to(self.params["device"])
         predict_layer_input = torch.cat([last_latent_expanded, all_concept_emb_expanded, question_emb], dim=-1)
 
         return self.predict_layer(predict_layer_input).squeeze(dim=-1)
