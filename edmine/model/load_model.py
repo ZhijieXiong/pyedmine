@@ -31,6 +31,7 @@ from edmine.model.sequential_kt_model.GIKT import GIKT
 from edmine.model.sequential_kt_model.HawkesKT import HawkesKT
 from edmine.model.sequential_kt_model.UKT import UKT
 from edmine.model.sequential_kt_model.LPKT4LPR import LPKT4LPR
+from edmine.model.sequential_kt_model.ReKT import ReKT
 # CD
 from edmine.model.cognitive_diagnosis_model.NCD import NCD
 from edmine.model.cognitive_diagnosis_model.IRT import IRT
@@ -73,6 +74,7 @@ model_table = {
     "HawkesKT": HawkesKT,
     "UKT": UKT,
     "LPKT4LPR": LPKT4LPR,
+    "ReKT": ReKT,
     "NCD": NCD,
     "IRT": IRT,
     "MIRT": MIRT,
