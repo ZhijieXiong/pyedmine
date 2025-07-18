@@ -16,13 +16,13 @@ def get_unique_concepts(question_seq, q2c):
     return set(concepts)
 
 
-def split_seq(seqs, min_seq_len):
+def split_seq(seqs, min_seq_len, split_seq):
     new_seqs = []
     for user_data in seqs:
         seq_len = user_data["seq_len"]
         if seq_len < min_seq_len:
             continue
-        user_data["intial_idx"] = int(seq_len * 0.7)
+        user_data["intial_idx"] = int(seq_len * split_seq)
         new_seqs.append(user_data)
     return new_seqs
         
@@ -60,13 +60,14 @@ if __name__ == "__main__":
     # 同理可以使用KTTrain和KTValid来划分LPRTrain和LPRValid
     # 为了减少工作量，基于pykt_setting划分数据集
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, default="assist2009")
+    parser.add_argument("--dataset_name", type=str, default="junyi2015")
     args = parser.parse_args()
     params = vars(args)
 
     lpr_setting = {
         "name": "LPR_offline_setting",
-        "min_seq_len": 10,
+        "min_seq_len": 20,
+        "split_seq": 0.8
     }
 
     file_manager = FileManager(config.FILE_MANAGER_ROOT)
@@ -76,23 +77,21 @@ if __name__ == "__main__":
     lpr_setting_dir = file_manager.get_setting_dir(lpr_setting["name"])
     kt_setting_dir = file_manager.get_setting_dir("pykt_setting")
     
-    for fold in range(5):
-        kt_data_train = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_train_fold_{fold}.txt"))
-        kt_data_valid = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_valid_fold_{fold}.txt"))
-        
-        kt_data_train = split_seq(kt_data_train, lpr_setting["min_seq_len"])
-        kt_data_valid = split_seq(kt_data_valid, lpr_setting["min_seq_len"])
-
-        lpr_data_train = generate_lpr_data(kt_data_train)
-        lpr_data_valid = generate_lpr_data(kt_data_valid)
-        
-        write_kt_file(lpr_data_train[0], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_single_goal_train_fold_{fold}.txt"))
-        write_kt_file(lpr_data_train[1], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_multi_goals_train_fold_{fold}.txt"))
-        write_kt_file(lpr_data_valid[0], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_single_goal_valid_fold_{fold}.txt"))
-        write_kt_file(lpr_data_valid[1], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_multi_goals_valid_fold_{fold}.txt"))
-    
+    kt_data_train = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_train.txt"))
+    kt_data_valid = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_valid.txt"))
     kt_data_test = read_kt_file(os.path.join(kt_setting_dir, f"{params['dataset_name']}_test.txt"))
-    kt_data_test = split_seq(kt_data_test, lpr_setting["min_seq_len"])
+    
+    kt_data_train = split_seq(kt_data_train, lpr_setting["min_seq_len"], lpr_setting["split_seq"])
+    kt_data_valid = split_seq(kt_data_valid, lpr_setting["min_seq_len"], lpr_setting["split_seq"])
+    kt_data_test = split_seq(kt_data_test, lpr_setting["min_seq_len"], lpr_setting["split_seq"])
+
+    lpr_data_train = generate_lpr_data(kt_data_train)
+    lpr_data_valid = generate_lpr_data(kt_data_valid)
     lpr_data_test = generate_lpr_data(kt_data_test)
+    
+    write_kt_file(lpr_data_train[0], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_single_goal_train.txt"))
+    write_kt_file(lpr_data_train[1], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_multi_goals_train.txt"))
+    write_kt_file(lpr_data_valid[0], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_single_goal_valid.txt"))
+    write_kt_file(lpr_data_valid[1], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_multi_goals_valid.txt"))
     write_kt_file(lpr_data_test[0], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_single_goal_test.txt"))
     write_kt_file(lpr_data_test[1], os.path.join(lpr_setting_dir, f"{params['dataset_name']}_multi_goals_test.txt"))

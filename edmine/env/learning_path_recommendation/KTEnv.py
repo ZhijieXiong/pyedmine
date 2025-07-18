@@ -50,6 +50,6 @@ class DLSequentialKTEnv(gym.Env):
             state = model.get_knowledge_state(batch)
             batch_size = batch["correctness_seq"].shape[0]
             predict_score_batch = model.get_predict_score(batch)["predict_score_batch"]
-            observation = predict_score_batch[torch.arange(batch_size), batch["seq_len"] - 1]
+            observation = predict_score_batch[torch.arange(batch_size), batch["seq_len"] - 2]
         return observation, state
   
