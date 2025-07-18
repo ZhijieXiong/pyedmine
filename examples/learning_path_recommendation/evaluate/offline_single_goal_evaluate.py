@@ -12,14 +12,13 @@ if __name__ == "__main__":
     # 初始化学生状态的数据集
     parser.add_argument("--kt_setting_name", type=str, default="pykt_setting")
     parser.add_argument("--setting_name", type=str, default="LPR_offline_setting")
-    parser.add_argument("--test_file_name", type=str, default="junyi2015_single_goal_test.txt")
+    parser.add_argument("--test_file_name", type=str, default="assist2009_single_goal_test.txt")
     # 模拟器配置
-    # MIKT@@pykt_setting@@junyi2015_train_fold_0@@seed_0@@2025-05-17@05-54-07
     parser.add_argument("--model_dir_name", type=str,
-                        default=r"qDKT@@pykt_setting@@junyi2015_train_fold_0@@seed_0@@2025-05-15@17-15-38")
+                        default=r"MIKT4LPR@@pykt_setting@@assist2009_train@@seed_0@@2025-07-18@15-04-22")
     parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
-    parser.add_argument("--dataset_name", type=str, default="junyi2015", help="for Q table")
+    parser.add_argument("--dataset_name", type=str, default="assist2009", help="for Q table")
     # 掌握阈值
     parser.add_argument("--master_threshold", type=float, default=0.6)
     # kt模型的batch大小
