@@ -20,8 +20,8 @@ FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
 MODELS_DIR = settings["MODELS_DIR"]
 
 
-def config_mikt(local_params):
-    model_name = "MIKT"
+def config_mikt4lpr(local_params):
+    model_name = "MIKT4LPR"
     
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}

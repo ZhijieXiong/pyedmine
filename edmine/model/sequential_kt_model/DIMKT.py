@@ -88,4 +88,3 @@ class DIMKT(nn.Module, DLSequentialKTModel):
 
     def get_knowledge_state(self, batch):
         pass
-
