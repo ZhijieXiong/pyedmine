@@ -27,7 +27,7 @@ def config_roster(local_params):
     model_name = local_params["model_dir_name"]
     model_dir = os.path.join(MODEL_DIR, model_name)
     model = load_dl_model(global_params, global_objects,
-                          model_dir, local_params["model_name"], local_params["model_name_in_ckt"])
+                          model_dir, local_params["model_file_name"], local_params["model_name_in_ckt"])
     model.eval()
     global_params["roster_config"] = {"model_name": model_name}
     global_objects["models"] = {model_name: model}

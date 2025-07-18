@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # 加载KT模型
     parser.add_argument("--model_dir_name", type=str, help="模型文件夹名",
                         default="DKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-06@02-12-29")
-    parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
+    parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # 相似度选择
     parser.add_argument("--similarity", type=str, default="cossim", choices=("cossim", "pearson_corr"))

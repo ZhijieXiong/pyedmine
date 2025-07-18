@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # 加载模型参数配置
     parser.add_argument("--model_dir_name", type=str, help="",
                         default="KG4EX@@ER_offline_setting@@assist2009_train_triples_dkt_0.2@@seed_0@@2025-03-13@20-19-52")
-    parser.add_argument("--model_name", type=str, help="文件名", default="saved.ckt")
+    parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # 测试配置
     parser.add_argument("--top_ns", type=str, default="[5,10,20]")
