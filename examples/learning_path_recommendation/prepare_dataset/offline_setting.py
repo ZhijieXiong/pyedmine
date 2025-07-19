@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # 同理可以使用KTTrain和KTValid来划分LPRTrain和LPRValid
     # 为了减少工作量，基于pykt_setting划分数据集
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, default="junyi2015")
+    parser.add_argument("--dataset_name", type=str, default="assist2009")
     args = parser.parse_args()
     params = vars(args)
 
