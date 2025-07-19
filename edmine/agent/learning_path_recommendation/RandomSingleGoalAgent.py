@@ -127,7 +127,7 @@ class RandomSingleGoalAgent(HierarchicalAgent):
             last_stage_qs = self.question_rec_history[cur_stage]
             if (state[last_stage_rec_c] > master_th) or (len(last_stage_qs) >= max_attempt_per_concept):
                 if concept_rec_strategy.startswith("random-"):
-                    eligible_concepts = [c_id for c_id in range(num_concept) if state[c_id] < master_th]
+                    eligible_concepts = [c_id for c_id in range(num_concept) if float(state[c_id]) < master_th]
                     # 从未掌握的概念中随机选一个
                     c_id2rec = random_generator.choice(eligible_concepts)
                 elif concept_rec_strategy.startswith("AStar-"):

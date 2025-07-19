@@ -64,10 +64,9 @@ class HierarchicalAgent:
         
         # 首行日志
         initial_ks = float(state[learning_goal])
-        msg = f"learning goal: c{learning_goal:<4}, initial knowledge state of c{learning_goal}: {str(initial_ks)[:4]}"
-        if initial_ks >= master_th:
-            msg += "\n"
-        self.objects["logger"].info(msg)
+        if initial_ks < master_th:
+            msg = f"learning goal: c{learning_goal:<4}, initial knowledge state of c{learning_goal}: {str(initial_ks)[:4]}"
+            self.objects["logger"].info(msg)
 
         # 准备数据
         correctness_seq = self.history_data["correctness_seq"][self.initial_seq_len:]

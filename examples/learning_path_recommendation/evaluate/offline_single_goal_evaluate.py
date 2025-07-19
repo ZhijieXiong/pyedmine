@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument("--test_file_name", type=str, default="assist2009_single_goal_test.txt")
     # 模拟器配置
     parser.add_argument("--model_dir_name", type=str,
-                        default=r"MIKT4LPR@@pykt_setting@@assist2009_train@@seed_0@@2025-07-18@15-04-22")
+                        default=r"qDKT@@pykt_setting@@assist2009_train@@seed_0@@2025-07-18@20-22-14")
     parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     parser.add_argument("--dataset_name", type=str, default="assist2009", help="for Q table")
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("--agent_dir_name", type=str, 
                         help="RandomAgent@@random-5@@10，random-5是rec concept的策略，10表示每个知识点最多推荐10道习题"
                         "RandomAgent@@AStar-5@@10，AStar-5是rec concept的策略，表示使用A*算法搜索最短学习路径，最多学习5个知识点，10表示每个知识点最多推荐10道习题",
-                        default=r"RandomAgent@@AStar-5@@10")
+                        default=r"RandomAgent@@random-5@@10")
     # 随机种子
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--save_log", type=str2bool, default=False)
