@@ -108,14 +108,11 @@ class HierarchicalAgent:
             final_ks = str(float(state[learning_goal]))[:4]
             self.objects["logger"].info(f"    final knowledge state of c{learning_goal}: {final_ks}\n")
     
-    def achieve_goals(self):
+    def achieve_single_goal(self):
         state = self.state_history[-1]
-        done = True
         learning_goal = self.learning_goals[0]
         master_th = self.params["evaluate_config"]["master_threshold"]
-        for learning_goal in self.learning_goals:
-            done = done and (state[learning_goal] >= master_th)
-        return done
+        return float(state[learning_goal]) >= master_th
     
     @abstractmethod
     def cal_reward(self):

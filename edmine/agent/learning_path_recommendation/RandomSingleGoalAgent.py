@@ -15,16 +15,11 @@ class RandomSingleGoalAgent(HierarchicalAgent):
         return 0
     
     def judge_done(self):
+        if self.achieve_single_goal():
+            return True
         concept_rec_strategy = self.params["agents_config"]["RandomAgent"]["concept_rec_strategy"]
         max_stage = int(concept_rec_strategy.split("-")[1])
-        if len(self.concept_rec_history) >= max_stage:
-            max_attempt_per_concept = self.params["agents_config"]["RandomAgent"]["max_attempt_per_concept"]
-            cur_stage = len(self.concept_rec_history) - 1
-            last_stage_qs = self.question_rec_history[cur_stage]
-            if len(last_stage_qs) >= max_attempt_per_concept:
-                return True
-        
-        return self.achieve_goals()
+        return len(self.concept_rec_history) > max_stage
     
     def prepare4a_star(self):
         pre_edges = self.objects["graph"]["pre_relation_edges"]

@@ -9,14 +9,14 @@ def as_array(obj):
         return np.asarray(as_list(obj))
 
 
-def promotion_report(initial_score, final_score, path_length, weights=None):
+def promotion_report(initial_scores, final_scores, path_lengths, weights=None):
     """
 
     Parameters
     ----------
-    initial_score: list or array
-    final_score: list or array
-    path_length: list or array
+    initial_scores: list or array
+    final_scores: list or array
+    path_lengths: list or array
 
     Returns
     -------
@@ -35,34 +35,43 @@ def promotion_report(initial_score, final_score, path_length, weights=None):
         NRPR:
             normalized relative promotion rate = \frac{normalized relative promotion}{path_length}
     """
+    if len(initial_scores) == 0 or len(final_scores) == 0 or len(path_lengths) == 0:
+        return {
+            "AP": -1,
+            "APR": -1,
+            "RP": -1,
+            "RPR": -1,
+            "NRP": -1,
+            "NRPR": -1
+        }
     ret = {}
 
-    initial_score = as_array(initial_score)
-    final_score = as_array(final_score)
+    initial_scores = as_array(initial_scores)
+    final_scores = as_array(final_scores)
 
-    absp = final_score - initial_score
+    absp = final_scores - initial_scores
 
     if weights is not None:
         absp *= as_array(weights)
 
     ret["AP"] = absp
 
-    absp_rate = absp / as_array(path_length)
+    absp_rate = absp / as_array(path_lengths)
     absp_rate[absp_rate == np.inf] = 0
     ret["APR"] = absp_rate
 
-    full_score = as_array([1] * len(initial_score))
+    full_score = as_array([1] * len(initial_scores))
 
     relp = absp / full_score
     ret["RP"] = relp
 
-    relp_rate = absp / (full_score * path_length)
+    relp_rate = absp / (full_score * path_lengths)
     relp_rate[relp_rate == np.inf] = 0
     ret["RPR"] = relp_rate
 
-    ret["NRP"] = absp / (full_score - initial_score)
+    ret["NRP"] = absp / (full_score - initial_scores)
 
-    norm_relp_rate = absp / ((full_score - initial_score) * path_length)
+    norm_relp_rate = absp / ((full_score - initial_scores) * path_lengths)
     norm_relp_rate[norm_relp_rate == np.inf] = 0
     ret["NRPR"] = norm_relp_rate
 
