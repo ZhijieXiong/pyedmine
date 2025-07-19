@@ -143,7 +143,7 @@ def select_dataset(model_name):
         return HDLPKTDataset
     elif model_name == "UKT":
         return UKTDataset
-    elif model_name in ["HawkesKT"]:
+    elif model_name in ["HawkesKT", "ReKT"]:
         return SingleConceptKTDataset
     else:
         return BasicSequentialKTDataset
