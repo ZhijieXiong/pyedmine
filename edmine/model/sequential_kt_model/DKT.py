@@ -86,7 +86,7 @@ class DKT(nn.Module, DLSequentialKTModel):
 
         return predict_score
 
-    def get_knowledge_state(self, batch):
+    def get_knowledge_state(self, batch, only_last_state=True):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
         num_concept = self.params["models_config"]["DKT"]["embed_config"]["concept"]["num_item"]
@@ -104,9 +104,12 @@ class DKT(nn.Module, DLSequentialKTModel):
         interaction_emb = torch.cat((concept_emb, correctness_emb), dim=2)
         latent, _ = self.encoder_layer(interaction_emb)
         
-        last_latent = latent[first_index, batch["seq_len"] - 1]
-        last_latent_expanded = last_latent.repeat_interleave(num_concept, dim=0).view(batch_size, num_concept, -1)
-        all_concept_emb_expanded = all_concept_emb.expand(batch_size, -1, -1)
-        predict_layer_input = torch.cat([last_latent_expanded, all_concept_emb_expanded], dim=-1)
+        if only_last_state:
+            latent = latent[first_index, batch["seq_len"] - 1]
+            latent_expanded = latent.repeat_interleave(num_concept, dim=0).view(batch_size, num_concept, -1)
+            all_concept_emb_expanded = all_concept_emb.expand(batch_size, -1, -1)
+            predict_layer_input = torch.cat([latent_expanded, all_concept_emb_expanded], dim=-1)
+        else:
+            raise NotImplementedError()
 
         return self.predict_layer(predict_layer_input).squeeze(dim=-1)
