@@ -24,7 +24,7 @@ PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖
   <br>
   <b>图片</b>: PyEdmine 实验流程图
 </p>
-
+各任务的具体实验设置请查阅[这里](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)
 
 ## 安装
 
@@ -58,7 +58,7 @@ pip install -e .
 
 5、模型评估：`examples` 中也提供了每个模型的评估脚本，并根据不同任务实现了不同维度与粒度的评估指标，包括冷启动评估、无偏评估等；
 
-6、其它特性：（1）PyEdmine 针对部分模型实现了基于贝叶斯优化的自动参数调整方法；（2）PyEdmine 可通过参数设置启用 wandb 功能。
+6、其它特性：（1）PyEdmine 针对部分模型实现了基于贝叶斯优化的自动参数调整方法；（2）PyEdmine 可通过参数设置启用 wandb 功能；（3）绘制学生知识状态变化图。
 
 每一步的具体操作说明，请参阅下文。
 
@@ -246,6 +246,18 @@ PyEdmine还支持基于贝叶斯网络的自动调参功能，如
 python examples/cognitive_diagnosis/train/ncd_search_params.py
 ```
 该脚本基于代码中的*parameters_space*变量设置搜参空间
+
+### 绘制学生知识状态变化图
+PyEdmine支持使用热力图展示学生知识状态变化过程，对应代码在
+
+```bash
+python examples/roster/train/kt_plot.py
+```
+
+效果如下图所示
+
+<img src="asset/img/trace_related_ks_map.png" alt="trace_related_ks_map" width="600">
+<img src="asset/img/trace_selected_ks_change.png" alt="trace_selected_ks_map" width="600">
 
 ## PyEdmine 重要发布
 | Releases | Date      |

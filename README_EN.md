@@ -23,6 +23,8 @@ Additionally, we designed a unified experimental setup where knowledge tracing m
   <b>Image</b>: PyEdmine Experimental Flowchart
 </p>
 
+For detailed experimental settings of each task, please refer to [here](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html).
+
 ## Installation
 
 ### Install via pip
@@ -55,7 +57,7 @@ Please download the source code of PyEdmine from GitHub, and then use the script
 
 5. Model Evaluation: Evaluation scripts for each model are also provided in the `examples` directory. PyEdmine implements evaluation metrics from multiple perspectives and at different levels of granularity, including cold-start evaluation and unbiased evaluation;
 
-6. Other Features: (1)PyEdmine supports automatic hyperparameter optimization for some models using Bayesian optimization; (2) PyEdmine allows enabling wandb integration through parameter configuration.
+6. Other Features: (1) PyEdmine supports automatic hyperparameter optimization for some models using Bayesian optimization; (2) PyEdmine allows enabling wandb integration through parameter configuration; (3) Visualization of Student Knowledge State Dynamics.
 
 For detailed instructions on each step, please refer to the following sections.
 
@@ -247,6 +249,19 @@ PyEdmine also supports automatic hyperparameter tuning based on Bayesian network
 python examples/cognitive_diagnosis/train/ncd_search_params.py
 ```
 This script uses the *parameters_space* variable defined in the code to set the search space
+
+### Visualization of Student Knowledge State Dynamics
+PyEdmine provides support for visualizing the evolution of a student's knowledge state using heatmaps.
+
+The corresponding implementation can be found in:
+```bash
+python examples/roster/train/kt_plot.py
+```
+
+An example output is shown below:
+
+<img src="asset/img/trace_related_ks_map.png" alt="trace_related_ks_map" width="600">
+<img src="asset/img/trace_selected_ks_change.png" alt="trace_selected_ks_map" width="600">
 
 ## PyEdmine Major Releases
 | Releases | Date      |
