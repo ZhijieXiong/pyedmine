@@ -133,7 +133,7 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
         learning_pre = torch.zeros(batch_size, dim_k).to(self.params["device"])
         state_history = []
 
-        for t in range(0, seq_len - 1):
+        for t in range(0, seq_len):
             e = question_seq[:, t]
             # q_e: (bs, 1, n_skill)
             q_e = q_matrix[e].view(batch_size, 1, -1)
@@ -161,18 +161,16 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
             # bs, num_c, dim_k
             h = LG_tilde + gamma_f * h_pre
             
-            # Predicting Module
-            next_q2c = q_matrix[question_seq[:, t + 1]]
-            # user_ability = torch.sigmoid(torch.einsum('bnd,ndo->bno', h, self.weight) + self.bias).squeeze(dim=-1) * next_q2c
             user_ability = torch.sigmoid(self.latent2ability(h)).squeeze(dim=-1)
             state_history.append(user_ability)
             
-            h_tilde = q_matrix[question_seq[:, t + 1]].view(batch_size, 1, -1).bmm(h).view(batch_size, dim_k)
-            # prepare for next prediction
-            learning_pre = learning
-            h_pre = h
-            h_tilde_pre = h_tilde
+            if (t + 1) < seq_len:
+                h_tilde = q_matrix[question_seq[:, t + 1]].view(batch_size, 1, -1).bmm(h).view(batch_size, dim_k)
+                # prepare for next prediction
+                learning_pre = learning
+                h_pre = h
+                h_tilde_pre = h_tilde
 
         state_history = torch.stack(state_history, dim=1)
-        return state_history[torch.arange(batch_size).to(self.params["device"]), batch["seq_len"] - 2]
+        return state_history[torch.arange(batch_size).to(self.params["device"]), batch["seq_len"] - 1]
     
