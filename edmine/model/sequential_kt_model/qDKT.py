@@ -97,20 +97,29 @@ class qDKT(nn.Module, DLSequentialKTModel):
         return predict_score
 
     def get_knowledge_state(self, batch):
+        q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
+        q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
         num_concept = self.params["models_config"]["qDKT"]["embed_config"]["concept"]["num_item"]
         dim_question = self.params["models_config"]["qDKT"]["embed_config"]["question"]["dim_item"]
 
-        self.encoder_layer.flatten_parameters()
         batch_size = batch["correctness_seq"].shape[0]
         first_index = torch.arange(batch_size).long().to(self.params["device"])
         all_concept_id = torch.arange(num_concept).long().to(self.params["device"])
         all_concept_emb = self.embed_layer.get_emb("concept", all_concept_id)
 
-        latent = self.get_latent(batch)
-        last_latent = latent[first_index, batch["seq_len"] - 2]
+        concept_emb = self.embed_layer.get_emb_fused1(
+            "concept", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
+        question_emb = self.embed_layer.get_emb("question", batch["question_seq"])
+        qc_emb = torch.cat((question_emb, concept_emb), dim=-1)
+        correctness_emb = self.embed_layer.get_emb("correctness", batch["correctness_seq"])
+        interaction_emb = torch.cat((qc_emb, correctness_emb), dim=2)
+        self.encoder_layer.flatten_parameters()
+        latent, _ = self.encoder_layer(interaction_emb)
+        
+        last_latent = latent[first_index, batch["seq_len"] - 1]
         last_latent_expanded = last_latent.repeat_interleave(num_concept, dim=0).view(batch_size, num_concept, -1)
         all_concept_emb_expanded = all_concept_emb.expand(batch_size, -1, -1)
-        question_emb = torch.zeros((batch_size, num_concept, dim_question)).float().to(self.params["device"])
-        predict_layer_input = torch.cat([last_latent_expanded, all_concept_emb_expanded, question_emb], dim=-1)
+        next_question_emb = torch.zeros((batch_size, num_concept, dim_question)).float().to(self.params["device"])
+        predict_layer_input = torch.cat([last_latent_expanded, all_concept_emb_expanded, next_question_emb], dim=-1)
 
         return self.predict_layer(predict_layer_input).squeeze(dim=-1)
