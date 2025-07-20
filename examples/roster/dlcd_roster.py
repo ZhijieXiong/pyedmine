@@ -17,6 +17,5 @@ if __name__ == "__main__":
 
     global_params, global_objects = config_roster(params)
     roster = DLCDRoster(global_params, global_objects)
-    data = read_kt_file("/data/dataset/settings/ER_offline_setting/assist2009_user_data.txt")
     user_concept_mastery_level = roster.get_knowledge_state([0,1,2,3])
     print(user_concept_mastery_level[0])

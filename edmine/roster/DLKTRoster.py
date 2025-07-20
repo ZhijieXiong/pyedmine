@@ -24,7 +24,7 @@ class DLKTRoster:
         else:
             return batch
 
-    def get_knowledge_state(self, batch):
+    def get_knowledge_state(self, batch, last_state=True):
         model_name = self.params["roster_config"]["model_name"]
         model = self.objects["models"][model_name]
         model.eval()
@@ -33,4 +33,4 @@ class DLKTRoster:
         else:
             pass
         with torch.no_grad():
-            return model.get_knowledge_state(batch)
+            return model.get_knowledge_state(batch, last_state)

@@ -116,7 +116,7 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
             "predict_score_batch": predict_score_batch
         }
 
-    def get_knowledge_state(self, batch):
+    def get_knowledge_state(self, batch, only_last_state=True):
         question_seq = batch["question_seq"]
         model_config = self.params["models_config"]["LPKT4LPR"]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
@@ -172,5 +172,8 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
                 h_tilde_pre = h_tilde
 
         state_history = torch.stack(state_history, dim=1)
-        return state_history[torch.arange(batch_size).to(self.params["device"]), batch["seq_len"] - 1]
+        if only_last_state:
+            return state_history[torch.arange(batch_size).to(self.params["device"]), batch["seq_len"] - 1]
+        else:
+            return state_history
     
