@@ -8,6 +8,10 @@ from edmine.utils.data_io import read_json
 
 
 def config_lpr_env(local_params, global_params, global_objects, model_dir):
+    global_params["kt_model_config"] = {
+        "seq_data_keys": ["question_seq", "correctness_seq", "mask_seq"],
+        "id_data_keys": ["seq_len"]
+    }
     config_general_dl_model(local_params, global_params)
     if local_params.get("dataset_name", False):
         config_q_table(local_params, global_params, global_objects)

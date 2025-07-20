@@ -19,7 +19,15 @@ class RandomSingleGoalAgent(HierarchicalAgent):
             return True
         concept_rec_strategy = self.params["agents_config"]["RandomAgent"]["concept_rec_strategy"]
         max_stage = int(concept_rec_strategy.split("-")[1])
-        return len(self.concept_rec_history) > max_stage
+        if len(self.concept_rec_history) > max_stage:
+            return True
+        elif len(self.concept_rec_history) == max_stage:
+            cur_stage = len(self.concept_rec_history) - 1
+            max_attempt_per_concept = self.params["agents_config"]["RandomAgent"]["max_attempt_per_concept"]
+            last_stage_qs = self.question_rec_history[cur_stage]
+            return len(last_stage_qs) >= max_attempt_per_concept
+        else:
+            return False
     
     def prepare4a_star(self):
         pre_edges = self.objects["graph"]["pre_relation_edges"]
@@ -103,15 +111,32 @@ class RandomSingleGoalAgent(HierarchicalAgent):
         else:
             return leaning_path[0]
         
-    def rec_question(self):
+    def rec_concept(self):
         state = self.state_history[-1]
+        master_th = self.params["evaluate_config"]["master_threshold"]
         agent_config = self.params["agents_config"]["RandomAgent"]
         random_generator = self.objects["random_generator"]
         num_concept = agent_config["num_concept"]
         concept_rec_strategy = self.params["agents_config"]["RandomAgent"]["concept_rec_strategy"]
         
+        if concept_rec_strategy.startswith("random-"):
+            eligible_concepts = [c_id for c_id in range(num_concept) if float(state[c_id]) < master_th]
+            # 从未掌握的概念中随机选一个
+            c_id2rec = random_generator.choice(eligible_concepts)
+        elif concept_rec_strategy.startswith("AStar-"):
+            c_id2rec = self.a_star_rec_concept()
+        else:
+            raise NotImplemented(f"{concept_rec_strategy} is not implemented")
+        
+        return int(c_id2rec)
+        
+    def rec_question(self):
+        state = self.state_history[-1]
+        agent_config = self.params["agents_config"]["RandomAgent"]
+        random_generator = self.objects["random_generator"]
+        
         if len(self.concept_rec_history) == 0:
-            c_id2rec = random_generator.randint(0, num_concept)
+            c_id2rec = self.rec_concept()
             self.concept_rec_history.append(c_id2rec)
             self.question_rec_history.append([])
         else:
@@ -120,15 +145,8 @@ class RandomSingleGoalAgent(HierarchicalAgent):
             last_stage_rec_c = self.concept_rec_history[-1]
             cur_stage = len(self.concept_rec_history) - 1
             last_stage_qs = self.question_rec_history[cur_stage]
-            if (state[last_stage_rec_c] > master_th) or (len(last_stage_qs) >= max_attempt_per_concept):
-                if concept_rec_strategy.startswith("random-"):
-                    eligible_concepts = [c_id for c_id in range(num_concept) if float(state[c_id]) < master_th]
-                    # 从未掌握的概念中随机选一个
-                    c_id2rec = random_generator.choice(eligible_concepts)
-                elif concept_rec_strategy.startswith("AStar-"):
-                    c_id2rec = self.a_star_rec_concept()
-                else:
-                    raise NotImplemented(f"{concept_rec_strategy} is not implemented")
+            if (state[last_stage_rec_c] >= master_th) or (len(last_stage_qs) >= max_attempt_per_concept):
+                c_id2rec = self.rec_concept()
                 self.concept_rec_history.append(c_id2rec)
                 self.question_rec_history.append([])
             else:
@@ -136,7 +154,7 @@ class RandomSingleGoalAgent(HierarchicalAgent):
         
         c2q = self.objects["dataset"]["c2q"]
         cur_stage = len(self.concept_rec_history) - 1
-        q_id2rec = random_generator.choice(c2q[c_id2rec])
+        q_id2rec = int(random_generator.choice(c2q[c_id2rec]))
         self.question_rec_history[cur_stage].append(q_id2rec)
         
         return q_id2rec

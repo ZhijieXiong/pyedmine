@@ -25,7 +25,7 @@ class LPREvaluator:
             self.cur_data_idx += 1
             
     def remove_done_agents(self, batch_observation, batch_state):
-        remain_idx = []
+        remain_indices = []
         for i, (agent, observation, state) in enumerate(zip(self.agents, batch_observation, batch_state)):
             agent.update(current_state=state)
             done = agent.judge_done()
@@ -34,11 +34,11 @@ class LPREvaluator:
                 agent.render()
                 self.agents[i] = None
             else:
-                remain_idx.append(i)
-        remain_idx = torch.tensor(remain_idx).long().to(self.params["device"])
-        batch_observation = batch_observation[remain_idx]
-        batch_state = batch_state[remain_idx]
-        self.agents = list(filter(lambda x: x is not None, self.agents))
+                remain_indices.append(i)
+        agents = [self.agents[remain_idx] for remain_idx in remain_indices]
+        self.agents = agents
+        batch_observation = batch_observation[remain_indices]
+        batch_state = batch_state[remain_indices]
         
         return batch_observation, batch_state
         
@@ -75,6 +75,7 @@ class LPREvaluator:
             batch_observation, _ = env.step(env_input_data)
             for i, (agent, observation) in enumerate(zip(self.agents, batch_observation)):
                 q_id = next_rec_data[i]["question_seq"]
+                # 如果后面有用需要其它信息（例如时间信息）的KT模型，需要在这更改数据更新
                 next_rec_result = (q_id, int(observation > 0.5))
                 agent.update(next_rec_result=next_rec_result)
             env_input_data = {"history_data": [agent.history_data for agent in self.agents]}

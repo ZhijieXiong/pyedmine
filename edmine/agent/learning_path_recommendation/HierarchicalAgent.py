@@ -9,30 +9,26 @@ class HierarchicalAgent:
     
         self.concept_rec_history = []
         self.question_rec_history = []
-        self.question_rec_result = []
         self.state_history = []
         self.initial_seq_len = 0
         self.history_data = None
         self.learning_goals = None
             
     def reset(self, learning_goals, user_data=None):
-        if user_data is None:
-            self.history_data = {
-                "question_seq": [],
-                "correctness_seq": [],
-                "mask_seq": [],
-                "seq_len": 0
-            }
-            self.initial_seq_len = 0
-        else:
+        seq_data_keys = self.params["kt_model_config"]["seq_data_keys"]
+        id_data_keys = self.params["kt_model_config"]["id_data_keys"]
+        self.history_data = {seq_data_key: [] for seq_data_key in seq_data_keys}
+        self.history_data["seq_len"] = 0
+        if user_data is not None:
             seq_len = user_data["seq_len"]
             self.initial_seq_len = seq_len
-            self.history_data = {
-                "question_seq": user_data["question_seq"],
-                "correctness_seq": user_data["correctness_seq"],
-                "mask_seq": [1] * seq_len,
-                "seq_len": seq_len
-            }
+            for id_data_key in id_data_keys:
+                self.history_data[id_data_key] = user_data[id_data_key]
+            for seq_data_key in seq_data_keys:
+                if seq_data_key == "mask_seq":
+                    self.history_data["mask_seq"] = [1] * seq_len
+                else:
+                    self.history_data[seq_data_key].extend(user_data[seq_data_key])
         self.learning_goals = learning_goals
         self.concept_rec_history = []
         self.question_rec_history = []
@@ -42,6 +38,7 @@ class HierarchicalAgent:
         if current_state is not None:
             self.state_history.append(current_state)
         if next_rec_result is not None:
+            # 如果后面有用需要其它信息（例如时间信息）的KT模型，需要在这更改数据更新
             next_rec_que, next_que_correctness = next_rec_result
             self.history_data["question_seq"].append(next_rec_que)
             self.history_data["correctness_seq"].append(next_que_correctness)
