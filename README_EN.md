@@ -260,8 +260,9 @@ python examples/roster/train/kt_plot.py
 
 An example output is shown below:
 
-<img src="asset/img/trace_related_ks_map.png" alt="trace_related_ks_map" width="600">
-<img src="asset/img/trace_selected_ks_change.png" alt="trace_selected_ks_map" width="600">
+<img src="asset/img/trace_related_cs_change.png" alt="trace_related_cs_change" width="600">
+<img src="asset/img/trace_selected_cs_change.png" alt="trace_selected_cs_change" width="600">
+<img src="asset/img/trace_single_concept_change.png" alt="trace_single_concept_change" width="600">
 
 ## PyEdmine Major Releases
 | Releases | Date      |
