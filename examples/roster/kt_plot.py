@@ -58,18 +58,37 @@ if __name__ == "__main__":
         state_seq.extend(state)
         
     concept_seq = user_data["concept_seq"][:target_seq_len]
-    trace_related_ks_map(
+    trace_related_cs_change(
         state_seq, 
         concept_seq,
         user_data["correctness_seq"][:target_seq_len],
         figsize=(22, 3)
-    ).savefig(os.path.join(current_dir, "trace_related_ks_map.png"))
+    ).savefig(os.path.join(current_dir, "trace_related_cs_change.png"))
     
-    trace_selected_ks_change(
+    target_cs = [0, 3, 5, 10]
+    trace_selected_cs_change(
         state_seq, 
         user_data["question_seq"][:target_seq_len],
         user_data["correctness_seq"][:target_seq_len],
-        [0,1,2,3,4],
+        target_cs,
         figsize=(22, 3)
-    ).savefig(os.path.join(current_dir, "trace_selected_ks_change.png"))
+    ).savefig(os.path.join(current_dir, "trace_selected_cs_change.png"))
+    
+    target_concept = 37
+    c_state_seq = []
+    qc_relation_seq = []
+    for state, q_id in zip(state_seq[:target_seq_len], user_data["question_seq"][:target_seq_len]):
+        c_state_seq.append(float(state[target_concept]))
+        q_realted_cs = q2c[q_id]
+        if target_concept in q_realted_cs:
+            qc_relation_seq.append(1/len(q_realted_cs))
+        else:
+            qc_relation_seq.append(0)
+    trace_single_concept_change(
+        target_concept,
+        c_state_seq,
+        qc_relation_seq,
+        user_data["correctness_seq"][:target_seq_len],
+        figsize=(22, 3)
+    ).savefig(os.path.join(current_dir, "trace_single_concept_change.png"))
     
