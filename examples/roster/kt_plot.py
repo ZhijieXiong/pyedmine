@@ -7,22 +7,6 @@ from utils import *
 from edmine.roster.DLKTRoster import DLKTRoster
 
 
-def total_data2single_data(total_data, span):
-    assert span >= 2, "span must greater than 1"
-    single_data = []
-    span = min(span, total_data["seq_len"])
-    for i in range(2, span+2):
-        item_data = {}
-        for k, v in total_data.items():
-            if type(v) is list:
-                item_data[k] = v[:i]
-            else:
-                item_data[k] = v
-        item_data["seq_len"] = i
-        single_data.append(item_data)
-    return single_data
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_dir_name", type=str,

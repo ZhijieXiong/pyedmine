@@ -1,7 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
-from matplotlib.patches import Ellipse
+import matplotlib.colors as mcolors
+
+
+def total_data2single_data(total_data, span):
+    single_data = []
+    span = min(span, total_data["seq_len"])
+    for i in range(1, span+1):
+        item_data = {}
+        for k, v in total_data.items():
+            if type(v) is list:
+                item_data[k] = v[:i]
+            else:
+                item_data[k] = v
+        item_data["seq_len"] = i
+        single_data.append(item_data)
+    return single_data
 
 
 def data2batches(data, batch_size):
@@ -189,40 +204,65 @@ def trace_single_concept_change(target_concept, c_state_seq, qc_relation_seq, co
 
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(x, c_state_seq, color='blue', linewidth=2)
+    ax.set_title(f"Knowledge Tracing over Time on c{target_concept}")
+    
     ax.set_xlim(-0.5, T - 0.5)
+    ax.set_xticks([])
+    
     ymax = min(1, np.max(c_state_seq) + 0.05)
     ax.set_ylim(0, ymax)  # ✅ y轴只显示 >=0 的部分
-
-    ax.set_xticks([])
-    ax.set_title(f"Knowledge Tracing over Time on c{target_concept}")
+    
     ax.tick_params(axis='y', labelrotation=0, top=False, length=0)
     ax.tick_params(axis='x', labelrotation=0, top=False, length=0)
 
     # ✅ 横轴下方添加标记：用混合坐标
     base_y_axes = -0.2
     trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+    
+    def get_color(strength, is_correct):
+        """
+        给定关联强度和是否做对，返回 RGB 颜色
+        strength: 0 ~ 1
+        is_correct: True → 绿色，False → 红色
+        """
+        # HSV: h=0红，h=120绿，s越高越艳，v=1保持亮度
+        hue = 120 / 360 if is_correct else 0.0
+        saturation = strength
+        value = 1.0
+        return mcolors.hsv_to_rgb((hue, saturation, value))
 
     for t in range(T):
-        color = colors[t]
-        if correctness_seq[t]:
-            ax.plot(t, base_y_axes, marker='o', color=color, markersize=12,
-                    transform=trans, clip_on=False, zorder=10)
-        else:
-            ax.plot(t, base_y_axes, marker='^', color=color, markersize=12,
-                    transform=trans, clip_on=False, zorder=10)
+        if t > 0:
+            # y(t-1) 和 y(t)
+            y_prev = c_state_seq[t - 1].item()
+            y_curr = c_state_seq[t].item()
 
+            # 虚线1：从 (t-1, y(t-1)) 到 (t, 0)
+            ax.plot([t - 1, t - 0.5], [y_prev, 0],
+                    linestyle='dashed', color='gray', linewidth=1.0, alpha=0.7)
 
-    # 添加 colorbar
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    pos = ax.get_position()
-    cbar_ax = fig.add_axes([
-        pos.x1 + 0.01,
-        pos.y0 + 0.13,
-        0.01,
-        pos.height * 0.8
-    ])
-    cbar = fig.colorbar(sm, cax=cbar_ax)
+            # 虚线2：从 (t, 0) 到 (t, y(t))
+            ax.plot([t - 0.5, t], [0, y_curr],
+                    linestyle='dashed', color='gray', linewidth=1.0, alpha=0.7)
+    
+            strength = qc_relation_seq[t]
+            is_correct = bool(correctness_seq[t])
+            color = get_color(strength, is_correct)
+            symbol = '✓' if is_correct else '✕'
+
+            # 黑色描边底层
+            ax.text(t - 0.5, base_y_axes, symbol,
+                    color='black',
+                    transform=trans,
+                    fontsize=19, ha='center', va='center',
+                    clip_on=False, zorder=9)
+
+            # 上层彩色符号
+            ax.text(t - 0.5, base_y_axes, symbol,
+                    color=color,
+                    transform=trans,
+                    fontsize=17, ha='center', va='center',
+                    clip_on=False, zorder=10)
 
     # 底部加空间避免裁剪
     plt.subplots_adjust(bottom=0.25)
