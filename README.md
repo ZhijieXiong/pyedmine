@@ -256,8 +256,9 @@ python examples/roster/train/kt_plot.py
 
 效果如下图所示
 
-<img src="asset/img/trace_related_ks_map.png" alt="trace_related_ks_map" width="600">
-<img src="asset/img/trace_selected_ks_change.png" alt="trace_selected_ks_map" width="600">
+<img src="asset/img/trace_related_cs_change.png" alt="trace_related_cs_change" width="600">
+<img src="asset/img/trace_selected_cs_change.png" alt="trace_selected_cs_change" width="600">
+<img src="asset/img/trace_single_concept_change.png" alt="trace_single_concept_change" width="600">
 
 ## PyEdmine 重要发布
 | Releases | Date      |
