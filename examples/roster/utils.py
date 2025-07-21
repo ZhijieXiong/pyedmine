@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
+from matplotlib.patches import Ellipse
 
 
 def data2batches(data, batch_size):
@@ -16,7 +18,7 @@ def data2batches(data, batch_size):
     return batches
 
 
-def trace_related_ks_map(cs_state_seq, concept_seq, correctness_seq, figsize=(22, 3)):
+def trace_related_cs_change(cs_state_seq, concept_seq, correctness_seq, figsize=(22, 3)):
     cs_state_seq = np.array(cs_state_seq)
     concept_seq = np.array(concept_seq)
     correctness_seq = np.array(correctness_seq)
@@ -59,6 +61,7 @@ def trace_related_ks_map(cs_state_seq, concept_seq, correctness_seq, figsize=(22
         ax.add_patch(plt.Circle((-1.2, i), 0.3, color=color, transform=ax.transData, clip_on=False))
 
     # 上方实心或空心圆，空心改成圆环
+    ring_radius = 0.3
     for t in range(T):
         ks = concept_seq[t]
         if ks not in ks2row:
@@ -69,11 +72,10 @@ def trace_related_ks_map(cs_state_seq, concept_seq, correctness_seq, figsize=(22
 
         if correctness_seq[t]:
             # 实心圆
-            circle = plt.Circle((t, y), 0.3, color=color, transform=ax.transData, clip_on=False, zorder=10)
+            circle = plt.Circle((t, y), ring_radius, color=color, transform=ax.transData, clip_on=False, zorder=10)
             ax.add_patch(circle)
         else:
             # 圆环：实心色大圆 + 中心白圆覆盖
-            ring_radius = 0.3
             hole_radius = ring_radius / 2
 
             outer_circle = plt.Circle((t, y), ring_radius, color=color, transform=ax.transData, clip_on=False, zorder=10)
@@ -99,7 +101,7 @@ def trace_related_ks_map(cs_state_seq, concept_seq, correctness_seq, figsize=(22
     return fig
 
 
-def trace_selected_ks_change(cs_state_seq, question_seq, correctness_seq, selected_ks, figsize=(22, 3)):
+def trace_selected_cs_change(cs_state_seq, question_seq, correctness_seq, selected_ks, figsize=(22, 3)):
     cs_state_seq = np.array(cs_state_seq)
     question_seq = np.array(question_seq)
     correctness_seq = np.array(correctness_seq)
@@ -166,6 +168,64 @@ def trace_selected_ks_change(cs_state_seq, question_seq, correctness_seq, select
     ax.set_xticks(np.arange(T))
     ax.set_xticklabels(np.arange(T))
     ax.tick_params(axis='x', labelrotation=0, top=False, length=0)
+
+    # plt.tight_layout()
+    # plt.show()
+
+    return fig
+
+
+def trace_single_concept_change(target_concept, c_state_seq, qc_relation_seq, correctness_seq, figsize=(22, 3)):
+    c_state_seq = np.array(c_state_seq)
+    qc_relation_seq = np.array(qc_relation_seq)
+    correctness_seq = np.array(correctness_seq)
+    
+    T = len(c_state_seq)
+    x = np.arange(T)
+
+    cmap = plt.get_cmap('viridis')
+    norm = plt.Normalize(0, 1)
+    colors = cmap(norm(qc_relation_seq))
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(x, c_state_seq, color='blue', linewidth=2)
+    ax.set_xlim(-0.5, T - 0.5)
+    ymax = min(1, np.max(c_state_seq) + 0.05)
+    ax.set_ylim(0, ymax)  # ✅ y轴只显示 >=0 的部分
+
+    ax.set_xticks([])
+    ax.set_title(f"Knowledge Tracing over Time on c{target_concept}")
+    ax.tick_params(axis='y', labelrotation=0, top=False, length=0)
+    ax.tick_params(axis='x', labelrotation=0, top=False, length=0)
+
+    # ✅ 横轴下方添加标记：用混合坐标
+    base_y_axes = -0.2
+    trans = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
+
+    for t in range(T):
+        color = colors[t]
+        if correctness_seq[t]:
+            ax.plot(t, base_y_axes, marker='o', color=color, markersize=12,
+                    transform=trans, clip_on=False, zorder=10)
+        else:
+            ax.plot(t, base_y_axes, marker='^', color=color, markersize=12,
+                    transform=trans, clip_on=False, zorder=10)
+
+
+    # 添加 colorbar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    pos = ax.get_position()
+    cbar_ax = fig.add_axes([
+        pos.x1 + 0.01,
+        pos.y0 + 0.13,
+        0.01,
+        pos.height * 0.8
+    ])
+    cbar = fig.colorbar(sm, cax=cbar_ax)
+
+    # 底部加空间避免裁剪
+    plt.subplots_adjust(bottom=0.25)
 
     # plt.tight_layout()
     # plt.show()
