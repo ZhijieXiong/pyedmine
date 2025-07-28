@@ -80,7 +80,7 @@ class SingleModelEpochTrainer(ABC):
         save_model = trainer_config["save_model"]
         use_multi_metrics = trainer_config["use_multi_metrics"]
         main_metric = trainer_config["main_metric"]
-        mutil_metrics = trainer_config["mutil_metrics"]
+        multi_metrics = trainer_config["multi_metrics"]
         data_loaders = self.objects["data_loaders"]
         train_loader = data_loaders["train_loader"]
         valid_loader = data_loaders["valid_loader"]
@@ -88,7 +88,7 @@ class SingleModelEpochTrainer(ABC):
 
         train_performance = self.evaluate_dataset(model, train_loader)
         valid_performance = self.evaluate_dataset(model, valid_loader) if valid_loader is not None else None
-        self.train_record.next_epoch(train_performance, valid_performance, main_metric, use_multi_metrics, mutil_metrics)
+        self.train_record.next_epoch(train_performance, valid_performance, main_metric, use_multi_metrics, multi_metrics)
         best_epoch = self.train_record.get_best_epoch()
         if valid_loader is not None:
             valid_performance_str = self.train_record.get_performance_str("valid")
