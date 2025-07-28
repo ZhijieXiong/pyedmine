@@ -21,6 +21,7 @@ class DLSequentialKTEnv(gym.Env):
             batch = {k: [] for k in history_data[0].keys()}
             for item_data, next_rec in zip(history_data, next_rec_data):
                 seq_len = len(item_data["correctness_seq"]) + has_next_rec_data
+                batch["seq_len"].append(seq_len)
                 for k, v in item_data.items():
                     if type(v) is list:
                         if next_rec is None:
@@ -29,7 +30,8 @@ class DLSequentialKTEnv(gym.Env):
                             seq = v + [next_rec[k]] + [0] * (max_seq_len - seq_len)
                         batch[k].append(seq)
                     else:
-                        batch[k].append(v)
+                        if k != "seq_len":
+                            batch[k].append(v)
             for k in batch.keys():
                 if k not in ["weight_seq", "hint_factor_seq", "attempt_factor_seq", "time_factor_seq", "correct_float"]:
                     batch[k] = torch.tensor(batch[k]).long().to(self.params["device"])

@@ -18,25 +18,25 @@ settings_path = os.path.join(current_dir, "../../settings.json")
 with open(settings_path, "r") as f:
     settings = json.load(f)
 FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
-MODEL_DIR = settings["MODELS_DIR"]
+MODELS_DIR = settings["MODELS_DIR"]
 
 
 def config_lpr(local_params):
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
     if local_params.get("save_log", False):
-        log_path = os.path.join(MODEL_DIR, local_params["agent_dir_name"],
+        log_path = os.path.join(MODELS_DIR, local_params["agent_dir_name"],
                                 f"evaluate_log@{get_now_time().replace(' ', '@').replace(':', '-')}.txt")
     else:
         log_path = None
     if local_params.get("save_all_sample", False):
-        all_sample_path = os.path.join(MODEL_DIR, local_params["agent_dir_name"],
+        all_sample_path = os.path.join(MODELS_DIR, local_params["agent_dir_name"],
                                        f"all_sample_evaluation.txt")
     else:
         all_sample_path = None
     global_params["all_sample_path"] = all_sample_path
     config_logger(local_params, global_objects, log_path)
-    config_lpr_env(local_params, global_params, global_objects, MODEL_DIR)
+    config_lpr_env(local_params, global_params, global_objects, MODELS_DIR)
     global_objects["env_simulator"] = DLSequentialKTEnv(global_params, global_objects)
     if "RandomAgent" in local_params["agent_dir_name"]:
         config_random_agent(local_params, global_params, global_objects)
