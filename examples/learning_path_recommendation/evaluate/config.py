@@ -5,7 +5,8 @@ import numpy as np
 
 from edmine.data.FileManager import FileManager
 from edmine.env.learning_path_recommendation.KTEnv import DLSequentialKTEnv
-from edmine.agent.learning_path_recommendation.RandomSingleGoalAgent import RandomSingleGoalAgent
+from edmine.model.learning_path_recommendation_agent.RandomRecQCAgent import RandomRecQCAgent
+from edmine.model.learning_path_recommendation_agent.AStarRecConceptAgent import AStarRecConceptAgent
 from edmine.utils.log import get_now_time
 from edmine.config.basic import config_logger
 from edmine.config.env import config_lpr_env
@@ -22,7 +23,7 @@ MODELS_DIR = settings["MODELS_DIR"]
 
 
 def config_lpr(local_params):
-    global_params = {}
+    global_params = {"evaluator_config": {}}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
     if local_params.get("save_log", False):
         log_path = os.path.join(MODELS_DIR, local_params["agent_dir_name"],
@@ -38,49 +39,43 @@ def config_lpr(local_params):
     config_logger(local_params, global_objects, log_path)
     config_lpr_env(local_params, global_params, global_objects, MODELS_DIR)
     global_objects["env_simulator"] = DLSequentialKTEnv(global_params, global_objects)
-    if "RandomAgent" in local_params["agent_dir_name"]:
-        config_random_agent(local_params, global_params, global_objects)
+    
+    agent_name = local_params["agent_dir_name"].split("@@")[0]
+    if "RandomRecQC" in agent_name:
+        config_random_rec_qc_agent(local_params, global_params, global_objects, agent_name)
+    elif "AStarRecConceptAgent" in agent_name:
+        config_Astar_rec_concept_agent(local_params, global_params, global_objects, agent_name)
     else:
         pass
-    setting_name = local_params["setting_name"]
-    test_file_name = local_params["test_file_name"]
-    setting_dir = global_objects["file_manager"].get_setting_dir(setting_name)
-    global_params["datasets_config"] = {
-        "test": {
-            "file_path": os.path.join(setting_dir, test_file_name),
-            "batch_size": local_params["batch_size"]
-        }
-    }
-    global_params["evaluate_config"] = {
-        "master_threshold": local_params["master_threshold"]
-    }
+    global_params["evaluator_config"]["master_threshold"] = local_params["master_threshold"]
+    global_params["evaluator_config"]["agent_name"] = agent_name
+    global_params["evaluator_config"]["render"] = local_params["render"]
+    global_params["evaluator_config"]["batch_size"] = local_params["batch_size"]
     
     return global_params, global_objects
 
 
-def config_random_agent(local_params, global_params, global_objects):
-    global_objects["agent_class"] = RandomSingleGoalAgent
-    agent_name = "RandomAgent"
+def config_random_rec_qc_agent(local_params, global_params, global_objects, agent_name):
+    global_objects["agents"] = {
+        agent_name: RandomRecQCAgent(global_params, global_objects)
+    }
     global_objects["random_generator"] = np.random.RandomState(local_params["seed"])
-    _, concept_rec_strategy, max_attempt_per_concept = local_params["agent_dir_name"].split("@@")
-    global_params["agents_config"] = {
-        agent_name: {
-            "num_question": global_objects["dataset"]["q_table"].shape[0],
-            "num_concept": global_objects["dataset"]["q_table"].shape[1],
-            "concept_rec_strategy": concept_rec_strategy,
-            "max_attempt_per_concept": int(max_attempt_per_concept)
-        }
+
+
+def config_Astar_rec_concept_agent(local_params, global_params, global_objects, agent_name):
+    global_objects["agents"] = {
+        agent_name: AStarRecConceptAgent(global_params, global_objects)
+    }
+    global_objects["random_generator"] = np.random.RandomState(local_params["seed"])
+    file_manager = global_objects["file_manager"]
+    dataset_name = local_params["dataset_name"]
+    preprocessed_dir = file_manager.get_preprocessed_dir(dataset_name)
+    pre_relation_path = os.path.join(preprocessed_dir, "pre_relation.txt")
+    if not os.path.exists(pre_relation_path):
+        setting_dir = file_manager.get_setting_dir(local_params["setting_name"])
+        dlpr_dir = os.path.join(setting_dir, "DLPR")
+        pre_relation_path = os.path.join(dlpr_dir, f"{dataset_name}_pre_relation.txt")
+    global_objects["graph"] = {
+        "pre_relation_edges": read_edges(pre_relation_path, map_int=True)
     }
     
-    if concept_rec_strategy.startswith("AStar-"):
-        file_manager = global_objects["file_manager"]
-        dataset_name = local_params["dataset_name"]
-        preprocessed_dir = file_manager.get_preprocessed_dir(dataset_name)
-        pre_relation_path = os.path.join(preprocessed_dir, "pre_relation.txt")
-        if not os.path.exists(pre_relation_path):
-            setting_dir = file_manager.get_setting_dir(local_params["setting_name"])
-            dlpr_dir = os.path.join(setting_dir, "DLPR")
-            pre_relation_path = os.path.join(dlpr_dir, f"{dataset_name}_pre_relation.txt")
-        global_objects["graph"] = {
-            "pre_relation_edges": read_edges(pre_relation_path, map_int=True)
-        }

@@ -1,106 +1,106 @@
-import torch
-
 from edmine.metric.learning_path_recommendation import promotion_report
+from edmine.model.module.Memory import LPRMemory
 
 
 class LPREvaluator:
     def __init__(self, params, objects):
         self.params = params
         self.objects = objects
-        self.inference_results = {dataset_name: {} for dataset_name in self.objects["datasets"].keys()}
-        self.agents = []
-        self.all_learning_history = []
+        self.memories = []
+        self.done_data = []
         self.cur_data_idx = 0
         
-    def add_agents(self, n):
-        test_data = self.objects["datasets"]["test"]
-        agent_class = self.objects["agent_class"]
+    def add_memories(self, n):
+        test_data = self.objects["data"]["test"]
         for _ in range(n):
             if self.cur_data_idx >= len(test_data):
                 break
             user_data = test_data[self.cur_data_idx]
-            agent = agent_class(self.params, self.objects)
-            agent.reset([user_data["learning_goal"]], user_data)
-            self.agents.append(agent)
+            memory = LPRMemory()
+            if "learning_goal" in user_data:
+                memory.reset([user_data["learning_goal"]], user_data=user_data)
+            else:
+                memory.reset(user_data["learning_goals"], user_data=user_data)
+            self.memories.append(memory)
             self.cur_data_idx += 1
             
-    def remove_done_agents(self, batch_observation, batch_state):
+    def remove_done_memories(self, batch_observation, batch_state):
+        evaluator_config = self.params["evaluator_config"]
+        render = evaluator_config["render"]
+        master_th = evaluator_config["master_threshold"]
+        agent_name = evaluator_config["agent_name"]
+        agent = self.objects["agents"][agent_name]
+        
         remain_indices = []
-        for i, (agent, observation, state) in enumerate(zip(self.agents, batch_observation, batch_state)):
-            agent.update(current_state=state)
-            done = agent.judge_done()
+        for i, memory in enumerate(self.memories):
+            done = agent.judge_done(memory, master_th)
             if done:
-                self.all_learning_history.append(agent.output_learning_history())
-                agent.render()
-                self.agents[i] = None
+                self.done_data.append(memory.output_learning_history())
+                if render:
+                    memory.render(master_th)
+                self.memories[i] = None
             else:
                 remain_indices.append(i)
-        agents = [self.agents[remain_idx] for remain_idx in remain_indices]
-        self.agents = agents
+                
+        self.memories = [self.memories[remain_idx] for remain_idx in remain_indices]
         batch_observation = batch_observation[remain_indices]
         batch_state = batch_state[remain_indices]
         
         return batch_observation, batch_state
-        
 
     def evaluate(self):
-        test_data = self.objects["datasets"]["test"]
+        evaluator_config = self.params["evaluator_config"]
+        batch_size = evaluator_config["batch_size"]
+        agent_name = evaluator_config["agent_name"]
+        test_data = self.objects["data"]["test"]
         env = self.objects["env_simulator"]
-        batch_size = self.params["datasets_config"]["test"]["batch_size"]
+        agent = self.objects["agents"][agent_name]
         
-        self.add_agents(batch_size)
-        env_input_data = {"history_data": [agent.history_data for agent in self.agents]}
+        self.add_memories(batch_size)
+        env_input_data = {"history_data": [memory.history_data for memory in self.memories]}
         batch_observation, batch_state = env.step(env_input_data)
-        batch_observation, batch_state = self.remove_done_agents(batch_observation, batch_state)
+        for memory, state in zip(self.memories, batch_state):
+            memory.update_history_data(current_state=state)
+        batch_observation, batch_state = self.remove_done_memories(batch_observation, batch_state)
         
-        while len(self.agents) == 0 and self.cur_data_idx < len(test_data):
-            self.add_agents(batch_size)
-            env_input_data = {"history_data": [agent.history_data for agent in self.agents]}
-            batch_observation, batch_state = env.step(env_input_data)
-            batch_observation, batch_state = self.remove_done_agents(batch_observation, batch_state)
-        
-        while len(self.agents) > 0:
+        while len(self.memories) > 0:
+            # 推荐习题
             next_rec_data = []
-            for agent, observation, state in zip(self.agents, batch_observation, batch_state):
+            for memory, observation, state in zip(self.memories, batch_observation, batch_state):
+                rec_concept, rec_question = agent.recommend_qc(memory, 0)
+                memory.update_rec_data(int(rec_concept), int(rec_question))
                 next_rec_data.append({
-                    "question_seq": int(agent.rec_question()),
+                    "question_seq": int(rec_question),
                     "correctness_seq": 0,
                     "mask_seq": 1    
                 })
-            
             env_input_data = {
-                "history_data": [agent.history_data for agent in self.agents],
+                "history_data": [memory.history_data for memory in self.memories],
                 "next_rec_data": next_rec_data
             }
-            batch_observation, _ = env.step(env_input_data)
-            for i, (agent, observation) in enumerate(zip(self.agents, batch_observation)):
+            batch_observation, batch_state = env.step(env_input_data)
+            for i, (memory, observation, state) in enumerate(zip(self.memories, batch_observation, batch_state)):
                 q_id = next_rec_data[i]["question_seq"]
                 # 如果后面有用需要其它信息（例如时间信息）的KT模型，需要在这更改数据更新
                 next_rec_result = (q_id, int(observation > 0.5))
-                agent.update(next_rec_result=next_rec_result)
-            env_input_data = {"history_data": [agent.history_data for agent in self.agents]}
-            batch_observation, batch_state = env.step(env_input_data)
-            batch_observation, batch_state = self.remove_done_agents(batch_observation, batch_state)
-                
-            self.add_agents(batch_size - len(self.agents))
-            if len(self.agents) == 0:
-                break
-            
-            env_input_data = {"history_data": [agent.history_data for agent in self.agents]}
-            batch_observation, batch_state = env.step(env_input_data)
-            self.remove_done_agents(batch_observation, batch_state)
-            
-            while len(self.agents) == 0 and self.cur_data_idx < len(test_data):
-                self.add_agents(batch_size)
-                env_input_data = {"history_data": [agent.history_data for agent in self.agents]}
+                memory.update_history_data(current_state=state, next_rec_result=next_rec_result)
+            batch_observation, batch_state = self.remove_done_memories(batch_observation, batch_state)
+
+            # 添加KT数据用于模拟（要获取新加入数据的state）
+            if (len(self.memories) < batch_size) and (self.cur_data_idx < len(test_data)):
+                n = len(self.memories)
+                self.add_memories(batch_size - n)
+                env_input_data = {"history_data": [memory.history_data for memory in self.memories]}
                 batch_observation, batch_state = env.step(env_input_data)
-                self.remove_done_agents(batch_observation, batch_state)      
+                for memory, state in zip(self.memories[n:], batch_state[n:]):
+                    memory.update_history_data(current_state=state)
+                batch_observation, batch_state = self.remove_done_memories(batch_observation, batch_state)    
                 
         self.log_inference_results()     
 
     def log_inference_results(self):
-        samples = list(filter(lambda x: len(x["state_history"]) > 1, self.all_learning_history))            
-        steps = [5, 10, 20, 50]
+        samples = list(filter(lambda x: len(x["state_history"]) > 1, self.done_data))            
+        steps = [5, 10, 20]
         steps.sort()
         data2evaluate = {
             step: {

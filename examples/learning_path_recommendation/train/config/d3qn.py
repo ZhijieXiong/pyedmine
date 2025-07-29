@@ -37,10 +37,12 @@ def config_d3qn(local_params):
     
     # KT模型的配置也在global_params["models_config"]
     global_params["models_config"]["concept_rec_model"] = {
-        "num_layer": local_params["num_layer_c_rec_model"]
+        "num_layer": local_params["num_layer_c_rec_model"],
+        "dim_feature": local_params["dim_c_feature"]
     }
     global_params["models_config"]["question_rec_model"] = {
-        "num_layer": local_params["num_layer_q_rec_model"]
+        "num_layer": local_params["num_layer_q_rec_model"],
+        "dim_feature": local_params["dim_q_feature"]
     }
     # 特殊配制
     global_params["trainer_config"]["buffer_size"] = local_params["buffer_size"]

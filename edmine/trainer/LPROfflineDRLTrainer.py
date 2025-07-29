@@ -1,7 +1,6 @@
 import torch
 import wandb
 import os
-from copy import deepcopy
 from torch.nn.utils import clip_grad_norm_
 
 from edmine.model.module.Memory import LPRMemory
@@ -148,6 +147,7 @@ class LPROfflineDRLTrainer:
         train_data = self.objects["data"]["train"]
         idx = 0
         self.objects["logger"].info(f"{get_now_time()} start training")
+        agent.prepare4next_epoch()
         for epoch in range(1, max_epoch + 1):
             for model in models.values():
                 model.eval()
@@ -181,7 +181,7 @@ class LPROfflineDRLTrainer:
                             clip_grad_norm_(model.parameters(), max_norm=grad_clip_config["grad_clipped"])
                         optimizer.step()
                         optimizer.zero_grad()
-                for model_name in all_loss.key():
+                for model_name in all_loss.keys():
                     scheduler_config = schedulers_config[model_name]
                     scheduler = schedulers[model_name]
                     if scheduler_config["use_scheduler"]:
@@ -189,6 +189,9 @@ class LPROfflineDRLTrainer:
             for model in models.values():
                 model.eval()
             self.evaluate()
+            if self.stop_train():
+                break
+            agent.prepare4next_epoch()
 
     def evaluate(self):
         trainer_config = self.params["trainer_config"]
@@ -203,12 +206,12 @@ class LPROfflineDRLTrainer:
         agent = self.objects["agents"][agent_name]
         models = self.objects["lpr_models"]
 
-        valid_performance = self.evaluate_dataset(env, agent, valid_data[:20])
+        valid_performance = self.evaluate_dataset(env, agent, valid_data)
         # todo: 这里后面要修改，通用的trainer不应该调用get_average_performance_top_ns
         average_valid_performance = get_average_performance_top_ns(valid_performance)
         self.train_record.next_epoch(average_valid_performance, main_metric, use_multi_metrics, multi_metrics)
         best_epoch = self.train_record.get_best_epoch()
-        valid_performance_str = self.train_record.get_performance_str("valid")
+        valid_performance_str = self.train_record.get_performance_str()
         self.objects["logger"].info(
             f"{get_now_time()} epoch {self.train_record.get_current_epoch():<3} , valid performances are "
             f"{valid_performance_str}train loss is {self.train_record.get_loss_str()}, current best epoch is "
@@ -312,4 +315,20 @@ class LPROfflineDRLTrainer:
             performances[step] = promotion_report(initial_scores, final_scores, path_lens)
 
         return performances
+    
+    def stop_train(self):
+        trainer_config = self.params["trainer_config"]
+        max_epoch = trainer_config["max_epoch"]
+        use_early_stop = trainer_config["use_early_stop"]
+        num_epoch_early_stop = trainer_config["num_epoch_early_stop"]
+
+        stop_flag = self.train_record.stop_training(max_epoch, use_early_stop, num_epoch_early_stop)
+        if stop_flag:
+            best_valid_performance_by_valid = self.train_record.get_evaluate_result_str()
+            self.objects["logger"].info(
+                f"best valid epoch: {self.train_record.get_best_epoch():<3} , "
+                f"valid performances in best epoch by valid are {best_valid_performance_by_valid}\n"
+            )
+
+        return stop_flag
     

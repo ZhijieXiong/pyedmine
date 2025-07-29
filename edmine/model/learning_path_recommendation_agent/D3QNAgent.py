@@ -6,15 +6,40 @@ from copy import deepcopy
 from edmine.model.learning_path_recommendation_agent.RLBasedLPRAgent import RLBasedLPRAgent
 
 
-def init_model(dim_in, dim_out, num_layer):
-    model = []
-    for i in range(num_layer):
-        if i == 0:
-            model.append(nn.Linear(dim_in, dim_out))
-        else:
-            model.append(nn.Linear(dim_out, dim_out))
-        model.append(nn.ReLU())
-    return nn.Sequential(*model)
+class DuelingDQN(nn.Module):
+    def __init__(self, dim_in, dim_hidden, num_actions, num_layer):
+        super().__init__()
+        # 特征提取部分（共享主干）
+        layers = []
+        for i in range(num_layer):
+            if i == 0:
+                layers.append(nn.Linear(dim_in, dim_hidden))
+            else:
+                layers.append(nn.Linear(dim_hidden, dim_hidden))
+            layers.append(nn.ReLU())
+        self.feature_extractor = nn.Sequential(*layers)
+
+        # Value 分支：输出状态值 V(s)
+        self.value_head = nn.Sequential(
+            nn.Linear(dim_hidden, dim_hidden),
+            nn.ReLU(),
+            nn.Linear(dim_hidden, 1)  # 输出单个值
+        )
+
+        # Advantage 分支：输出各个动作的优势 A(s, a)
+        self.advantage_head = nn.Sequential(
+            nn.Linear(dim_hidden, dim_hidden),
+            nn.ReLU(),
+            nn.Linear(dim_hidden, num_actions)  # 输出 num_actions 个值
+        )
+
+    def forward(self, x):
+        features = self.feature_extractor(x)  # shape: (bs, dim_hidden)
+        value = self.value_head(features)     # shape: (bs, 1)
+        advantage = self.advantage_head(features)  # shape: (bs, num_actions)
+        # Q(s, a) = V(s) + A(s, a) - mean(A(s, ·))
+        q_values = value + advantage - advantage.mean(dim=-1, keepdim=True)
+        return q_values  # shape: (bs, num_actions)
     
 
 class D3QNAgent(RLBasedLPRAgent):
@@ -24,23 +49,27 @@ class D3QNAgent(RLBasedLPRAgent):
         c_rec_model_config = self.params["models_config"]["concept_rec_model"]
         q_rec_model_config = self.params["models_config"]["question_rec_model"]
         
-        self.concept_rec_model = init_model(
+        self.concept_rec_model = DuelingDQN(
             num_concept * 2,
+            c_rec_model_config["dim_feature"],
             num_concept,
             c_rec_model_config["num_layer"]
         ).to(self.params["device"])
-        self.question_rec_model = init_model(
+        self.question_rec_model = DuelingDQN(
             num_concept * 2,
+            q_rec_model_config["dim_feature"],
             num_question,
             q_rec_model_config["num_layer"]
         ).to(self.params["device"])
-        self.concept_rec_model_delay = init_model(
+        self.concept_rec_model_delay = DuelingDQN(
             num_concept * 2,
+            c_rec_model_config["dim_feature"],
             num_concept,
             c_rec_model_config["num_layer"]
         ).to(self.params["device"])
-        self.question_rec_model_delay = init_model(
+        self.question_rec_model_delay = DuelingDQN(
             num_concept * 2,
+            q_rec_model_config["dim_feature"],
             num_question,
             q_rec_model_config["num_layer"]
         ).to(self.params["device"])
@@ -197,23 +226,29 @@ class D3QNAgent(RLBasedLPRAgent):
         return batch
 
     def get_all_loss(self, batch):
+        q_table = self.objects["dataset"]["q_table_tensor"]
         trainer_config = self.params["trainer_config"]
         gamma = trainer_config["gamma"]
         batch_size = batch["c_reward"].shape[0]
 
         c_value = self.concept_rec_model(batch["cur_c_input"]).gather(dim=1, index=batch["cur_c"].unsqueeze(1)).squeeze(1)
         with torch.no_grad():
-            c_target = self.concept_rec_model_delay(batch["next_c_input"])
-        c_target = c_target.max(dim=1)[0].reshape(-1)
+            # double DQN：用online网络选择动作，然后用target网络估计target state value
+            next_c_action = self.concept_rec_model(batch["next_c_input"]).argmax(dim=1, keepdim=True)
+            c_target = self.concept_rec_model_delay(batch["next_c_input"]).gather(1, next_c_action).squeeze(1)
         c_target = batch["c_reward"] + c_target * gamma
-        concept_rec_loss = torch.nn.functional.mse_loss(c_value, c_target)
+        concept_rec_loss = torch.nn.functional.smooth_l1_loss(c_value, c_target)
 
+        q_mask = q_table.T[next_c_action].squeeze(dim=1).bool().to(self.params["device"])
         q_value = self.question_rec_model(batch["cur_q_input"]).gather(dim=1, index=batch["cur_q"].unsqueeze(1)).squeeze(1)
         with torch.no_grad():
-            q_target = self.question_rec_model_delay(batch["next_q_input"])
-        q_target = q_target.max(dim=1)[0].reshape(-1)
+            # double DQN
+            next_q_values = self.question_rec_model(batch["next_q_input"])
+            next_q_values[~q_mask] = float('-inf')
+            next_q_action = next_q_values.argmax(dim=1, keepdim=True)
+            q_target = self.question_rec_model_delay(batch["next_q_input"]).gather(1, next_q_action).squeeze(1)
         q_target = batch["q_reward"] + q_target * gamma
-        question_rec_loss = torch.nn.functional.mse_loss(q_value, q_target)
+        question_rec_loss = torch.nn.functional.smooth_l1_loss(q_value, q_target)
 
         return {
             "concept_rec_model": {
