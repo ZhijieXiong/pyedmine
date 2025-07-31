@@ -1,6 +1,7 @@
 from edmine.utils.use_torch import set_seed
 from edmine.dataset.SequentialKTDataset import *
 from edmine.trainer.LPROfflineDRLTrainer import LPROfflineDRLTrainer
+from edmine.trainer.LPROnlineDRLTrainer import LPROnlineDRLTrainer
 
 current_best_performance = -100
 
@@ -27,7 +28,10 @@ def get_objective_func(parser, config_func, agent_name, agent_class):
             agent_name: agent_class(global_params, global_objects)
         }
 
-        trainer = LPROfflineDRLTrainer(global_params, global_objects)
+        if agent_name in ["D3QN"]:
+            trainer = LPROfflineDRLTrainer(global_params, global_objects)
+        else:
+            trainer = LPROnlineDRLTrainer(global_params, global_objects)
         trainer.train()
         performance_this = trainer.train_record.get_evaluate_result()["main_metric"]
 

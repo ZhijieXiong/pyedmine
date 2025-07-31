@@ -119,6 +119,7 @@ class LPREvaluator:
                 data2evaluate[step]["final_scores"].append(states[min(step, len(states)-1)])
                 if step > len(states):
                     break
+                
         for step in steps:
             intial_scores = data2evaluate[step]["intial_scores"]
             final_scores = data2evaluate[step]["final_scores"]
@@ -127,4 +128,4 @@ class LPREvaluator:
             performance_str = ""
             for metric_name, metric_value in step_performance.items():
                 performance_str += f"{metric_name}: {metric_value:<9.5}, "
-            self.objects["logger"].info(f"step {step} performances are {performance_str}")
+            self.objects["logger"].info(f"    step {step} performances are {performance_str}")

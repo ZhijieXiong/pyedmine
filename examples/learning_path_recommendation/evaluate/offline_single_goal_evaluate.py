@@ -24,13 +24,13 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=64)
     # 智能体配置
     parser.add_argument("--agent_dir_name", type=str, 
-                        help="RandomRecQC-20，随机推荐20个知识点下的习题"
+                        help="随机推荐无需训练，仅用agent name表示参数：RandomRecQC-20，随机推荐20个知识点下的习题"
                         "AStarRecConceptAgent-4-5，表示使用A*算法搜索最短学习路径，最多学习4个知识点，每个知识点最多推荐5道习题",
-                        default=r"AStarRecConceptAgent-4-5")
+                        default=r"RandomRecQC-20")
     parser.add_argument("--agent_file_name", type=str, help="文件名", default="saved.ckt")
     # 掌握阈值和是否打印学习过程
     parser.add_argument("--master_threshold", type=float, default=0.6)
-    parser.add_argument("--render", type=str2bool, default=True)
+    parser.add_argument("--render", type=str2bool, default=False)
     # 随机种子
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--save_log", type=str2bool, default=False)

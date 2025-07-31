@@ -153,7 +153,9 @@ class LPROfflineDRLTrainer:
                 model.eval()
             self.objects["random_generator"].shuffle(train_data)
             self.objects["logger"].info(f"{get_now_time()} epoch {epoch:<4}, start collecting data")
+            agent.eval()
             rl_data, idx = self.collect_rl_data(train_data, idx)
+            agent.train()
             # 数据遍历完了，重新遍历
             if idx >= (len(train_data) - 3):
                 idx = 0

@@ -78,6 +78,16 @@ class D3QNAgent(RLBasedLPRAgent):
             "question_rec_model": self.question_rec_model
         }
         
+    def eval(self):
+        self.concept_rec_model.eval()
+        self.concept_rec_model_delay.eval()
+        self.question_rec_model.eval()
+        self.question_rec_model_delay.eval()
+        
+    def train(self):
+        self.concept_rec_model.train()
+        self.question_rec_model.train()
+        
     def prepare4next_epoch(self):
         self.concept_rec_model_delay.load_state_dict(self.concept_rec_model.state_dict())
         self.question_rec_model_delay.load_state_dict(self.question_rec_model.state_dict())
@@ -237,7 +247,7 @@ class D3QNAgent(RLBasedLPRAgent):
             next_c_action = self.concept_rec_model(batch["next_c_input"]).argmax(dim=1, keepdim=True)
             c_target = self.concept_rec_model_delay(batch["next_c_input"]).gather(1, next_c_action).squeeze(1)
         c_target = batch["c_reward"] + c_target * gamma
-        concept_rec_loss = torch.nn.functional.smooth_l1_loss(c_value, c_target)
+        concept_rec_loss = torch.nn.functional.mse_loss(c_value, c_target)
 
         q_mask = q_table.T[next_c_action].squeeze(dim=1).bool().to(self.params["device"])
         q_value = self.question_rec_model(batch["cur_q_input"]).gather(dim=1, index=batch["cur_q"].unsqueeze(1)).squeeze(1)
@@ -248,7 +258,7 @@ class D3QNAgent(RLBasedLPRAgent):
             next_q_action = next_q_values.argmax(dim=1, keepdim=True)
             q_target = self.question_rec_model_delay(batch["next_q_input"]).gather(1, next_q_action).squeeze(1)
         q_target = batch["q_reward"] + q_target * gamma
-        question_rec_loss = torch.nn.functional.smooth_l1_loss(q_value, q_target)
+        question_rec_loss = torch.nn.functional.mse_loss(q_value, q_target)
 
         return {
             "concept_rec_model": {

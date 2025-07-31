@@ -2,3 +2,5 @@ from .clip_params import setup_clip_args
 from .scheduler_params import setup_scheduler_args
 from .lpr_params import setup_common_args
 from .grad_acc_params import setup_grad_acc_args
+from .epoch_trainer_params import setup_epoch_trainer_args
+from .step_trainer_params import setup_step_trainer_args

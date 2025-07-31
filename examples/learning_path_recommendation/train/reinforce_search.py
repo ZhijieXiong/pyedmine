@@ -2,40 +2,31 @@ import argparse
 from hyperopt import fmin, tpe, hp
 
 from set_params import *
-from config.d3qn import config_d3qn
+from config.reinforce import config_reinforce
 from utils import get_objective_func
 
-from edmine.model.learning_path_recommendation_agent.D3QNAgent import D3QNAgent
+from edmine.model.learning_path_recommendation_agent.Rinforce import Reinforce
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_epoch_trainer_args(), setup_scheduler_args(), setup_clip_args(), setup_grad_acc_args()], 
+    parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_step_trainer_args(), setup_scheduler_args(), setup_clip_args(), setup_grad_acc_args()], 
                                      add_help=False)
-    # batch size
-    parser.add_argument("--buffer_size", type=int, default=5000)
-    parser.add_argument("--train_batch_size", type=int, default=64)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
     parser.add_argument("--learning_rate", type=float, default=0.0001)
     parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--momentum", type=float, default=0.9)
-    # 折扣因子和探索概率
+    # 折扣因子
     parser.add_argument("--gamma", type=float, default=0.9, help="discount factor")
-    parser.add_argument("--epsilon", type=float, default=0.1, help="ε-greedy")
     # 模型参数
     parser.add_argument("--max_question_attempt", type=int, default=20)
-    parser.add_argument("--dim_c_feature", type=int, default=64)
-    parser.add_argument("--dim_q_feature", type=int, default=128)
-    parser.add_argument("--num_layer_c_rec_model", type=int, default=2)
-    parser.add_argument("--num_layer_q_rec_model", type=int, default=2)
+    parser.add_argument("--num_layer_action_model", type=int, default=2)
+    parser.add_argument("--num_layer_state_model", type=int, default=2)
     
     # 设置参数空间
     parameters_space = {
-        "buffer_size": [500, 1000],
         "learning_rate": [0.00001, 0.0001, 0.001],
-        "train_batch_size": [32, 64],
         "gamma": [0.9, 0.95, 0.99],
-        "epsilon": [0.05, 0.1, 0.2],
     }
     space = {
         param_name: hp.choice(param_name, param_space)
@@ -55,4 +46,4 @@ if __name__ == "__main__":
     else:
         max_evals = num
     current_best_performance = 0
-    fmin(get_objective_func(parser, config_d3qn, "D3QN", D3QNAgent), space, algo=tpe.suggest, max_evals=max_evals)
+    fmin(get_objective_func(parser, config_reinforce, "Reinforce", Reinforce), space, algo=tpe.suggest, max_evals=max_evals)
