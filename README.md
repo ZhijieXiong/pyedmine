@@ -1,22 +1,19 @@
-# PyEdmine
-
 [![](./asset/img/pypi_icon.png)](https://pypi.org/project/edmine/)
 
-[文档] | [数据集信息] | [教育数据挖掘论文列表] | [模型榜单] | [English]
+[文档] | [相关论文列表] | [数据集信息] | [模型榜单]
 
 [文档]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
 [数据集信息]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
-[教育数据挖掘论文列表]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
+[相关论文列表]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
 [模型榜单]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
-[English]: README_EN.md
 
-PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
+PyEdmine是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
 
-目前已实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型
+PyEdmine基于主流实验设置，提出了一个统一的实验流程，用于进行知识追踪、认知诊断、习题推荐和学习路径推荐的实验
 
-我们约定了一个统一、易用的数据文件格式，并已支持 14 个 benchmark dataset
+PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持 14 个 benchmark dataset
 
-此外，我们设计了一个统一的实验设置，该设置下，知识追踪模型和认知诊断模型可以在习题推荐任务上进行评估
+PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型、3个学习路径推荐模型
 
 
 <p align="center">
@@ -24,7 +21,32 @@ PyEdmine 是一个面向研究者的，易于开发与复现的**教育数据挖
   <br>
   <b>图片</b>: PyEdmine 实验流程图
 </p>
-各任务的具体实验设置请查阅[这里](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)
+
+各任务的具体实验设置和代码框架设计请查阅[文档](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)
+
+
+- [安装](#安装)
+  - [从pip安装](#从pip安装)
+  - [从源文件安装（推荐）](#从源文件安装推荐)
+  - [主要依赖](#主要依赖)
+- [快速开始](#快速开始)
+  - [目录配置](#目录配置)
+  - [数据预处理](#数据预处理)
+  - [数据集划分](#数据集划分)
+  - [模型训练](#模型训练)
+  - [模型评估](#模型评估)
+    - [知识追踪](#知识追踪)
+    - [认知诊断](#认知诊断)
+    - [习题推荐](#习题推荐)
+    - [学习路径推荐](#学习路径推荐)
+  - [模型自动调参](#模型自动调参)
+  - [绘制学生知识状态变化图](#绘制学生知识状态变化图)
+- [PyEdmine 重要发布](#pyedmine-重要发布)
+- [数据集扩展](#数据集扩展)
+- [参考代码库](#参考代码库)
+- [贡献](#贡献)
+- [免责声明](#免责声明)
+
 
 ## 安装
 
@@ -52,7 +74,7 @@ pip install -e .
 
 2、数据预处理：下载原始数据集并放置到指定位置，然后使用 `examples` 中提供的脚本进行数据预处理，以获得统一格式的数据文件。数据集信息可在 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html) 查看；
 
-3、数据集划分：基于统一格式的数据文件并结合特定实验设置进行数据集划分。PyEdmine 提供了四种实验设置：两种知识追踪任务的设置（分别借鉴 [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) 与 [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988)）、一种认知诊断任务的设置（借鉴 [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)）、以及一种习题推荐任务的设置；
+3、数据集划分：对执行了统一格式处理后的数据，基于特定实验设置进行数据集划分。PyEdmine 提供了五种实验设置：两种知识追踪任务的设置（分别借鉴 [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) 与 [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988)）、一种认知诊断任务的设置（借鉴 [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)）、一种离线习题推荐任务和一种离线学习路径推荐任务的设置；
 
 4、模型训练：`examples` 中提供了每个模型的训练启动脚本，更多信息可参考 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)；
 
@@ -174,6 +196,7 @@ python data_preprocess/kt_data.py
 python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追踪
 python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
+
 ```
 你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ),[sfkt_setting](https://www.alipan.com/s/NfUiLwfoAsK), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
 
@@ -190,22 +213,59 @@ python examples/cognitive_diagnosis/train/ncd.py  # 使用默认参数训练NCD�
 python examples/knowledge_tracing/dimkt/get_difficulty.py  # 生成DIMKT需要的难度信息
 python examples/cognitive_diagnosis/hyper_cd/construct_hyper_graph.py  # 生成HyperCD需要的图信息
 ```
-训练时会得到类似如下的输出
+
+学习路径推荐任务需要知识追踪模型作为环境模拟器，因此需要先训练好一个知识追踪模型，PyEdmine目前实现了基于qDKT和LPKT4LPR的环境模拟器
+
+基于Epoch的训练器，训练时会得到类似如下的输出
 ```bash
-2025-03-06 02:12:35 epoch 1   , valid performances are main metric: 0.7186   , AUC: 0.7186   , ACC: 0.64765  , MAE: 0.41924  , RMSE: 0.46919  , train loss is predict loss: 0.588902    , current best epoch is 1
-2025-03-06 02:12:37 epoch 2   , valid performances are main metric: 0.72457  , AUC: 0.72457  , ACC: 0.63797  , MAE: 0.42329  , RMSE: 0.47456  , train loss is predict loss: 0.556672    , current best epoch is 2
-2025-03-06 02:12:39 epoch 3   , valid performances are main metric: 0.72014  , AUC: 0.72014  , ACC: 0.63143  , MAE: 0.43218  , RMSE: 0.47536  , train loss is predict loss: 0.551513    , current best epoch is 2
-2025-03-06 02:12:40 epoch 4   , valid performances are main metric: 0.71843  , AUC: 0.71843  , ACC: 0.65182  , MAE: 0.41843  , RMSE: 0.46837  , train loss is predict loss: 0.548907    , current best epoch is 2
-2025-03-06 02:12:42 epoch 5   , valid performances are main metric: 0.72453  , AUC: 0.72453  , ACC: 0.65276  , MAE: 0.41841  , RMSE: 0.46684  , train loss is predict loss: 0.547639    , current best epoch is 2
+2025-06-19 10:59:21 start loading and processing dataset
+2025-06-19 10:59:38 start training
+2025-06-19 10:59:44 epoch 1   , valid performances are main metric: 0.76521  , AUC: 0.76521  , ACC: 0.84833  , MAE: 0.23686  , RMSE: 0.34025  , train loss is predict loss: 0.406844    , current best epoch is 1
+2025-06-19 11:00:11 epoch 2   , valid performances are main metric: 0.77796  , AUC: 0.77796  , ACC: 0.85032  , MAE: 0.23244  , RMSE: 0.33654  , train loss is predict loss: 0.376817    , current best epoch is 2
+2025-06-19 11:00:40 epoch 3   , valid performances are main metric: 0.78149  , AUC: 0.78149  , ACC: 0.85163  , MAE: 0.22629  , RMSE: 0.33514  , train loss is predict loss: 0.371912    , current best epoch is 3
+2025-06-19 11:01:08 epoch 4   , valid performances are main metric: 0.78366  , AUC: 0.78366  , ACC: 0.85256  , MAE: 0.22437  , RMSE: 0.33424  , train loss is predict loss: 0.369758    , current best epoch is 4
+2025-06-19 11:01:37 epoch 5   , valid performances are main metric: 0.78437  , AUC: 0.78437  , ACC: 0.85268  , MAE: 0.21839  , RMSE: 0.33416  , train loss is predict loss: 0.368626    , current best epoch is 4
+
 ...
-2025-03-06 02:13:44 epoch 31  , valid performances are main metric: 0.72589  , AUC: 0.72589  , ACC: 0.65867  , MAE: 0.40794  , RMSE: 0.46316  , train loss is predict loss: 0.532516    , current best epoch is 16
-2025-03-06 02:13:47 epoch 32  , valid performances are main metric: 0.72573  , AUC: 0.72573  , ACC: 0.65426  , MAE: 0.41602  , RMSE: 0.46415  , train loss is predict loss: 0.532863    , current best epoch is 16
-2025-03-06 02:13:49 epoch 33  , valid performances are main metric: 0.72509  , AUC: 0.72509  , ACC: 0.6179   , MAE: 0.43133  , RMSE: 0.48417  , train loss is predict loss: 0.532187    , current best epoch is 16
-2025-03-06 02:13:52 epoch 34  , valid performances are main metric: 0.72809  , AUC: 0.72809  , ACC: 0.63938  , MAE: 0.41994  , RMSE: 0.47377  , train loss is predict loss: 0.533765    , current best epoch is 16
-2025-03-06 02:13:54 epoch 35  , valid performances are main metric: 0.72523  , AUC: 0.72523  , ACC: 0.63852  , MAE: 0.42142  , RMSE: 0.47327  , train loss is predict loss: 0.531101    , current best epoch is 16
-2025-03-06 02:13:57 epoch 36  , valid performances are main metric: 0.72838  , AUC: 0.72838  , ACC: 0.61986  , MAE: 0.43105  , RMSE: 0.48364  , train loss is predict loss: 0.532342    , current best epoch is 16
-best valid epoch: 16  , train performances in best epoch by valid are main metric: 0.74893  , AUC: 0.74893  , ACC: 0.72948  , MAE: 0.34608  , RMSE: 0.42706  , main_metric: 0.74893  , 
-valid performances in best epoch by valid are main metric: 0.72902  , AUC: 0.72902  , ACC: 0.59389  , MAE: 0.43936  , RMSE: 0.49301  , main_metric: 0.72902  , 
+
+2025-06-19 11:06:12 epoch 37  , valid performances are main metric: 0.78987  , AUC: 0.78987  , ACC: 0.85457  , MAE: 0.2147   , RMSE: 0.33187  , train loss is predict loss: 0.362751    , current best epoch is 21
+2025-06-19 11:06:17 epoch 38  , valid performances are main metric: 0.7907   , AUC: 0.7907   , ACC: 0.85463  , MAE: 0.21792  , RMSE: 0.3316   , train loss is predict loss: 0.362828    , current best epoch is 21
+2025-06-19 11:06:23 epoch 39  , valid performances are main metric: 0.78943  , AUC: 0.78943  , ACC: 0.85388  , MAE: 0.22209  , RMSE: 0.33233  , train loss is predict loss: 0.362957    , current best epoch is 21
+2025-06-19 11:06:29 epoch 40  , valid performances are main metric: 0.79026  , AUC: 0.79026  , ACC: 0.85434  , MAE: 0.21326  , RMSE: 0.33218  , train loss is predict loss: 0.362876    , current best epoch is 21
+2025-06-19 11:06:35 epoch 41  , valid performances are main metric: 0.79023  , AUC: 0.79023  , ACC: 0.8546   , MAE: 0.22441  , RMSE: 0.33173  , train loss is predict loss: 0.362758    , current best epoch is 21
+best valid epoch: 21  , train performances in best epoch by valid are main metric: 0.79207  , AUC: 0.79207  , ACC: 0.85297  , MAE: 0.22056  , RMSE: 0.33278  , main_metric: 0.79207  , 
+valid performances in best epoch by valid are main metric: 0.7898   , AUC: 0.7898   , ACC: 0.85434  , MAE: 0.21901  , RMSE: 0.33197  , main_metric: 0.7898   , 
+```
+基于Step的训练器，训练时会得到类似如下的输出
+```bash
+2025-08-01 19:16:44 start loading and processing dataset
+2025-08-01 19:17:08 start training
+2025-08-01 19:17:28 step 100      : train loss is concept state loss: 0.867828    , concept action loss: -1.51221    , question state loss: 0.338242    , question action loss: -1.80328    , 
+2025-08-01 19:17:50 step 200      : train loss is concept state loss: 0.818596    , concept action loss: -1.46902    , question state loss: 0.308322    , question action loss: -1.78957    , 
+2025-08-01 19:18:14 step 300      : train loss is concept state loss: 0.823793    , concept action loss: -1.48536    , question state loss: 0.309225    , question action loss: -2.42813    , 
+2025-08-01 19:18:35 step 400      : train loss is concept state loss: 0.701109    , concept action loss: -1.35137    , question state loss: 0.235002    , question action loss: -3.50641    , 
+2025-08-01 19:18:58 step 500      : train loss is concept state loss: 0.738613    , concept action loss: -1.4045     , question state loss: 0.258047    , question action loss: -3.9537     , 
+2025-08-01 19:32:58 step 500      , valid performance are
+main metric: -0.008321982840624414
+step5, AP: -0.033304, APR: -0.0063331, RP: -0.033304, RPR: -0.0063331, NRP: -0.061017, NRPR: -0.011474, 
+step10, AP: -0.046469, APR: -0.0041848, RP: -0.046469, RPR: -0.0041848, NRP: -0.08442 , NRPR: -0.0075014, 
+step20, AP: -0.067674, APR: -0.0033046, RP: -0.067674, RPR: -0.0033046, NRP: -0.12283 , NRPR: -0.0059905, 
+
+...
+
+2025-08-01 21:53:24 step 5100     : train loss is concept state loss: 0.212986    , concept action loss: -0.765349   , question state loss: 0.0368868   , question action loss: -1.31573    , 
+2025-08-01 21:53:46 step 5200     : train loss is concept state loss: 0.199054    , concept action loss: -0.732374   , question state loss: 0.0336832   , question action loss: -1.18531    , 
+2025-08-01 21:54:08 step 5300     : train loss is concept state loss: 0.208855    , concept action loss: -0.761285   , question state loss: 0.0397747   , question action loss: -1.28841    , 
+2025-08-01 21:54:28 step 5400     : train loss is concept state loss: 0.178077    , concept action loss: -0.706407   , question state loss: 0.0257976   , question action loss: -1.04622    , 
+2025-08-01 21:54:49 step 5500     : train loss is concept state loss: 0.191855    , concept action loss: -0.728117   , question state loss: 0.0346215   , question action loss: -1.20783    , 
+2025-08-01 22:08:29 step 5500     , valid performance are
+main metric: -0.012395949990968961
+step5, AP: -0.05172 , APR: -0.0097354, RP: -0.05172 , RPR: -0.0097354, NRP: -0.097195, NRPR: -0.018089, 
+step10, AP: -0.06721 , APR: -0.0062151, RP: -0.06721 , RPR: -0.0062151, NRP: -0.12677 , NRPR: -0.011617, 
+step20, AP: -0.083493, APR: -0.0039493, RP: -0.083493, RPR: -0.0039493, NRP: -0.15846 , NRPR: -0.0074827, 
+
+best valid step: 500      
+valid performance by best valid epoch is {"5": {"AP": -0.03330377663327104, "APR": -0.00633306784213987, "RP": -0.03330377663327104, "RPR": -0.00633306784213987, "NRP": -0.061017051242375234, "NRPR": -0.011473998633936285}, "10": {"AP": -0.04646934891696771, "APR": -0.004184800090990535, "RP": -0.04646934891696771, "RPR": -0.004184800090990535, "NRP": -0.08442007529036973, "NRPR": -0.007501426604322975}, "20": {"AP": -0.06767395292607752, "APR": -0.0033046125319343496, "RP": -0.06767395292607752, "RPR": -0.0033046125319343496, "NRP": -0.12283069568440122, "NRPR": -0.005990523283613981}}
 ```
 如果训练模型时*use_wandb*参数为True，则可以在[wandb](https://wandb.ai/)上查看模型的损失变化和指标变化
 
@@ -237,6 +297,14 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 - OFFLINE_ACC 将学生未来练习的习题作为标签，计算准确率
 - OFFLINE_NDCG 将学生未来练习的习题作为标签，计算NDCG
 - PERSONALIZATION_INDEX 计算给不同学生推荐习题的差异度，作为个性化的指标
+#### 学习路径推荐
+$m_{start}$和$m_{end}$分别是目标知识点的初始分数和最终分数，$m_{full}$是知识点的满分，$l$是路径长度
+- AP = $m_{end} - m_{start}$
+- APR = $\frac{m_{end} - m_{start}}{l}$
+- RP = $\frac{AP}{m_{full}}$
+- RPR = $\frac{RP}{l}$
+- NRP = $\frac{AP}{m_{full} - m_{start}}$
+- NRPR = $\frac{NRP}{l}$
 
 你也可以下载已经[训练好的模型](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing)在我们提供的实验设置上进行模型评估
 
@@ -266,10 +334,12 @@ python examples/roster/train/kt_plot.py
 | v0.1.0   | 3/26/2025 |
 | v0.1.1   | 3/31/2025 |
 | v0.2.0   | 4/9/2025 |
+| v0.2.1   | 1/8/2025 |
 
 - `v0.1.0` 初始发布版本
 - `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
 - `v0.2.0` beta版本，但是GRKT模型训练会报错（NaN），尚未解决
+- `v0.2.1` 修复了一些bug，集成了学习路径推荐任务
 
 ## 数据集扩展
 [edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。
@@ -283,10 +353,6 @@ python examples/roster/train/kt_plot.py
 结合人工进行了简单核对与修正。
 
 尽管整体文本信息具有较高准确性，但仍可能存在个别提取错误。这是一个**非官方的扩展版本**，欢迎社区参考与使用，但建议在具体研究中结合自身需求进行验证与清洗。
-
-## 开发中
-
-### 学习路径规划任务
 
 ## 参考代码库
 
