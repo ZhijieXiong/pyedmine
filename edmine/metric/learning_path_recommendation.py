@@ -1,12 +1,4 @@
 import numpy as np
-from longling import as_list
-
-
-def as_array(obj):
-    if isinstance(obj, np.ndarray):
-        return obj
-    else:
-        return np.asarray(as_list(obj))
 
 
 def promotion_report(initial_scores, final_scores, path_lengths, weights=None):
@@ -46,21 +38,21 @@ def promotion_report(initial_scores, final_scores, path_lengths, weights=None):
         }
     ret = {}
 
-    initial_scores = as_array(initial_scores)
-    final_scores = as_array(final_scores)
+    initial_scores = np.asarray(initial_scores)
+    final_scores = np.asarray(final_scores)
 
     absp = final_scores - initial_scores
 
     if weights is not None:
-        absp *= as_array(weights)
+        absp *= np.asarray(weights)
 
     ret["AP"] = absp
 
-    absp_rate = absp / as_array(path_lengths)
+    absp_rate = absp / np.asarray(path_lengths)
     absp_rate[absp_rate == np.inf] = 0
     ret["APR"] = absp_rate
 
-    full_score = as_array([1] * len(initial_scores))
+    full_score = np.asarray([1] * len(initial_scores))
 
     relp = absp / full_score
     ret["RP"] = relp
