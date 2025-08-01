@@ -64,7 +64,7 @@ class LPROfflineDRLTrainer:
         done_data = []
         remain_indices = []
         for i, memory in enumerate(memories):
-            done = agent.judge_done(memory, master_th)
+            done = agent.judge_done(memory, master_th=master_th)
             if done:
                 done_data.append(memory.output_learning_history())
                 memories[i] = None
@@ -98,7 +98,7 @@ class LPROfflineDRLTrainer:
             # 推荐习题
             next_rec_data = []
             for memory, observation, state in zip(memories, batch_observation, batch_state):
-                rec_concept, rec_question = agent.recommend_qc(memory, epsilon)
+                rec_concept, rec_question = agent.recommend_qc(memory, epsilon=epsilon)
                 memory.update_rec_data(int(rec_concept), int(rec_question))
                 next_rec_data.append({
                     "question_seq": int(rec_question),
@@ -256,7 +256,7 @@ class LPROfflineDRLTrainer:
             # 推荐习题
             next_rec_data = []
             for memory, observation, state in zip(memories, batch_observation, batch_state):
-                rec_concept, rec_question = agent.recommend_qc(memory, 0)
+                rec_concept, rec_question = agent.recommend_qc(memory, epsilon=0)
                 memory.update_rec_data(int(rec_concept), int(rec_question))
                 next_rec_data.append({
                     "question_seq": int(rec_question),

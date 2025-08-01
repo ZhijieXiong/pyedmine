@@ -55,6 +55,7 @@ class LPREvaluator:
         test_data = self.objects["data"]["test"]
         env = self.objects["env_simulator"]
         agent = self.objects["agents"][agent_name]
+        agent.eval()
         
         self.add_memories(batch_size)
         env_input_data = {"history_data": [memory.history_data for memory in self.memories]}
@@ -128,4 +129,4 @@ class LPREvaluator:
             performance_str = ""
             for metric_name, metric_value in step_performance.items():
                 performance_str += f"{metric_name}: {metric_value:<9.5}, "
-            self.objects["logger"].info(f"    step {step} performances are {performance_str}")
+            self.objects["logger"].info(f"step {step} performances are {performance_str}")

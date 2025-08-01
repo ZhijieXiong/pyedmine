@@ -76,7 +76,6 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
         trainer_config = self.params["trainer_config"]
         agent_name = trainer_config["agent_name"]
         master_th = trainer_config["master_threshold"]
-        epsilon = trainer_config.get("epsilon", 0)
         agent = self.objects["agents"][agent_name]
         env = self.objects["env_simulator"]
         memory = LPRMemory()
@@ -85,15 +84,14 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
         else:
             memory.reset(user_data["learning_goals"], user_data=user_data)
         
-        done_data = []
         env_input_data = {"history_data": [memory.history_data]}
         observation, batch_state = env.step(env_input_data)
         state = batch_state[0]
         memory.update_history_data(current_state=state)
-        done = agent.judge_done(memory, master_th)
+        done = agent.judge_done(memory, master_th=master_th)
         while not done:
             next_rec_data = []
-            rec_concept, rec_question = agent.recommend_qc(memory, epsilon)
+            rec_concept, rec_question = agent.recommend_qc(memory)
             memory.update_rec_data(int(rec_concept), int(rec_question))
             next_rec_data.append({
                 "question_seq": int(rec_question),
@@ -110,7 +108,7 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
             # 如果后面有用需要其它信息（例如时间信息）的KT模型，需要在这更改数据更新
             next_rec_result = (q_id, int(observation > 0.5))
             memory.update_history_data(current_state=state, next_rec_result=next_rec_result)
-            done = agent.judge_done(memory, master_th)
+            done = agent.judge_done(memory, master_th=master_th)
         return agent.done_data2rl_data([memory.output_learning_history()])
         
     def train(self):
@@ -272,7 +270,7 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
             # 推荐习题
             next_rec_data = []
             for memory, observation, state in zip(memories, batch_observation, batch_state):
-                rec_concept, rec_question = agent.recommend_qc(memory, 0)
+                rec_concept, rec_question = agent.recommend_qc(memory)
                 memory.update_rec_data(int(rec_concept), int(rec_question))
                 next_rec_data.append({
                     "question_seq": int(rec_question),

@@ -5,7 +5,7 @@ from set_params import *
 from config.reinforce import config_reinforce
 from utils import get_objective_func
 
-from edmine.model.learning_path_recommendation_agent.Rinforce import Reinforce
+from edmine.model.learning_path_recommendation_agent.Reinforce import Reinforce
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from edmine.utils.use_torch import set_seed
 from edmine.utils.log import get_now_time
 from edmine.utils.data_io import read_kt_file
 from edmine.trainer.LPROnlineDRLTrainer import LPROnlineDRLTrainer
-from edmine.model.learning_path_recommendation_agent.Rinforce import Reinforce
+from edmine.model.learning_path_recommendation_agent.Reinforce import Reinforce
 
 
 if __name__ == "__main__":

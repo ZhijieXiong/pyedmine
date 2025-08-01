@@ -33,7 +33,10 @@ def get_objective_func(parser, config_func, agent_name, agent_class):
         else:
             trainer = LPROnlineDRLTrainer(global_params, global_objects)
         trainer.train()
-        performance_this = trainer.train_record.get_evaluate_result()["main_metric"]
+        if agent_name in ["D3QN"]:
+            performance_this = trainer.train_record.get_evaluate_result()["main_metric"]
+        else:
+            performance_this = trainer.best_valid_main_metric
 
         if (performance_this - current_best_performance) >= 0.001:
             current_best_performance = performance_this

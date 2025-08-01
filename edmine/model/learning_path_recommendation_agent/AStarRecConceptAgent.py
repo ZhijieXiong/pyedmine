@@ -11,7 +11,7 @@ class AStarRecConceptAgent(LPRAgent):
         self.rev_graph = None
         self.shortest_path2goal = None
     
-    def judge_done(self, memory, master_th):
+    def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
         evaluator_config = self.params["evaluator_config"]
@@ -37,7 +37,7 @@ class AStarRecConceptAgent(LPRAgent):
         else:
             return False
         
-    def recommend_qc(self, memory, master_th):
+    def recommend_qc(self, memory, master_th=0.6, epsilon=0):
         evaluator_config = self.params["evaluator_config"]
         agent_name = evaluator_config["agent_name"]
         max_attempt_per_concept = int(agent_name.split("-")[2])

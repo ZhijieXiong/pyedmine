@@ -11,6 +11,7 @@ from edmine.utils.log import get_now_time
 from edmine.config.basic import config_logger
 from edmine.config.env import config_lpr_env
 from edmine.utils.data_io import read_edges
+from edmine.model.load_agent import load_lpr_agent
 
 
 current_file_name = inspect.getfile(inspect.currentframe())
@@ -46,11 +47,15 @@ def config_lpr(local_params):
     elif "AStarRecConceptAgent" in agent_name:
         config_Astar_rec_concept_agent(local_params, global_params, global_objects, agent_name)
     else:
-        pass
+        agent_dir = os.path.join(MODELS_DIR, local_params["agent_dir_name"])
+        global_objects["agents"] = {
+            agent_name: load_lpr_agent(global_params, global_objects, agent_dir)
+        }
     global_params["evaluator_config"]["master_threshold"] = local_params["master_threshold"]
     global_params["evaluator_config"]["agent_name"] = agent_name
     global_params["evaluator_config"]["render"] = local_params["render"]
     global_params["evaluator_config"]["batch_size"] = local_params["batch_size"]
+    global_objects["random_generator"] = np.random.RandomState(local_params["seed"])
     
     return global_params, global_objects
 
@@ -59,14 +64,12 @@ def config_random_rec_qc_agent(local_params, global_params, global_objects, agen
     global_objects["agents"] = {
         agent_name: RandomRecQCAgent(global_params, global_objects)
     }
-    global_objects["random_generator"] = np.random.RandomState(local_params["seed"])
 
 
 def config_Astar_rec_concept_agent(local_params, global_params, global_objects, agent_name):
     global_objects["agents"] = {
         agent_name: AStarRecConceptAgent(global_params, global_objects)
     }
-    global_objects["random_generator"] = np.random.RandomState(local_params["seed"])
     file_manager = global_objects["file_manager"]
     dataset_name = local_params["dataset_name"]
     preprocessed_dir = file_manager.get_preprocessed_dir(dataset_name)

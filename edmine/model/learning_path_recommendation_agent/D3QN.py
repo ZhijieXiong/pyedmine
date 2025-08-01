@@ -42,7 +42,7 @@ class DuelingDQN(nn.Module):
         return q_values  # shape: (bs, num_actions)
     
 
-class D3QNAgent(RLBasedLPRAgent):
+class D3QN(RLBasedLPRAgent):
     def __init__(self, params, objects):
         super().__init__(params, objects)
         num_question, num_concept = self.objects["dataset"]["q_table"].shape
@@ -94,7 +94,7 @@ class D3QNAgent(RLBasedLPRAgent):
         self.concept_rec_model_delay.eval()
         self.question_rec_model_delay.eval()
     
-    def judge_done(self, memory, master_th):
+    def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
         max_question_attempt = self.params["agents_config"]["D3QN"]["max_question_attempt"]
@@ -103,10 +103,8 @@ class D3QNAgent(RLBasedLPRAgent):
             num_question_his += len(qs)
         return num_question_his >= max_question_attempt
     
-    def recommend_qc(self, memory, epsilon):
+    def recommend_qc(self, memory, master_th=0.6, epsilon=0):
         num_concept = self.objects["dataset"]["q_table"].shape[1]
-        trainer_config = self.params["trainer_config"]
-        master_th = trainer_config["master_threshold"]
         q_table = self.objects["dataset"]["q_table_tensor"]
         c2q = self.objects["dataset"]["c2q"]
         random_generator = self.objects["random_generator"]

@@ -72,7 +72,7 @@ class Reinforce(RLBasedLPRAgent):
         self.question_action_model.train()
         self.question_action_model.train()
     
-    def judge_done(self, memory, master_th):
+    def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
         max_question_attempt = self.params["agents_config"]["Reinforce"]["max_question_attempt"]
@@ -81,7 +81,7 @@ class Reinforce(RLBasedLPRAgent):
             num_question_his += len(qs)
         return num_question_his >= max_question_attempt
     
-    def recommend_qc(self, memory, epsilon=0):
+    def recommend_qc(self, memory, master_th=0.6, epsilon=0):
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         q_table = self.objects["dataset"]["q_table_tensor"]
         

@@ -5,7 +5,7 @@ from set_params import *
 from config.d3qn import config_d3qn
 from utils import get_objective_func
 
-from edmine.model.learning_path_recommendation_agent.D3QNAgent import D3QNAgent
+from edmine.model.learning_path_recommendation_agent.D3QN import D3QN
 
 
 if __name__ == "__main__":
@@ -33,7 +33,6 @@ if __name__ == "__main__":
     parameters_space = {
         "buffer_size": [500, 1000],
         "learning_rate": [0.00001, 0.0001, 0.001],
-        "train_batch_size": [32, 64],
         "gamma": [0.9, 0.95, 0.99],
         "epsilon": [0.05, 0.1, 0.2],
     }
@@ -55,4 +54,4 @@ if __name__ == "__main__":
     else:
         max_evals = num
     current_best_performance = 0
-    fmin(get_objective_func(parser, config_d3qn, "D3QN", D3QNAgent), space, algo=tpe.suggest, max_evals=max_evals)
+    fmin(get_objective_func(parser, config_d3qn, "D3QN", D3QN), space, algo=tpe.suggest, max_evals=max_evals)

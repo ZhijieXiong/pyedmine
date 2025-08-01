@@ -9,7 +9,7 @@ from edmine.utils.use_torch import set_seed
 from edmine.utils.log import get_now_time
 from edmine.utils.data_io import read_kt_file
 from edmine.trainer.LPROfflineDRLTrainer import LPROfflineDRLTrainer
-from edmine.model.learning_path_recommendation_agent.D3QNAgent import D3QNAgent
+from edmine.model.learning_path_recommendation_agent.D3QN import D3QN
 
 
 if __name__ == "__main__":
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     }
 
     global_objects["agents"] = {
-        "D3QN": D3QNAgent(global_params, global_objects)
+        "D3QN": D3QN(global_params, global_objects)
     }
     
     trainer = LPROfflineDRLTrainer(global_params, global_objects)
