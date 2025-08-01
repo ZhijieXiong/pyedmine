@@ -20,7 +20,7 @@ def config_epoch_trainer(local_params, global_params, model_name):
 
 def config_step_trainer(local_params, global_params, model_name):
     global_params["trainer_config"] = {
-        "batch_size": local_params["train_batch_size"],
+        "batch_size": local_params.get("train_batch_size", 0),
         "model_name": model_name,
         "max_step": local_params["max_step"],
         "use_early_stop": local_params["use_early_stop"],
@@ -39,8 +39,14 @@ def config_exercise_recommendation_trainer(local_params, global_params, model_na
     global_params["trainer_config"]["top_ns"] = eval(local_params["top_ns"])
 
 
-def config_learning_path_recommendation_trainer(local_params, global_params, model_name):
+def config_lpr_epoch_trainer(local_params, global_params, model_name):
     config_epoch_trainer(local_params, global_params, model_name)
+    global_params["trainer_config"]["target_steps"] = eval(local_params["target_steps"])
+    global_params["trainer_config"]["master_threshold"] = local_params["master_threshold"]
+    
+    
+def config_lpr_step_trainer(local_params, global_params, model_name):
+    config_step_trainer(local_params, global_params, model_name)
     global_params["trainer_config"]["target_steps"] = eval(local_params["target_steps"])
     global_params["trainer_config"]["master_threshold"] = local_params["master_threshold"]
 
