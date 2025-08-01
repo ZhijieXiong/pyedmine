@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # 智能体配置
     parser.add_argument("--agent_dir_name", type=str, 
                         help="随机推荐无需训练，仅用agent name表示参数：RandomRecQC-20，随机推荐20个知识点下的习题"
-                        "AStarRecConceptAgent-4-5，表示使用A*算法搜索最短学习路径，最多学习4个知识点，每个知识点最多推荐5道习题",
+                        "AStarRecConcept-4-5，表示使用A*算法搜索最短学习路径，最多学习4个知识点，每个知识点最多推荐5道习题",
                         default=r"RandomRecQC-20")
     parser.add_argument("--agent_file_name", type=str, help="文件名", default="saved.ckt")
     # 掌握阈值和是否打印学习过程

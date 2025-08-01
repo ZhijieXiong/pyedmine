@@ -44,7 +44,7 @@ def config_lpr(local_params):
     agent_name = local_params["agent_dir_name"].split("@@")[0]
     if "RandomRecQC" in agent_name:
         config_random_rec_qc_agent(local_params, global_params, global_objects, agent_name)
-    elif "AStarRecConceptAgent" in agent_name:
+    elif "AStarRecConcept" in agent_name:
         config_Astar_rec_concept_agent(local_params, global_params, global_objects, agent_name)
     else:
         agent_dir = os.path.join(MODELS_DIR, local_params["agent_dir_name"])

@@ -128,5 +128,5 @@ class LPREvaluator:
             step_performance = promotion_report(intial_scores, final_scores, path_lens)
             performance_str = ""
             for metric_name, metric_value in step_performance.items():
-                performance_str += f"{metric_name}: {metric_value:<9.5}, "
+                performance_str += f"{metric_name}: {metric_value:<9.5f}, "
             self.objects["logger"].info(f"step {step} performances are {performance_str}")
