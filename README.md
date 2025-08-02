@@ -13,7 +13,7 @@ PyEdmine提出了一个统一的实验流程，用于进行知识追踪、认知
 
 PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持 14 个 benchmark dataset
 
-PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型、3个学习路径推荐模型
+PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型、4个学习路径推荐模型
 
 
 <p align="center">
@@ -30,6 +30,7 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
   - [从源文件安装（推荐）](#从源文件安装推荐)
   - [主要依赖](#主要依赖)
 - [快速开始](#快速开始)
+  - [概览](#概览)
   - [目录配置](#目录配置)
   - [数据预处理](#数据预处理)
   - [数据集划分](#数据集划分)
@@ -68,6 +69,7 @@ pip install -e .
 非必需依赖：dgl 是部分认知诊断模型所需的；hyperopt 用于自动化参数调优；wandb 用于记录实验数据；tqdm 用于模型评估阶段。
 
 ## 快速开始
+### 概览
 请从 GitHub 下载 PyEdmine 的源代码，然后使用 `examples` 目录中提供的脚本完成数据预处理、数据集划分、模型训练与模型评估。PyEdmine 框架的基本流程如下，请按顺序执行：
 
 1、目录配置：通过 `settings.json` 文件配置数据与模型的存放路径，然后运行`set_up.py`以生成必要的目录；
@@ -270,7 +272,7 @@ valid performance by best valid epoch is {"5": {"AP": -0.03330377663327104, "APR
 如果训练模型时*use_wandb*参数为True，则可以在[wandb](https://wandb.ai/)上查看模型的损失变化和指标变化
 
 ### 模型评估
-如果训练模型时*save_model*参数，则会将模型参数文件保存至`/path/to/save/model`目录下，那么可以使用测试集对模型进行评估，如
+如果训练模型时*save_model*参数为True，则会将模型参数文件保存至`/path/to/save/model`目录下，那么可以使用测试集对模型进行评估，如
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
@@ -319,7 +321,7 @@ python examples/cognitive_diagnosis/train/ncd_search_params.py
 PyEdmine支持使用热力图展示学生知识状态变化过程，对应代码在
 
 ```bash
-python examples/roster/train/kt_plot.py
+python examples/roster/kt_plot.py
 ```
 
 效果如下图所示
