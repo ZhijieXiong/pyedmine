@@ -9,7 +9,7 @@
 
 PyEdmine是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
 
-PyEdmine基于主流实验设置，提出了一个统一的实验流程，用于进行知识追踪、认知诊断、习题推荐和学习路径推荐的实验
+PyEdmine提出了一个统一的实验流程，用于进行知识追踪、认知诊断、习题推荐和学习路径推荐的实验
 
 PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持 14 个 benchmark dataset
 
@@ -22,7 +22,7 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
   <b>图片</b>: PyEdmine 实验流程图
 </p>
 
-各任务的具体实验设置和代码框架设计请查阅[文档](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)
+各任务的具体实验设置请查阅[模型榜单](https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html)上的说明
 
 
 - [安装](#安装)
@@ -357,7 +357,6 @@ python examples/roster/train/kt_plot.py
 ## 参考代码库
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)
-- [EduDATA](https://github.com/bigdata-ustc/EduData)
 - [EduKTM](https://github.com/bigdata-ustc/EduKTM)
 - [EduCDM](https://github.com/bigdata-ustc/EduCDM)
 - [RecBole](https://github.com/RUCAIBox/RecBole)
