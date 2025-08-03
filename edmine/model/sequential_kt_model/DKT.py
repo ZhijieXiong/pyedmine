@@ -4,17 +4,21 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DKT"
 
 
+@register_model(MODEL_NAME)
 class DKT(nn.Module, DLSequentialKTModel):
-    model_name = "DKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(DKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["DKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         embed_config = model_config["embed_config"]
         dim_concept = embed_config["concept"]["dim_item"]
         dim_correctness = embed_config["correctness"]["dim_item"]
@@ -89,7 +93,7 @@ class DKT(nn.Module, DLSequentialKTModel):
     def get_knowledge_state(self, batch, only_last_state=True):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        num_concept = self.params["models_config"]["DKT"]["embed_config"]["concept"]["num_item"]
+        num_concept = self.params["models_config"][MODEL_NAME]["embed_config"]["concept"]["num_item"]
 
         self.encoder_layer.flatten_parameters()
         batch_size = batch["correctness_seq"].shape[0]

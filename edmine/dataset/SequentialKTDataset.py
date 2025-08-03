@@ -82,7 +82,7 @@ class DIMKTDataset(BasicSequentialKTDataset):
         self.dataset2tensor()
 
     def parse_difficulty(self):
-        question_difficulty = self.objects["dimkt"]["question_difficulty"]
+        question_difficulty = self.objects["DIMKT"]["question_difficulty"]
         for item_data in self.dataset_original:
             item_data["question_diff_seq"] = []
             for q_id in item_data["question_seq"]:
@@ -106,7 +106,7 @@ class QDCKTDataset(BasicSequentialKTDataset):
 
     def __getitem__(self, index):
         result = dict()
-        question_difficulty = self.objects["qdckt"]["question_difficulty"]
+        question_difficulty = self.objects["QDCKT"]["question_difficulty"]
         for key, value in self.dataset_original[index].items():
             result[key] = deepcopy(value)
 

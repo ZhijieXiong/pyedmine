@@ -5,17 +5,21 @@ from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTM
 from edmine.model.module.EmbedLayer import EmbedLayer, CosinePositionalEmbedding
 from edmine.model.module.Transformer import TransformerLayer4SimpleKT
 from edmine.model.module.PredictorLayer import PredictorLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "SimpleKT"
 
 
+@register_model(MODEL_NAME)
 class SimpleKT(nn.Module, DLSequentialKTModel):
-    model_name = "SimpleKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(SimpleKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["SimpleKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         self.embed_layer = EmbedLayer(model_config["embed_config"])
         self.encoder_layer = Architecture(params)
         self.predict_layer = PredictorLayer(model_config["predictor_config"])
@@ -23,7 +27,7 @@ class SimpleKT(nn.Module, DLSequentialKTModel):
     def base_emb(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        separate_qa = self.params["models_config"]["SimpleKT"]["separate_qa"]
+        separate_qa = self.params["models_config"][MODEL_NAME]["separate_qa"]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
 
         # c_ct
@@ -96,7 +100,7 @@ class Architecture(nn.Module):
         super().__init__()
 
         self.params = params
-        model_config = self.params["models_config"]["SimpleKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_block = model_config["num_block"]
         dim_model = model_config["dim_model"]
         seq_len = model_config["seq_len"]

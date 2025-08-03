@@ -3,17 +3,21 @@ import torch.nn as nn
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "LPKT4LPR"
 
 
+@register_model(MODEL_NAME)
 class LPKT4LPR(nn.Module, DLSequentialKTModel):
-    model_name = "LPKT4LPR"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(LPKT4LPR, self).__init__()
         self.params = params
         self.objects = objects
         
-        model_config = self.params["models_config"]["LPKT4LPR"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
         dim_correctness = model_config["embed_config"]["correctness"]["dim_item"]
         dim_e = model_config["dim_e"]
@@ -46,7 +50,7 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
 
     def forward(self, batch):
         question_seq = batch["question_seq"]
-        model_config = self.params["models_config"]["LPKT4LPR"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
         q_matrix = self.objects["dataset"]["q_table_tensor"].float()
         num_concept = q_matrix.shape[1]
@@ -118,7 +122,7 @@ class LPKT4LPR(nn.Module, DLSequentialKTModel):
 
     def get_knowledge_state(self, batch, only_last_state=True):
         question_seq = batch["question_seq"]
-        model_config = self.params["models_config"]["LPKT4LPR"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
         q_matrix = self.objects["dataset"]["q_table_tensor"].float()
         num_concept = q_matrix.shape[1]

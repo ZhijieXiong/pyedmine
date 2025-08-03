@@ -5,16 +5,20 @@ import torch.nn.functional as F
 from edmine.model.module.Clipper import NoneNegClipper
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "HyperCDF"
 
 
+@register_model(MODEL_NAME)
 class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "HyperCD"
+    model_name = MODEL_NAME
     def __init__(self, params, objects):
         super(HyperCD, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["HyperCD"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_user = model_config["num_user"]
         num_question = model_config["num_question"]
         num_concept = model_config["num_concept"]
@@ -44,7 +48,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
                 nn.init.xavier_normal_(param)
 
     def convolution(self, embedding, adj):
-        num_layer = self.params["models_config"]["HyperCD"]["num_layer"]
+        num_layer = self.params["models_config"][MODEL_NAME]["num_layer"]
         all_emb = embedding.weight.to(self.params["device"])
         final = [all_emb]
         for i in range(num_layer):
@@ -55,7 +59,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
         return final_emb
 
     def forward(self, batch):
-        leaky = self.params["models_config"]["HyperCD"]["leaky"]
+        leaky = self.params["models_config"][MODEL_NAME]["leaky"]
         student_id = batch["user_id"]
         exercise_id = batch["question_id"]
         q_table = self.objects["dataset"]["q_table_tensor"]
@@ -111,7 +115,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
 
 
     def get_knowledge_state(self, user_id):
-        leaky = self.params["models_config"]["HyperCD"]["leaky"]
+        leaky = self.params["models_config"][MODEL_NAME]["leaky"]
         student_adj = self.objects["dataset"]["adj"]["user"]
         knowledge_adj = self.objects["dataset"]["adj"]["concept"]
 
@@ -124,7 +128,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
         return torch.sigmoid(student_feature @ knowledge_feature.T)[user_id].detach().cpu().numpy()
 
     def get_exercise_level(self):
-        leaky = self.params["models_config"]["HyperCD"]["leaky"]
+        leaky = self.params["models_config"][MODEL_NAME]["leaky"]
         exercise_adj = self.objects["dataset"]["adj"]["question"]
         knowledge_adj = self.objects["dataset"]["adj"]["concept"]
         
@@ -137,7 +141,7 @@ class HyperCD(nn.Module, DLCognitiveDiagnosisModel):
         return torch.sigmoid(exercise_feature @ knowledge_feature.T).detach().cpu().numpy()
 
     def get_knowledge_feature(self):
-        leaky = self.params["models_config"]["HyperCD"]["leaky"]
+        leaky = self.params["models_config"][MODEL_NAME]["leaky"]
         convolved_knowledge_emb = self.convolution(self.knowledge_emb, self.knowledge_adj)
         knowledge_feature = F.leaky_relu(self.knowledge_emb2feature(convolved_knowledge_emb), negative_slope=leaky)
         return knowledge_feature.detach().cpu().numpy()

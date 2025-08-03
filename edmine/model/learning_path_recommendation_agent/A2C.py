@@ -4,6 +4,9 @@ import torch.nn as nn
 from copy import deepcopy
 
 from edmine.model.learning_path_recommendation_agent.RLBasedLPRAgent import RLBasedLPRAgent
+from edmine.model.registry import register_model
+
+MODEL_NAME = "A2C"
 
 
 def init_model(dim_in, dim_out, num_layer, softmax=True):
@@ -20,6 +23,7 @@ def init_model(dim_in, dim_out, num_layer, softmax=True):
     return nn.Sequential(*layers)
 
 
+@register_model(MODEL_NAME)
 class A2C(RLBasedLPRAgent):
     def __init__(self, params, objects):
         super().__init__(params, objects)
@@ -95,7 +99,7 @@ class A2C(RLBasedLPRAgent):
     def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
-        max_question_attempt = self.params["agents_config"]["A2C"]["max_question_attempt"]
+        max_question_attempt = self.params["agents_config"][MODEL_NAME]["max_question_attempt"]
         num_question_his = 0
         for qs in memory.question_rec_history:
             num_question_his += len(qs)

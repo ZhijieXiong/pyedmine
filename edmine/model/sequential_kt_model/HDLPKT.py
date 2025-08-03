@@ -7,16 +7,20 @@ import torch.nn.functional as F
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "HDLPKT"
 
 
+@register_model(MODEL_NAME)
 class HDLPKT(nn.Module, DLSequentialKTModel):
-    model_name = "HDLPKT"
+    model_name = MODEL_NAME
     def __init__(self, params, objects):
         super(HDLPKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["HDLPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_k = model_config["dim_k"]
         dim_a = model_config["dim_a"]
@@ -60,11 +64,11 @@ class HDLPKT(nn.Module, DLSequentialKTModel):
         self.deno=nn.Linear(num_concept, 2)
         
     def get_predict_score(self, batch, seq_start=2):
-        model_config = self.params["models_config"]["HDLPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["dim_k"]
         dim_a = model_config["dim_a"]
         max_seq_length = model_config["max_seq_length"]
-        q_matrix = self.objects["HDLPKT"]["q_matrix"]
+        q_matrix = self.objects[MODEL_NAME]["q_matrix"]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         
         user_id = batch["user_id"]
@@ -170,7 +174,7 @@ class HDLPKT(nn.Module, DLSequentialKTModel):
         }
 
     def target_exer_discriminator(self, q, k, mask):
-        model_config = self.params["models_config"]["HDLPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["dim_k"]
         
         mask1 = mask.unsqueeze(2).expand(-1, -1, 2 * dim_k)
@@ -197,7 +201,7 @@ class HDLPKT(nn.Module, DLSequentialKTModel):
         return gumbel_softmax_alpha[:, :, 1], cl_loss
 
     def seq_level_vae(self, item_seq, mask):
-        model_config = self.params["models_config"]["HDLPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["dim_k"]
         
         mask1 = mask.unsqueeze(2).expand(-1, -1, 2 * dim_k)

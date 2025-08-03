@@ -4,17 +4,21 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "qDKT"
 
 
+@register_model(MODEL_NAME)
 class qDKT(nn.Module, DLSequentialKTModel):
-    model_name = "qDKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(qDKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["qDKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         embed_config = model_config["embed_config"]
         dim_concept = embed_config["concept"]["dim_item"]
         dim_question = embed_config["question"]["dim_item"]
@@ -99,8 +103,8 @@ class qDKT(nn.Module, DLSequentialKTModel):
     def get_knowledge_state(self, batch, only_last_state=True):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        num_concept = self.params["models_config"]["qDKT"]["embed_config"]["concept"]["num_item"]
-        dim_question = self.params["models_config"]["qDKT"]["embed_config"]["question"]["dim_item"]
+        num_concept = self.params["models_config"][MODEL_NAME]["embed_config"]["concept"]["num_item"]
+        dim_question = self.params["models_config"][MODEL_NAME]["embed_config"]["question"]["dim_item"]
 
         batch_size = batch["correctness_seq"].shape[0]
         first_index = torch.arange(batch_size).long().to(self.params["device"])

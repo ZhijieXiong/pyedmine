@@ -8,6 +8,9 @@ from edmine.model.module.Transformer import TransformerLayer4CLKT
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "CLKT"
 
 
 class Similarity(Module):
@@ -23,15 +26,16 @@ class Similarity(Module):
         self.temp = temp
 
 
+@register_model(MODEL_NAME)
 class CLKT(Module, DLSequentialKTModel):
-    model_name = "CLKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(CLKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = params["models_config"]["CLKT"]
+        model_config = params["models_config"][MODEL_NAME]
         dim_model = model_config["dim_model"]
         num_block = model_config["num_block"]
         dim_final_fc = model_config["dim_final_fc"]

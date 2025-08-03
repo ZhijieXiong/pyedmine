@@ -5,17 +5,21 @@ from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTM
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "QDCKT"
 
 
+@register_model(MODEL_NAME)
 class QDCKT(nn.Module, DLSequentialKTModel):
-    model_name = "QDCKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(QDCKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["QDCKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_concept = model_config["embed_config"]["concept"]["dim_item"]
         dim_correctness = model_config["embed_config"]["correctness"]["dim_item"]
         dim_que_diff = model_config["embed_config"]["question_diff"]["dim_item"]
@@ -38,8 +42,8 @@ class QDCKT(nn.Module, DLSequentialKTModel):
     def get_latent(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        q2diff_transfer_table = self.objects["qdckt"]["q2diff_transfer_table"]
-        q2diff_weight_table = self.objects["qdckt"]["q2diff_weight_table"]
+        q2diff_transfer_table = self.objects[MODEL_NAME]["q2diff_transfer_table"]
+        q2diff_weight_table = self.objects[MODEL_NAME]["q2diff_weight_table"]
 
         concept_emb = self.embed_layer.get_emb_fused1("concept", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
         embed_question_diff = self.embed_layer.__getattr__("question_diff")
@@ -58,8 +62,8 @@ class QDCKT(nn.Module, DLSequentialKTModel):
     def forward(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        q2diff_transfer_table = self.objects["qdckt"]["q2diff_transfer_table"]
-        q2diff_weight_table = self.objects["qdckt"]["q2diff_weight_table"]
+        q2diff_transfer_table = self.objects[MODEL_NAME]["q2diff_transfer_table"]
+        q2diff_weight_table = self.objects[MODEL_NAME]["q2diff_weight_table"]
 
         concept_emb = self.embed_layer.get_emb_fused1("concept", q2c_transfer_table, q2c_mask_table, batch["question_seq"])
         embed_question_diff = self.embed_layer.__getattr__("question_diff")
@@ -86,12 +90,12 @@ class QDCKT(nn.Module, DLSequentialKTModel):
         }
         
     def get_predict_loss(self, batch, seq_start=2):
-        num_question_diff = self.objects["qdckt"]["num_question_diff"]
+        num_question_diff = self.objects[MODEL_NAME]["num_question_diff"]
         w_qdckt_loss = self.params["loss_config"]["qdckt loss"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        q2diff_transfer_table = self.objects["qdckt"]["q2diff_transfer_table"]
-        q2diff_weight_table = self.objects["qdckt"]["q2diff_weight_table"]
+        q2diff_transfer_table = self.objects[MODEL_NAME]["q2diff_transfer_table"]
+        q2diff_weight_table = self.objects[MODEL_NAME]["q2diff_weight_table"]
         mask_seq = torch.ne(batch["mask_seq"], 0)
 
         concept_emb = self.embed_layer.get_emb_fused1("concept", q2c_transfer_table, q2c_mask_table, batch["question_seq"])

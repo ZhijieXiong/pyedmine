@@ -6,17 +6,21 @@ from edmine.model.module.EmbedLayer import EmbedLayer, CosinePositionalEmbedding
 from edmine.model.module.Transformer import TransformerLayer4UKT
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.loss import WassersteinNCELoss, binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "UKT"
 
 
+@register_model(MODEL_NAME)
 class UKT(nn.Module, DLSequentialKTModel):
-    model_name = "UKT"
+    model_name = MODEL_NAME
     
     def __init__(self, params, objects):
         super().__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["UKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         temperature = model_config["temperature"]
         self.wloss = WassersteinNCELoss(temperature)
         self.embed_layer = EmbedLayer(model_config["embed_config"])
@@ -24,7 +28,7 @@ class UKT(nn.Module, DLSequentialKTModel):
         self.out = PredictorLayer(model_config["predictor_config"])
 
     def base_emb(self, batch, aug=False):
-        separate_qa = self.params["models_config"]["UKT"]["separate_qa"]
+        separate_qa = self.params["models_config"][MODEL_NAME]["separate_qa"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
         num_concept = self.objects["dataset"]["q_table"].shape[0]
@@ -155,7 +159,7 @@ class Architecture(nn.Module):
         super().__init__()
         self.parmas = params
         
-        model_config = params["models_config"]["UKT"]
+        model_config = params["models_config"][MODEL_NAME]
         dim_model = model_config["dim_model"]
         seq_len = model_config["seq_len"]
         num_block = model_config["num_block"]

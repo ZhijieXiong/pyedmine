@@ -47,7 +47,7 @@ def config_qdckt(local_params):
     for k, v in diff["question_difficulty"].items():
         question_difficulty[int(k)] = v
     num_que_diff = diff["num_question_diff"]
-    global_objects["qdckt"] = {
+    global_objects[model_name] = {
         "question_difficulty": question_difficulty,
         "num_question_diff": num_que_diff
     }
@@ -66,10 +66,10 @@ def config_qdckt(local_params):
         else:
             q2diff_transfer_table.append(list(range(q_diff-w_size//2, q_diff-w_size//2 + w_size)))
             q2diff_weight_table.append(deepcopy(ws))
-    global_objects["qdckt"]["q2diff_transfer_table"] = torch.LongTensor(q2diff_transfer_table).to(global_params["device"])
+    global_objects[model_name]["q2diff_transfer_table"] = torch.LongTensor(q2diff_transfer_table).to(global_params["device"])
     q2diff_weight_table = torch.FloatTensor(q2diff_weight_table).to(global_params["device"])
     # 按照论文中所说归一化
-    global_objects["qdckt"]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
+    global_objects[model_name]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
 
     # 模型参数
     global_params["models_config"] = {

@@ -4,17 +4,21 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DKTForget"
 
 
+@register_model(MODEL_NAME)
 class DKTForget(nn.Module, DLSequentialKTModel):
-    model_name = "DKTForget"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(DKTForget, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["DKTForget"]
+        model_config = self.params["models_config"][MODEL_NAME]
         embed_config = model_config["embed_config"]
         dim_emb = embed_config["concept"]["dim_item"]
         dim_latent = model_config["dim_latent"]

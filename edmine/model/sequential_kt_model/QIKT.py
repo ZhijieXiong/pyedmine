@@ -4,6 +4,9 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "QIKT"
 
 
 class MLP(nn.Module):
@@ -28,15 +31,16 @@ def sigmoid_inverse(x, epsilon=1e-8):
     return torch.log(x / (1 - x + epsilon) + epsilon)
 
 
+@register_model(MODEL_NAME)
 class QIKT(nn.Module, DLSequentialKTModel):
-    model_name = "QIKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super().__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["QIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_question = model_config["embed_config"]["question"]["num_item"]
         num_concept = model_config["embed_config"]["concept"]["num_item"]
         dim_emb = model_config["embed_config"]["concept"]["dim_item"]
@@ -65,7 +69,7 @@ class QIKT(nn.Module, DLSequentialKTModel):
     def forward(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        model_config = self.params["models_config"]["QIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         lambda_q_all = model_config["lambda_q_all"]
         lambda_c_next = model_config["lambda_c_next"]
         lambda_c_all = model_config["lambda_c_all"]
@@ -153,7 +157,7 @@ class QIKT(nn.Module, DLSequentialKTModel):
 
     def get_predict_loss(self, batch, seq_start=2):
         loss_wight = self.params["loss_config"]
-        use_irt = self.params["models_config"]["QIKT"]["use_irt"]
+        use_irt = self.params["models_config"][MODEL_NAME]["use_irt"]
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
 
         predict_score_batch, predict_score_q_next, predict_score_q_all, predict_score_c_next, predict_score_c_all = (

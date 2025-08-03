@@ -8,6 +8,9 @@ from copy import deepcopy
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.MultiHeadAttention import MultiHeadAttention4Dtransformer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DTransformer"
 
 
 class TransformerLayer4Dtransformer(nn.Module):
@@ -15,7 +18,7 @@ class TransformerLayer4Dtransformer(nn.Module):
         super().__init__()
         self.params = params
 
-        model_config = self.params["models_config"]["DTransformer"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_model = model_config["dim_model"]
         dropout = model_config["dropout"]
 
@@ -24,7 +27,7 @@ class TransformerLayer4Dtransformer(nn.Module):
         self.layer_norm = nn.LayerNorm(dim_model)
 
     def forward(self, query, key, values, seqs_length, peek_cur=False):
-        model_config = self.params["models_config"]["DTransformer"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dropout = model_config["dropout"]
 
         # construct mask
@@ -55,8 +58,9 @@ class TransformerLayer4Dtransformer(nn.Module):
         return self.layer_norm(query), scores
 
 
+@register_model(MODEL_NAME)
 class DTransformer(nn.Module, DLSequentialKTModel):
-    model_name = "DTransformer"
+    model_name = MODEL_NAME
     MIN_SEQ_LEN = 5
 
     def __init__(self, params, objects):
@@ -64,7 +68,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["DTransformer"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_model = model_config["dim_model"]
         dim_final_fc = model_config["dim_final_fc"]
         num_know = model_config["num_know"]
@@ -79,7 +83,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         # 提取知识状态（习题表征作为k和q，交互表征作为v）
         self.knowledge_retriever = TransformerLayer4Dtransformer(params)
         params_ = deepcopy(params)
-        params_["models_config"]["DTransformer"]["key_query_same"] = False
+        params_["models_config"][MODEL_NAME]["key_query_same"] = False
         self.block4 = TransformerLayer4Dtransformer(params_)
 
         self.num_know = num_know
@@ -97,7 +101,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         )
 
     def forward(self, concept_emb, interaction_emb, seqs_length):
-        num_head = self.params["models_config"]["DTransformer"]["num_head"]
+        num_head = self.params["models_config"][MODEL_NAME]["num_head"]
 
         # 融合了习题难度的concept embedding作为k、q、v提取有上下文信息的question embedding（论文中的m）
         question_representation, _ = self.question_encoder(concept_emb, concept_emb, concept_emb, seqs_length,
@@ -300,7 +304,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         return predict_logits, z, concept_emb, reg_loss, (q_scores, k_scores)
 
     def get_predict_loss_(self, batch):
-        window = self.params["models_config"]["DTransformer"]["window"]
+        window = self.params["models_config"][MODEL_NAME]["window"]
 
         concept_seq = batch["concept_seq"]
         correctness_seq = batch["correctness_seq"]
@@ -336,7 +340,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         }
 
     def get_cl_loss(self, batch):
-        model_config = self.params["models_config"]["DTransformer"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dropout = model_config["dropout"]
 
         concept_seq = batch["concept_seq"]
@@ -391,7 +395,7 @@ class DTransformer(nn.Module, DLSequentialKTModel):
         return cl_loss
 
     def sim(self, z1, z2):
-        temperature = self.params["models_config"]["DTransformer"]["temperature"]
+        temperature = self.params["models_config"][MODEL_NAME]["temperature"]
         bs, seq_len, _ = z1.size()
         z1 = z1.unsqueeze(1).view(bs, 1, seq_len, self.num_know, -1)
         z2 = z2.unsqueeze(0).view(1, bs, seq_len, self.num_know, -1)

@@ -45,14 +45,14 @@ def config_dimkt(local_params):
         question_difficulty[int(k)] = v
     for k, v in diff["concept_difficulty"].items():
         concept_difficulty[int(k)] = v
-    global_objects["dimkt"] = {
+    global_objects[model_name] = {
         "question_difficulty": question_difficulty,
         "concept_difficulty": concept_difficulty    
     }
     q2c_diff_table = [0] * local_params["num_concept"]
     for c_id, c_diff_id in concept_difficulty.items():
         q2c_diff_table[c_id] = c_diff_id
-    global_objects["dimkt"]["q2c_diff_table"] = torch.LongTensor(q2c_diff_table).to(global_params["device"])
+    global_objects[model_name]["q2c_diff_table"] = torch.LongTensor(q2c_diff_table).to(global_params["device"])
 
     # 模型参数
     global_params["models_config"] = {

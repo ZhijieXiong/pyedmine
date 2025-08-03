@@ -4,23 +4,27 @@ import torch.nn.functional as F
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "IRT"
 
 
+@register_model(MODEL_NAME)
 class IRT(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "IRT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(IRT, self).__init__()
         self.params = params
         self.objects = objects
 
-        self.embed_layer = EmbedLayer(self.params["models_config"]["IRT"]["embed_config"])
+        self.embed_layer = EmbedLayer(self.params["models_config"][MODEL_NAME]["embed_config"])
 
     def forward(self, batch):
         user_id = batch["user_id"]
         question_id = batch["question_id"]
 
-        model_config = self.params["models_config"]["IRT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         value_range = model_config["value_range"]
         a_range = model_config["a_range"]
         D = model_config["D"]

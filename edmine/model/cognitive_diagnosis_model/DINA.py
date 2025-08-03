@@ -6,21 +6,25 @@ import torch.nn.functional as F
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DINA"
 
 
+@register_model(MODEL_NAME)
 class DINA(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "DINA"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(DINA, self).__init__()
         self.params = params
         self.objects = objects
 
-        self.embed_layer = EmbedLayer(self.params["models_config"]["DINA"]["embed_config"])
+        self.embed_layer = EmbedLayer(self.params["models_config"][MODEL_NAME]["embed_config"])
         self.sign = StraightThroughEstimator()
 
     def forward(self, batch):
-        model_config = self.params["models_config"]["DINA"]
+        model_config = self.params["models_config"][MODEL_NAME]
         max_step = model_config["max_step"]
         max_slip = model_config["max_slip"]
         max_guess = model_config["max_guess"]

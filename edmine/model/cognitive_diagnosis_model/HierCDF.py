@@ -5,6 +5,9 @@ import torch.nn as nn
 
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "HierCDF"
 
 
 def irt2pl(user_emb: torch.Tensor, item_emb: torch.Tensor, item_offset: torch.Tensor):
@@ -27,20 +30,21 @@ itf_dict = {
 }
 
 
+@register_model(MODEL_NAME)
 class HierCDF(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "HierCDF"
+    model_name = MODEL_NAME
     def __init__(self, params, objects):
         super(HierCDF, self).__init__()
         self.params = params
         self.objects = objects
         
-        model_config = self.params["models_config"]["HierCDF"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_user = model_config["num_user"]
         num_question = model_config["num_question"]
         num_concept = model_config["num_concept"]
         dim_hidden = model_config["dim_hidden"]
         itf_type = model_config["itf_type"]
-        know_graph = self.objects["HierCDF"]["know_graph"]
+        know_graph = self.objects[MODEL_NAME]["know_graph"]
 
         self.know_edge = nx.DiGraph()
         for k in range(num_concept):
@@ -96,8 +100,8 @@ class HierCDF(nn.Module, DLCognitiveDiagnosisModel):
         self.itf = itf_dict.get(itf_type, self.ncd)
 
     def get_posterior(self, user_id):
-        num_concept = self.params["models_config"]["HierCDF"]["num_concept"]
-        know_graph = self.objects["HierCDF"]["know_graph"]
+        num_concept = self.params["models_config"][MODEL_NAME]["num_concept"]
+        know_graph = self.objects[MODEL_NAME]["know_graph"]
         
         n_batch = user_id.shape[0]
         posterior = torch.rand(n_batch, num_concept).to(self.params["device"])
@@ -153,8 +157,8 @@ class HierCDF(nn.Module, DLCognitiveDiagnosisModel):
         return posterior
     
     def get_condi_p(self, user_id):
-        num_concept = self.params["models_config"]["HierCDF"]["num_concept"]
-        know_graph = self.objects["HierCDF"]["know_graph"]
+        num_concept = self.params["models_config"][MODEL_NAME]["num_concept"]
+        know_graph = self.objects[MODEL_NAME]["know_graph"]
         
         n_batch = user_id.shape[0]
         result_tensor = torch.rand(n_batch, num_concept).to(self.params["device"])
@@ -177,8 +181,8 @@ class HierCDF(nn.Module, DLCognitiveDiagnosisModel):
         return result_tensor
 
     def get_condi_n(self, user_id):
-        num_concept = self.params["models_config"]["HierCDF"]["num_concept"]
-        know_graph = self.objects["HierCDF"]["know_graph"]
+        num_concept = self.params["models_config"][MODEL_NAME]["num_concept"]
+        know_graph = self.objects[MODEL_NAME]["know_graph"]
         
         n_batch = user_id.shape[0]
         result_tensor = torch.rand(n_batch, num_concept).to(self.params["device"])

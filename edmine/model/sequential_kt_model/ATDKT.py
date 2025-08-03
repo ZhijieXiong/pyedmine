@@ -6,21 +6,25 @@ from copy import deepcopy
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "ATDKT"
 
 
 def ut_mask(seq_len):
     return torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
 
 
+@register_model(MODEL_NAME)
 class ATDKT(nn.Module, DLSequentialKTModel):
-    model_name = "ATDKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(ATDKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["ATDKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_emb = model_config["dim_emb"]
         dim_latent = model_config["dim_latent"]
@@ -84,7 +88,7 @@ class ATDKT(nn.Module, DLSequentialKTModel):
         }
 
     def get_predict_loss(self, batch, seq_start=2):
-        model_config = self.params["models_config"]["ATDKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         IK_start = model_config["IK_start"]
         mask_seq = torch.ne(batch["mask_seq"], 0)
         question_id = torch.unique(batch["question_seq"])

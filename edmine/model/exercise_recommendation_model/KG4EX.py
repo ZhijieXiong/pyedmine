@@ -4,21 +4,25 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 from edmine.model.exercise_recommendation_model.DLExerciseRecommendationModel import DLExerciseRecommendationModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "KG4EX"
 
 
 def TransE(head, relation, tail, gamma):
     return gamma - torch.norm((head + relation) - tail, p=2)
 
 
+@register_model(MODEL_NAME)
 class KG4EX(nn.Module, DLExerciseRecommendationModel):
-    model_name = "KG4EX"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(KG4EX, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = params["models_config"]["KG4EX"]
+        model_config = params["models_config"][MODEL_NAME]
         model_selection = model_config["model_selection"]
         num_entity = len(self.objects["dataset"]["entity2id"])
         num_relation = len(self.objects["dataset"]["relation2id"])
@@ -125,7 +129,7 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
         else:
             raise ValueError('mode %s not supported' % mode)
 
-        model_selection = self.params["models_config"]["KG4EX"]["model_selection"]
+        model_selection = self.params["models_config"][MODEL_NAME]["model_selection"]
         if model_selection == "TransE":
             score = self.TransE(head, relation, tail)
         elif model_selection == "RotatE":
@@ -169,7 +173,7 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
         return score
 
     def train_one_step(self, one_step_data):
-        model_config = self.params["models_config"]["KG4EX"]
+        model_config = self.params["models_config"][MODEL_NAME]
         negative_adversarial_sampling = model_config["negative_adversarial_sampling"]
         uni_weight = model_config["uni_weight"]
         adversarial_temperature = model_config["adversarial_temperature"]
@@ -253,7 +257,7 @@ class KG4EX(nn.Module, DLExerciseRecommendationModel):
         entity2id = self.objects["dataset"]["entity2id"]
         q_table = self.objects["dataset"]["q_table"]
         num_question, num_concept = q_table.shape[0], q_table.shape[1]
-        gamma = self.params["models_config"]["KG4EX"]["gamma"]
+        gamma = self.params["models_config"][MODEL_NAME]["gamma"]
         max_top_n = max(top_ns)
 
         _, user_mlkc, (user_pkc, user_efr) = data

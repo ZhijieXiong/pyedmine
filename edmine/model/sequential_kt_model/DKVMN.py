@@ -4,17 +4,21 @@ import torch.nn as nn
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DKVMN"
 
 
+@register_model(MODEL_NAME)
 class DKVMN(nn.Module, DLSequentialKTModel):
-    model_name = "DKVMN"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(DKVMN, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = params["models_config"]["DKVMN"]
+        model_config = params["models_config"][MODEL_NAME]
         dim_key = model_config["embed_config"]["key"]["dim_item"]
         dim_value = model_config["dim_value"]
 

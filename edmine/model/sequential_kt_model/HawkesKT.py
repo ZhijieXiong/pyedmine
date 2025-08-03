@@ -4,17 +4,21 @@ import torch.nn as nn
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "HawkesKT"
 
 
+@register_model(MODEL_NAME)
 class HawkesKT(nn.Module, DLSequentialKTModel):
-    model_name = "HawkesKT"
+    model_name = MODEL_NAME
     
     def __init__(self, params, objects):
         super().__init__()
         self.params = params
         self.objects = objects
         
-        model_config = self.params["models_config"]["HawkesKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         
         self.embed_layer = EmbedLayer(model_config["embed_config"])
         for _, module in self.embed_layer.named_modules():
@@ -22,7 +26,7 @@ class HawkesKT(nn.Module, DLSequentialKTModel):
                 nn.init.normal_(module.weight, mean=0.0, std=0.01)
 
     def get_predict_score(self, batch, seq_start=2):
-        model_config = self.params["models_config"]["HawkesKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         time_log = model_config["time_log"]
         _, num_concept = self.objects["dataset"]["q_table"].shape
         

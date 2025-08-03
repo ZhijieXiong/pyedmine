@@ -4,24 +4,27 @@ import torch.nn.functional as F
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "MIRT"
 
 
-
+@register_model(MODEL_NAME)
 class MIRT(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "MIRT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(MIRT, self).__init__()
         self.params = params
         self.objects = objects
 
-        self.embed_layer = EmbedLayer(self.params["models_config"]["MIRT"]["embed_config"])
+        self.embed_layer = EmbedLayer(self.params["models_config"][MODEL_NAME]["embed_config"])
 
     def forward(self, batch):
         user_id = batch["user_id"]
         question_id = batch["question_id"]
 
-        model_config = self.params["models_config"]["MIRT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         a_range = model_config["a_range"]
 
         theta = torch.squeeze(self.embed_layer.get_emb("theta", user_id), dim=-1)

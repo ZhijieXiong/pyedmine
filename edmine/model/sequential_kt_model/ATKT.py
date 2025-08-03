@@ -9,6 +9,9 @@ from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTM
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "ATKT"
 
 
 def l2_normalize_adv(d):
@@ -21,15 +24,16 @@ def l2_normalize_adv(d):
     return torch.from_numpy(d)
 
 
+@register_model(MODEL_NAME)
 class ATKT(nn.Module, DLSequentialKTModel):
-    model_name = "ATKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(ATKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["ATKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_concept = model_config["embed_config"]["concept"]["dim_item"]
         dim_latent = model_config["dim_latent"]
         dim_attention = model_config["dim_attention"]
@@ -109,7 +113,7 @@ class ATKT(nn.Module, DLSequentialKTModel):
         }
 
     def get_predict_loss(self, batch, seq_start=2):
-        model_config = self.params["models_config"]["ATKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         epsilon = model_config["epsilon"]
         w_adv_loss = self.params["loss_config"]["adv loss"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]

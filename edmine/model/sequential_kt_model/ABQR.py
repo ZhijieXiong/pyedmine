@@ -5,6 +5,9 @@ import copy
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "ABQR"
 
 
 def loss_fn(x, y):
@@ -123,20 +126,21 @@ class BGRL(nn.Module):
         return embed, loss
 
 
+@register_model(MODEL_NAME)
 class ABQR(nn.Module, DLSequentialKTModel):
-    model_name = "ABQR"
+    model_name = MODEL_NAME
     
     def __init__(self, params, objects):
         super(ABQR, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["ABQR"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_question = self.objects["dataset"]["q_table"].shape[0]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_emb = model_config["dim_emb"]
         dropout = model_config["dropout"]
-        gcn_adj = self.objects["ABQR"]["gcn_adj"]
+        gcn_adj = self.objects[MODEL_NAME]["gcn_adj"]
         
         self.gcl = BGRL(dim_emb, dropout, gcn_adj)
         self.gcn = GCNConv(dim_emb, dim_emb, dropout)
@@ -193,7 +197,7 @@ class ABQR(nn.Module, DLSequentialKTModel):
         last_pro = batch["question_seq"][:, :-1]
         next_pro = batch["question_seq"][:, 1:]
         last_ans = batch["correctness_seq"][:, :-1]
-        gcn_adj = self.objects["ABQR"]["gcn_adj"]
+        gcn_adj = self.objects[MODEL_NAME]["gcn_adj"]
         
         pro_embed, _ = self.gcl(self.pro_embed, gcn_adj, None)
         last_pro_embed = F.embedding(last_pro, pro_embed)
@@ -217,10 +221,10 @@ class ABQR(nn.Module, DLSequentialKTModel):
     def get_predict_loss(self, batch, seq_start=2):
         last_pro = batch["question_seq"][:, :-1]
         last_ans = batch["correctness_seq"][:, :-1]
-        model_config = self.params["models_config"]["ABQR"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_emb = model_config["dim_emb"]
         num_question = self.objects["dataset"]["q_table"].shape[0]
-        gcn_adj = self.objects["ABQR"]["gcn_adj"]
+        gcn_adj = self.objects[MODEL_NAME]["gcn_adj"]
         trainer_config = self.params["trainer_config"]
         model_name = trainer_config["model_name"]
         optimizer = self.objects["optimizers"][model_name]

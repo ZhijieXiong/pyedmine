@@ -24,14 +24,14 @@ def config_dimkt(local_params, global_params, global_objects, setting_name, trai
         question_difficulty[int(k)] = v
     for k, v in diff["concept_difficulty"].items():
         concept_difficulty[int(k)] = v
-    global_objects["dimkt"] = {
+    global_objects["DIMKT"] = {
         "question_difficulty": question_difficulty,
         "concept_difficulty": concept_difficulty    
     }
     q2c_diff_table = [0] * local_params["num_concept"]
     for c_id, c_diff_id in concept_difficulty.items():
         q2c_diff_table[c_id] = c_diff_id
-    global_objects["dimkt"]["q2c_diff_table"] = torch.LongTensor(q2c_diff_table).to(global_params["device"])
+    global_objects["DIMKT"]["q2c_diff_table"] = torch.LongTensor(q2c_diff_table).to(global_params["device"])
 
 
 def config_lpkt(global_params, global_objects):
@@ -72,7 +72,7 @@ def config_qdckt(global_params, global_objects, setting_name, train_file_name):
     for k, v in diff["question_difficulty"].items():
         question_difficulty[int(k)] = v
     num_que_diff = diff["num_question_diff"]
-    global_objects["qdckt"] = {
+    global_objects["QDCKT"] = {
         "question_difficulty": question_difficulty,
         "num_question_diff": num_que_diff
     }
@@ -91,10 +91,10 @@ def config_qdckt(global_params, global_objects, setting_name, train_file_name):
         else:
             q2diff_transfer_table.append(list(range(q_diff-w_size//2, q_diff-w_size//2 + w_size)))
             q2diff_weight_table.append(deepcopy(ws))
-    global_objects["qdckt"]["q2diff_transfer_table"] = torch.LongTensor(q2diff_transfer_table).to(global_params["device"])
+    global_objects["QDCKT"]["q2diff_transfer_table"] = torch.LongTensor(q2diff_transfer_table).to(global_params["device"])
     q2diff_weight_table = torch.FloatTensor(q2diff_weight_table).to(global_params["device"])
     # 按照论文中所说归一化
-    global_objects["qdckt"]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
+    global_objects["QDCKT"]["q2diff_weight_table"] = q2diff_weight_table / q2diff_weight_table.sum(dim=1, keepdim=True)
 
 
 def config_grkt(global_objects, setting_name, train_file_name):

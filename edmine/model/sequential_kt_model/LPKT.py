@@ -3,17 +3,21 @@ import torch.nn as nn
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "LPKT"
 
 
+@register_model(MODEL_NAME)
 class LPKT(nn.Module, DLSequentialKTModel):
-    model_name = "LPKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(LPKT, self).__init__()
         self.params = params
         self.objects = objects
         
-        model_config = self.params["models_config"]["LPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
         dim_correctness = model_config["embed_config"]["correctness"]["dim_item"]
         dim_e = model_config["dim_e"]
@@ -38,9 +42,9 @@ class LPKT(nn.Module, DLSequentialKTModel):
 
     def forward(self, batch):
         question_seq = batch["question_seq"]
-        model_config = self.params["models_config"]["LPKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_k = model_config["embed_config"]["question"]["dim_item"]
-        q_matrix = self.objects["LPKT"]["q_matrix"]
+        q_matrix = self.objects[MODEL_NAME]["q_matrix"]
         num_concept = q_matrix.shape[1]
 
         batch_size, seq_len = question_seq.size(0), question_seq.size(1)

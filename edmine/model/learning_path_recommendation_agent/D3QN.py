@@ -4,6 +4,9 @@ import torch.nn as nn
 from copy import deepcopy
 
 from edmine.model.learning_path_recommendation_agent.RLBasedLPRAgent import RLBasedLPRAgent
+from edmine.model.registry import register_model
+
+MODEL_NAME = "D3QN"
 
 
 class DuelingDQN(nn.Module):
@@ -42,6 +45,7 @@ class DuelingDQN(nn.Module):
         return q_values  # shape: (bs, num_actions)
     
 
+@register_model(MODEL_NAME)
 class D3QN(RLBasedLPRAgent):
     def __init__(self, params, objects):
         super().__init__(params, objects)
@@ -98,7 +102,7 @@ class D3QN(RLBasedLPRAgent):
     def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
-        max_question_attempt = self.params["agents_config"]["D3QN"]["max_question_attempt"]
+        max_question_attempt = self.params["agents_config"][MODEL_NAME]["max_question_attempt"]
         num_question_his = 0
         for qs in memory.question_rec_history:
             num_question_his += len(qs)

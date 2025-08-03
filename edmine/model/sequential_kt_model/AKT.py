@@ -6,17 +6,21 @@ from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.Transformer import TransformerLayer4AKT
 from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "AKT"
 
 
+@register_model(MODEL_NAME)
 class AKT(nn.Module, DLSequentialKTModel):
-    model_name = "AKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(AKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["AKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         self.embed_layer = EmbedLayer(model_config["embed_config"])
         self.encoder_layer = Architecture(params)
         self.predict_layer = PredictorLayer(model_config["predictor_config"])
@@ -24,7 +28,7 @@ class AKT(nn.Module, DLSequentialKTModel):
     def base_emb(self, batch):
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
-        separate_qa = self.params["models_config"]["AKT"]["separate_qa"]
+        separate_qa = self.params["models_config"][MODEL_NAME]["separate_qa"]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
 
         # c_ct
@@ -40,7 +44,7 @@ class AKT(nn.Module, DLSequentialKTModel):
         return concept_emb, interaction_emb
     
     def get_latent(self, batch):
-        separate_qa = self.params["models_config"]["AKT"]["separate_qa"]
+        separate_qa = self.params["models_config"][MODEL_NAME]["separate_qa"]
         q2c_transfer_table = self.objects["dataset"]["q2c_transfer_table"]
         q2c_mask_table = self.objects["dataset"]["q2c_mask_table"]
 
@@ -129,7 +133,7 @@ class Architecture(nn.Module):
     def __init__(self, params):
         super(Architecture, self).__init__()
         self.params = params
-        num_block = self.params["models_config"]["AKT"]["num_block"]
+        num_block = self.params["models_config"][MODEL_NAME]["num_block"]
 
         # question encoder的偶数层（从0开始）用于对question做self attention，奇数层用于对question和interaction做cross attention
         self.question_encoder = nn.ModuleList([TransformerLayer4AKT(params) for _ in range(num_block * 2)])

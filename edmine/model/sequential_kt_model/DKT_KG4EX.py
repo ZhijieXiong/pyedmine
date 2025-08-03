@@ -3,10 +3,14 @@ import torch.nn as nn
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.module.PredictorLayer import PredictorLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "DKT_KG4EX"
 
 
+@register_model(MODEL_NAME)
 class DKT_KG4EX(nn.Module):
-    model_name = "DKT_KG4EX"
+    model_name = MODEL_NAME
     model_type = "DLSequentialKTModel"
 
     def __init__(self, params, objects):
@@ -14,7 +18,7 @@ class DKT_KG4EX(nn.Module):
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["DKT_KG4EX"]
+        model_config = self.params["models_config"][MODEL_NAME]
         embed_config = model_config["embed_config"]
         dim_concept = embed_config["concept"]["dim_item"]
         dim_correctness = embed_config["correctness"]["dim_item"]
@@ -99,8 +103,8 @@ class DKT_KG4EX(nn.Module):
 
     def get_aux_loss(self, batch):
         """防止模型全输出1（原论文代码提供的案例中单个学生最后时刻的pkc之和不为1，所以不是概率分布，不采用多分类损失，并且论文中也不是用的多分类损失）"""
-        num_concept = self.params["models_config"]["DKT_KG4EX"]["embed_config"]["concept"]["num_item"]
-        dim_latent = self.params["models_config"]["DKT_KG4EX"]["dim_latent"]
+        num_concept = self.params["models_config"][MODEL_NAME]["embed_config"]["concept"]["num_item"]
+        dim_latent = self.params["models_config"][MODEL_NAME]["dim_latent"]
 
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
         batch_size = batch["correctness_seq"].shape[0]
@@ -119,7 +123,7 @@ class DKT_KG4EX(nn.Module):
         return torch.mean(predict_score)
 
     def get_knowledge_state(self, batch):
-        num_concept = self.params["models_config"]["DKT_KG4EX"]["embed_config"]["concept"]["num_item"]
+        num_concept = self.params["models_config"][MODEL_NAME]["embed_config"]["concept"]["num_item"]
 
         self.encoder_layer.flatten_parameters()
         batch_size = batch["correctness_seq"].shape[0]

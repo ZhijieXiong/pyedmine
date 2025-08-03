@@ -3,17 +3,21 @@ import torch.nn as nn
 from torch_geometric.nn.dense.linear import Linear
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "GIKT"
 
 
+@register_model(MODEL_NAME)
 class GIKT(nn.Module, DLSequentialKTModel):
-    model_name = "GIKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(GIKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["GIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_emb = model_config["dim_emb"]
         num_question, num_concept = self.objects["dataset"]["q_table"].shape[0], \
             self.objects["dataset"]["q_table"].shape[1]
@@ -21,8 +25,8 @@ class GIKT(nn.Module, DLSequentialKTModel):
         dropout4gru = model_config["dropout4gru"]
         dropout4gnn = model_config["dropout4gnn"]
 
-        self.question_neighbors = objects["GIKT"]["question_neighbors"]
-        self.concept_neighbors = objects["GIKT"]["concept_neighbors"]
+        self.question_neighbors = objects[MODEL_NAME]["question_neighbors"]
+        self.concept_neighbors = objects[MODEL_NAME]["concept_neighbors"]
 
         self.embed_question = nn.Embedding(num_question, dim_emb)
         self.embed_concept = nn.Embedding(num_concept, dim_emb)
@@ -40,7 +44,7 @@ class GIKT(nn.Module, DLSequentialKTModel):
         self.MLP_W = Linear(2 * dim_emb, 1)
 
     def forward(self, batch):
-        model_config = self.params["models_config"]["GIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_emb = model_config["dim_emb"]
         agg_hops = model_config["agg_hops"]
         rank_k = model_config["rank_k"]
@@ -151,7 +155,7 @@ class GIKT(nn.Module, DLSequentialKTModel):
         # 第3次聚合，(0'',1'')，聚合得到新的embedding，放到输入位置0上
         # 最后0'''通过一个MLP得到最终的embedding
         # aggregate from outside to inside
-        agg_hops = self.params["models_config"]["GIKT"]["agg_hops"]
+        agg_hops = self.params["models_config"][MODEL_NAME]["agg_hops"]
         for i in range(agg_hops):
             for j in range(agg_hops - i):
                 emb_list[j] = self.sum_aggregate(emb_list[j], emb_list[j+1], j)

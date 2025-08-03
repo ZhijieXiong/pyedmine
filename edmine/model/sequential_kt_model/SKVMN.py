@@ -6,6 +6,9 @@ from torch.nn.init import kaiming_normal_
 
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "SKVMN"
 
 
 class DKVMNHeadGroup(nn.Module):
@@ -74,15 +77,16 @@ class DKVMN(nn.Module):
         return self.value_head.write(control_input=control_input, memory=memory_value, write_weight=write_weight)
 
 
+@register_model(MODEL_NAME)
 class SKVMN(Module, DLSequentialKTModel):
-    model_name = "SKVMN"
+    model_name = MODEL_NAME
     
     def __init__(self, params, objects):
         super().__init__()
         self.params = params
         self.objects = objects
 
-        model_config = params["models_config"]["SKVMN"]
+        model_config = params["models_config"][MODEL_NAME]
         dim_kv = model_config["dim_kv"]
         size_memory = model_config["size_memory"]
         dropout = model_config["dropout"]
@@ -108,7 +112,7 @@ class SKVMN(Module, DLSequentialKTModel):
         return torch.triu(torch.ones(seq_len, seq_len), diagonal=0).to(dtype=torch.bool)
 
     def triangular_layer(self, correlation_weight, batch_size, seq_len):
-        model_config = self.params["models_config"]["SKVMN"]
+        model_config = self.params["models_config"][MODEL_NAME]
         a = model_config["a"]
         b = model_config["b"]
         c = model_config["c"]

@@ -7,6 +7,9 @@ from edmine.model.module.Clipper import NoneNegClipper
 from edmine.model.module.EmbedLayer import EmbedLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "RCD"
             
             
 class Fusion(nn.Module):
@@ -15,7 +18,7 @@ class Fusion(nn.Module):
         self.params = params
         self.objects = objects
         
-        num_concept = params["models_config"]["RCD"]["embed_config"]["concept"]["num_item"]
+        num_concept = params["models_config"][MODEL_NAME]["embed_config"]["concept"]["num_item"]
         directed_g = objects["dataset"]["local_map"]['directed_g']
         undirected_g = objects["dataset"]["local_map"]['undirected_g']
         k_from_e = objects["dataset"]["local_map"]['k_from_e']
@@ -40,7 +43,7 @@ class Fusion(nn.Module):
         self.e_attn_fc2 = nn.Linear(2 * num_concept, 1, bias=True)
 
     def forward(self, kn_emb, exer_emb, all_stu_emb):
-        num_question = self.params["models_config"]["RCD"]["embed_config"]["question"]["num_item"]
+        num_question = self.params["models_config"][MODEL_NAME]["embed_config"]["question"]["num_item"]
         
         k_directed = self.directed_gat(kn_emb)
         k_undirected = self.undirected_gat(kn_emb)
@@ -85,14 +88,15 @@ class Fusion(nn.Module):
         return kn_emb, exer_emb, all_stu_emb
     
     
+@register_model(MODEL_NAME)
 class RCD(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "RCD"
+    model_name = MODEL_NAME
     def __init__(self, params, objects):
         super(RCD, self).__init__()
         self.params = params
         self.objects = objects
         
-        model_config = params["models_config"]["RCD"]
+        model_config = params["models_config"][MODEL_NAME]
         num_concept = model_config["embed_config"]["concept"]["num_item"]
         num_question = model_config["embed_config"]["question"]["num_item"]
         num_user = model_config["embed_config"]["user"]["num_item"]

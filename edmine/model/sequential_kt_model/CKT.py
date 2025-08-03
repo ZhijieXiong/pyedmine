@@ -4,6 +4,9 @@ import torch.nn.functional as F
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "CKT"
 
 
 class CausalConvBlock(nn.Module):
@@ -51,15 +54,16 @@ class CausalConvNet(nn.Module):
         return x
 
 
+@register_model(MODEL_NAME)
 class CKT(nn.Module, DLSequentialKTModel):
-    model_name = "CKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(CKT, self).__init__()
         self.params = params
         self.objects = objects
         
-        model_config = self.params["models_config"]["CKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_emb = model_config["embed_config"]["question"]["dim_item"]
         num_layer = model_config["num_layer"]

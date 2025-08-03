@@ -5,6 +5,9 @@ import torch.nn.functional as F
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "GRKT"
 
 
 def positive_activate(mode, input_tensor):
@@ -30,8 +33,9 @@ class Positive_Linear(nn.Module):
         return input_tensor.matmul(positive_activate(self.mode, self.weight))
 
 
+@register_model(MODEL_NAME)
 class GRKT(nn.Module, DLSequentialKTModel):
-    model_name = "GRKT"
+    model_name = MODEL_NAME
     
     def __init__(self, params, objects):
         super(GRKT, self).__init__()
@@ -39,7 +43,7 @@ class GRKT(nn.Module, DLSequentialKTModel):
         self.objects = objects
         
         # num_concept, num_question, dim_hidden, k_hidden, pos_mode, k_hop, rel_map, thresh, pre_map, alpha, tau
-        model_config = self.params["models_config"]["GRKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = model_config["num_concept"]
         num_question = model_config["num_question"]
         dim_hidden = model_config["dim_hidden"]
@@ -47,8 +51,8 @@ class GRKT(nn.Module, DLSequentialKTModel):
         pos_mode = model_config["pos_mode"]
         k_hop = model_config["k_hop"]
         thresh = model_config["thresh"]
-        rel_map = objects["GRKT"]["rel_map"]
-        pre_map = objects["GRKT"]["pre_map"]
+        rel_map = objects[MODEL_NAME]["rel_map"]
+        pre_map = objects[MODEL_NAME]["pre_map"]
         
         self.know_embedding = nn.Embedding(num_concept + 1, dim_hidden, padding_idx = 0)
         self.prob_embedding = nn.Embedding(num_question + 1, dim_hidden, padding_idx = 0)
@@ -180,7 +184,7 @@ class GRKT(nn.Module, DLSequentialKTModel):
             [nn.Linear(k_hidden, k_hidden, bias = False) for _ in range(k_hop)])
 
     def forward(self, batch):
-        model_config = self.params["models_config"]["GRKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = model_config["num_concept"]
         dim_hidden = model_config["dim_hidden"]
         k_hidden = model_config["k_hidden"]

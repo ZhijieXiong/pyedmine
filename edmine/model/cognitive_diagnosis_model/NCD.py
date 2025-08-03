@@ -6,17 +6,21 @@ from edmine.model.module.PredictorLayer import PredictorLayer
 from edmine.model.cognitive_diagnosis_model.DLCognitiveDiagnosisModel import DLCognitiveDiagnosisModel
 from edmine.model.module.Clipper import NoneNegClipper
 from edmine.model.loss import binary_cross_entropy
+from edmine.model.registry import register_model
+
+MODEL_NAME = "NCD"
 
 
+@register_model(MODEL_NAME)
 class NCD(nn.Module, DLCognitiveDiagnosisModel):
-    model_name = "NCD"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(NCD, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["NCD"]
+        model_config = self.params["models_config"][MODEL_NAME]
         self.embed_layer = EmbedLayer(model_config["embed_config"])
         self.predict_layer = PredictorLayer(model_config["predictor_config"])
 

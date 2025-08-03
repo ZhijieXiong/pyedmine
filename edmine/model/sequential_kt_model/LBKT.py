@@ -4,17 +4,21 @@ import torch.nn as nn
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
 from edmine.model.module.EmbedLayer import EmbedLayer
+from edmine.model.registry import register_model
+
+MODEL_NAME = "LBKT"
 
 
+@register_model(MODEL_NAME)
 class LBKT(nn.Module, DLSequentialKTModel):
-    model_name = "LBKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(LBKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["LBKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_question = model_config["embed_config"]["question"]["dim_item"]
         dim_correctness = model_config["embed_config"]["correctness"]["dim_item"]
@@ -38,7 +42,7 @@ class LBKT(nn.Module, DLSequentialKTModel):
         question_emb = self.embed_layer.get_emb("question", question_seq)
         correctness_emb = self.embed_layer.get_emb("correctness", correctness_seq)
 
-        correlation_weight = self.objects["LBKT"]["q_matrix"][question_seq]
+        correlation_weight = self.objects[MODEL_NAME]["q_matrix"][question_seq]
         acts_emb = torch.relu(self.input_layer(torch.cat([question_emb, correctness_emb], -1)))
 
         time_factor_seq = time_factor_seq.unsqueeze(-1)
@@ -98,7 +102,7 @@ class LBKTcell(nn.Module):
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["LBKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_question = model_config["embed_config"]["question"]["dim_item"]
         r = model_config["r"]
         dim_h = model_config["dim_h"]
@@ -136,7 +140,7 @@ class LBKTcell(nn.Module):
         self.sig = nn.Sigmoid()
 
     def forward(self, interact_emb, correlation_weight, topic_emb, time_factor, attempt_factor, hint_factor, h_pre):
-        model_config = self.params["models_config"]["LBKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         dim_h = model_config["dim_h"]
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         dim_factor = model_config["dim_factor"]

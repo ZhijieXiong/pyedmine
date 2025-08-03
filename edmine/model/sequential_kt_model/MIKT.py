@@ -4,17 +4,21 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from edmine.model.sequential_kt_model.DLSequentialKTModel import DLSequentialKTModel
+from edmine.model.registry import register_model
+
+MODEL_NAME = "MIKT"
 
 
+@register_model(MODEL_NAME)
 class MIKT(nn.Module, DLSequentialKTModel):
-    model_name = "MIKT"
+    model_name = MODEL_NAME
 
     def __init__(self, params, objects):
         super(MIKT, self).__init__()
         self.params = params
         self.objects = objects
 
-        model_config = self.params["models_config"]["MIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_question = model_config["num_question"]
         num_concept = model_config["num_concept"]
         dim_emb = model_config["dim_emb"]
@@ -99,7 +103,7 @@ class MIKT(nn.Module, DLSequentialKTModel):
                 nn.init.xavier_uniform_(m.weight)
 
     def forward(self, batch):
-        model_config = self.params["models_config"]["MIKT"]
+        model_config = self.params["models_config"][MODEL_NAME]
         num_question = model_config["num_question"]
         num_concept = model_config["num_concept"]
 
