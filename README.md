@@ -337,11 +337,13 @@ python examples/roster/kt_plot.py
 | v0.1.1   | 3/31/2025 |
 | v0.2.0   | 4/9/2025 |
 | v0.2.1   | 1/8/2025 |
+| v0.2.2   | 3/8/2025 |
 
 - `v0.1.0` 初始发布版本
 - `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
 - `v0.2.0` beta版本，但是GRKT模型训练会报错（NaN），尚未解决
 - `v0.2.1` 修复了一些bug，集成了学习路径推荐任务
+- `v0.2.2` 修复了学习路径推荐的一些bug
 
 ## 数据集扩展
 [edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。
