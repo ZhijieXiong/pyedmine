@@ -218,7 +218,7 @@ class HierCDF(nn.Module, DLCognitiveDiagnosisModel):
         
         output = self.itf(user_factor, item_factor, item_disc)
 
-        return output 
+        return output.squeeze(dim=-1)
     
     def get_predict_loss(self, batch):
         user_id = batch["user_id"]
