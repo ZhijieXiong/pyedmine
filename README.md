@@ -362,6 +362,7 @@ python examples/roster/kt_plot.py
 - [EduKTM](https://github.com/bigdata-ustc/EduKTM)
 - [EduCDM](https://github.com/bigdata-ustc/EduCDM)
 - [RecBole](https://github.com/RUCAIBox/RecBole)
+- [More_Simple_Reinforcement_Learning](https://github.com/lansinuote/More_Simple_Reinforcement_Learning)
 - [其它论文代码仓库](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
 
 ## 贡献

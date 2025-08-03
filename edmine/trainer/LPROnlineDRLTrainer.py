@@ -124,6 +124,7 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
         use_multi_metrics = trainer_config["use_multi_metrics"]
         main_metric = trainer_config["main_metric"]
         multi_metrics = trainer_config["multi_metrics"]
+        interval_execute_config = trainer_config.get("interval_execute_config", None)
         grad_clips_config = self.params["grad_clips_config"]
         schedulers_config = self.params["schedulers_config"]
         optimizers = self.objects["optimizers"]
@@ -248,6 +249,16 @@ class LPROnlineDRLTrainer(SingleModelStepTrainer):
                             f"{json.dumps(best_log_performance['valid_performance'])}\n"
                         )
                         break
+                    
+            # 自由配置每隔多少个step，做什么操作
+            # step_action_config: dict[int, list[func]]
+            if interval_execute_config is not None:
+                for interval, target_funcs in interval_execute_config.items():
+                    to_execute_func = (step > 1) and ((step - 1) % interval == 0)
+                    if to_execute_func:
+                        for target_func in target_funcs:
+                            self.objects["logger"].info(f"{get_now_time()} step {step:<9}: execute {target_func.__name__}")
+                            target_func()
 
     def evaluate_dataset(self, env, agent, kt_data):
         trainer_config = self.params["trainer_config"]

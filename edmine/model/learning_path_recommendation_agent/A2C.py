@@ -6,99 +6,96 @@ from copy import deepcopy
 from edmine.model.learning_path_recommendation_agent.RLBasedLPRAgent import RLBasedLPRAgent
 
 
-class DuelingDQN(nn.Module):
-    def __init__(self, dim_in, dim_hidden, num_actions, num_layer):
-        super().__init__()
-        # 特征提取部分（共享主干）
-        layers = []
-        for i in range(num_layer):
-            if i == 0:
-                layers.append(nn.Linear(dim_in, dim_hidden))
-            else:
-                layers.append(nn.Linear(dim_hidden, dim_hidden))
-            layers.append(nn.ReLU())
-        self.feature_extractor = nn.Sequential(*layers)
+def init_model(dim_in, dim_out, num_layer, softmax=True):
+    layers = []
+    for i in range(num_layer):
+        if i == 0:
+            layers.append(nn.Linear(dim_in, dim_out))
+        else:
+            layers.append(nn.Linear(dim_out, dim_out))
+        layers.append(nn.ReLU())
+    if softmax:
+        layers.append(nn.Linear(dim_out, dim_out))
+        layers.append(nn.Softmax(dim=1))
+    return nn.Sequential(*layers)
 
-        # Value 分支：输出状态值 V(s)
-        self.value_head = nn.Sequential(
-            nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
-            nn.Linear(dim_hidden, 1)  # 输出单个值
-        )
 
-        # Advantage 分支：输出各个动作的优势 A(s, a)
-        self.advantage_head = nn.Sequential(
-            nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
-            nn.Linear(dim_hidden, num_actions)  # 输出 num_actions 个值
-        )
-
-    def forward(self, x):
-        features = self.feature_extractor(x)  # shape: (bs, dim_hidden)
-        value = self.value_head(features)     # shape: (bs, 1)
-        advantage = self.advantage_head(features)  # shape: (bs, num_actions)
-        # Q(s, a) = V(s) + A(s, a) - mean(A(s, ·))
-        q_values = value + advantage - advantage.mean(dim=-1, keepdim=True)
-        return q_values  # shape: (bs, num_actions)
-    
-
-class D3QN(RLBasedLPRAgent):
+class A2C(RLBasedLPRAgent):
     def __init__(self, params, objects):
         super().__init__(params, objects)
         num_question, num_concept = self.objects["dataset"]["q_table"].shape
-        c_rec_model_config = self.params["models_config"]["concept_rec_model"]
-        q_rec_model_config = self.params["models_config"]["question_rec_model"]
+        action_model_config = self.params["models_config"]["action_model"]
+        state_model_config = self.params["models_config"]["state_model"]
         
-        self.concept_rec_model = DuelingDQN(
+        self.c_actor = init_model(
             num_concept * 2,
-            c_rec_model_config["dim_feature"],
             num_concept,
-            c_rec_model_config["num_layer"]
+            action_model_config["num_layer"],
+            softmax=True
         ).to(self.params["device"])
-        self.question_rec_model = DuelingDQN(
+        self.c_critic = init_model(
             num_concept * 2,
-            q_rec_model_config["dim_feature"],
+            1,
+            state_model_config["num_layer"],
+            softmax=False
+        ).to(self.params["device"])
+        self.c_critic_delay = init_model(
+            num_concept * 2,
+            1,
+            state_model_config["num_layer"],
+            softmax=False
+        ).to(self.params["device"])
+        
+        self.q_actor = init_model(
+            num_concept * 2,
             num_question,
-            q_rec_model_config["num_layer"]
+            action_model_config["num_layer"],
+            softmax=True
         ).to(self.params["device"])
-        self.concept_rec_model_delay = DuelingDQN(
+        self.q_critic = init_model(
             num_concept * 2,
-            c_rec_model_config["dim_feature"],
-            num_concept,
-            c_rec_model_config["num_layer"]
+            1,
+            state_model_config["num_layer"],
+            softmax=False
         ).to(self.params["device"])
-        self.question_rec_model_delay = DuelingDQN(
+        self.q_critic_delay = init_model(
             num_concept * 2,
-            q_rec_model_config["dim_feature"],
-            num_question,
-            q_rec_model_config["num_layer"]
+            1,
+            state_model_config["num_layer"],
+            softmax=False
         ).to(self.params["device"])
+        
         self.objects["lpr_models"] = {
-            "concept_rec_model": self.concept_rec_model,
-            "question_rec_model": self.question_rec_model
+            "concept_actor": self.c_actor,
+            "concept_critic": self.c_critic,
+            "question_actor": self.q_actor,
+            "question_critic": self.q_critic
         }
-        self.copy_state_model()
         
     def eval(self):
-        self.concept_rec_model.eval()
-        self.concept_rec_model_delay.eval()
-        self.question_rec_model.eval()
-        self.question_rec_model_delay.eval()
+        self.c_actor.eval()
+        self.c_critic.eval()
+        self.c_critic_delay.eval()
+        self.q_actor.eval()
+        self.q_critic.eval()
+        self.q_critic_delay.eval()
         
     def train(self):
-        self.concept_rec_model.train()
-        self.question_rec_model.train()
+        self.q_actor.train()
+        self.q_critic.train()
+        self.c_actor.train()
+        self.c_critic.train()
         
     def copy_state_model(self):
-        self.concept_rec_model_delay.load_state_dict(self.concept_rec_model.state_dict())
-        self.question_rec_model_delay.load_state_dict(self.question_rec_model.state_dict())
-        self.concept_rec_model_delay.eval()
-        self.question_rec_model_delay.eval()
-    
+        self.c_critic_delay.load_state_dict(self.c_critic.state_dict())
+        self.q_critic_delay.load_state_dict(self.q_critic.state_dict())
+        self.c_critic_delay.eval()
+        self.q_critic_delay.eval()
+        
     def judge_done(self, memory, master_th=0.6):
         if memory.achieve_single_goal(master_th):
             return True
-        max_question_attempt = self.params["agents_config"]["D3QN"]["max_question_attempt"]
+        max_question_attempt = self.params["agents_config"]["A2C"]["max_question_attempt"]
         num_question_his = 0
         for qs in memory.question_rec_history:
             num_question_his += len(qs)
@@ -107,42 +104,32 @@ class D3QN(RLBasedLPRAgent):
     def recommend_qc(self, memory, master_th=0.6, epsilon=0):
         num_concept = self.objects["dataset"]["q_table"].shape[1]
         q_table = self.objects["dataset"]["q_table_tensor"]
-        c2q = self.objects["dataset"]["c2q"]
-        random_generator = self.objects["random_generator"]
         
         state = memory.state_history[-1]
         knowledge_state = state.to(self.params["device"])
         data_type = knowledge_state.dtype
-        if random_generator.rand() < epsilon:
-            eligible_concepts = [c_id for c_id in range(num_concept) if float(state[c_id]) < master_th]
-            # 从未掌握的概念中随机选一个
-            c_id2rec = random_generator.choice(eligible_concepts)
-        else:
-            learning_goals = np.zeros(num_concept, dtype=int)
-            learning_goals[memory.learning_goals] = 1
-            c_rec_model_input = torch.cat(
-                (knowledge_state, 
-                 torch.from_numpy(learning_goals).to(dtype=data_type).to(self.params["device"]))
-            )
-            with torch.no_grad():
-                c_id2rec = int(torch.argmax(self.concept_rec_model(c_rec_model_input)))
+        learning_goals = np.zeros(num_concept, dtype=int)
+        learning_goals[memory.learning_goals] = 1
+        c_rec_model_input = torch.cat(
+            (knowledge_state, 
+                torch.from_numpy(learning_goals).to(dtype=data_type).to(self.params["device"]))
+        ).unsqueeze(dim=0)
+        with torch.no_grad():
+            c_id2rec = int(torch.argmax(self.c_actor(c_rec_model_input)))
         
-        if random_generator.rand() < epsilon:
-            q_id2rec = int(random_generator.choice(c2q[c_id2rec]))
-        else:
-            learning_goals = np.zeros(num_concept, dtype=int)
-            learning_goals[c_id2rec] = 1
-            q_rec_model_input = torch.cat(
-                (knowledge_state, 
-                 torch.from_numpy(learning_goals).to(dtype=data_type).to(self.params["device"]))
-            )
-            q_mask = q_table.T[c_id2rec].bool().to(self.params["device"])
-            with torch.no_grad():
-                q_values = self.question_rec_model(q_rec_model_input)
-                q_values[~q_mask] = float('-inf')
-                q_id2rec = int(torch.argmax(q_values))
+        learning_goals = np.zeros(num_concept, dtype=int)
+        learning_goals[c_id2rec] = 1
+        q_rec_model_input = torch.cat(
+            (knowledge_state, 
+                torch.from_numpy(learning_goals).to(dtype=data_type).to(self.params["device"]))
+        ).unsqueeze(dim=0)
+        q_mask = q_table.T[c_id2rec].bool().unsqueeze(dim=0).to(self.params["device"])
+        with torch.no_grad():
+            q_values = self.q_actor(q_rec_model_input)
+            q_values[~q_mask] = float('-inf')
+            q_id2rec = int(torch.argmax(q_values))
         return c_id2rec, q_id2rec
-            
+    
     def done_data2rl_data(self, done_data):
         rl_data = []
         for item in done_data:
@@ -237,47 +224,73 @@ class D3QN(RLBasedLPRAgent):
             batch[k] = torch.stack(v, dim=0)
 
         return batch
-
+    
     def get_all_loss(self, batch):
         q_table = self.objects["dataset"]["q_table_tensor"]
         trainer_config = self.params["trainer_config"]
         gamma = trainer_config["gamma"]
         batch_size = batch["c_reward"].shape[0]
-
-        c_value = self.concept_rec_model(batch["cur_c_input"]).gather(dim=1, index=batch["cur_c"].unsqueeze(1)).squeeze(1)
+        
+        c_value = self.c_critic(batch["cur_c_input"]).squeeze(dim=-1)
         with torch.no_grad():
-            # double DQN：用online网络选择动作，然后用target网络估计target state value
-            next_c_action = self.concept_rec_model(batch["next_c_input"]).argmax(dim=1, keepdim=True)
-            c_target = self.concept_rec_model_delay(batch["next_c_input"]).gather(1, next_c_action).squeeze(1)
-        c_target = batch["c_reward"] + c_target * gamma * (1 - batch["over"])
-        concept_rec_loss = torch.nn.functional.mse_loss(c_value, c_target)
-
-        q_mask = q_table.T[next_c_action].squeeze(dim=1).bool().to(self.params["device"])
-        q_value = self.question_rec_model(batch["cur_q_input"]).gather(dim=1, index=batch["cur_q"].unsqueeze(1)).squeeze(1)
+            c_target = self.c_critic_delay(batch["next_c_input"]).squeeze(dim=-1)
+        c_target = c_target * gamma * (1 - batch["over"]) + batch["c_reward"]
+        c_state_loss = torch.nn.functional.mse_loss(c_value, c_target)
+        
+        c_advantage = (c_target - c_value).detach()
+        c_prob = self.c_actor(batch["cur_c_input"])
+        c_prob = c_prob.gather(dim=1, index=batch["cur_c"].unsqueeze(dim=-1)).squeeze(dim=-1)
+        c_prob = (c_prob + 1e-8).log() * c_advantage
+        c_action_loss = -c_prob.mean()
+        
+        q_mask = q_table.T[batch["cur_c"]].bool().to(self.params["device"])
+        q_value = self.q_critic(batch["cur_q_input"]).squeeze(dim=-1)
         with torch.no_grad():
-            # double DQN
-            next_q_values = self.question_rec_model(batch["next_q_input"])
-            next_q_values[~q_mask] = float('-inf')
-            next_q_action = next_q_values.argmax(dim=1, keepdim=True)
-            q_target = self.question_rec_model_delay(batch["next_q_input"]).gather(1, next_q_action).squeeze(1)
-        q_target = batch["q_reward"] + q_target * gamma * (1 - batch["over"])
-        question_rec_loss = torch.nn.functional.mse_loss(q_value, q_target)
+            q_target = self.q_critic_delay(batch["next_q_input"]).squeeze(dim=-1)
+        q_target = q_target * gamma * (1 - batch["over"]) + batch["q_reward"]
+        q_state_loss = torch.nn.functional.mse_loss(q_value, q_target)
+        
+        q_advantage = (q_target - q_value).detach()
+        q_action_prob = self.q_actor(batch["cur_q_input"])
+        # 非原地操作
+        q_action_prob = q_action_prob.masked_fill(~q_mask, float('-inf'))
+        q_action_prob = q_action_prob.gather(dim=1, index=batch["cur_q"].unsqueeze(dim=-1)).squeeze(dim=-1)
+        q_action_prob = (q_action_prob + 1e-8).log() * q_advantage
+        q_action_loss = -q_action_prob.mean()
 
         return {
-            "concept_rec_model": {
-                "total_loss": concept_rec_loss,
+            "concept_critic": {
+                "total_loss": c_state_loss,
                 "losses_value": {
-                    "concept mse loss": {
-                        "value": concept_rec_loss.detach().cpu().item() * batch_size,
+                    "concept state loss": {
+                        "value": c_state_loss.detach().cpu().item() * batch_size,
                         "num_sample": batch_size
                     }
                 }
             },
-            "question_rec_model": {
-                "total_loss": question_rec_loss,
+            "concept_actor": {
+                "total_loss": c_action_loss,
                 "losses_value": {
-                    "question mse loss": {
-                        "value": question_rec_loss.detach().cpu().item() * batch_size,
+                    "concept action loss": {
+                        "value": c_action_loss.detach().cpu().item() * batch_size,
+                        "num_sample": batch_size
+                    }
+                }
+            },
+            "question_critic": {
+                "total_loss": q_state_loss,
+                "losses_value": {
+                    "question state loss": {
+                        "value": q_state_loss.detach().cpu().item() * batch_size,
+                        "num_sample": batch_size
+                    }
+                }
+            },
+            "question_actor": {
+                "total_loss": q_action_loss,
+                "losses_value": {
+                    "question action loss": {
+                        "value": q_action_loss.detach().cpu().item() * batch_size,
                         "num_sample": batch_size
                     }
                 }

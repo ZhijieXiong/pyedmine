@@ -137,6 +137,7 @@ class LPROfflineDRLTrainer:
         train_batch_size = trainer_config["train_batch_size"]
         agent_name = trainer_config["agent_name"]
         accumulation_step = trainer_config["accumulation_step"]
+        interval_execute_config = trainer_config.get("interval_execute_config", None)
         models = self.objects["lpr_models"]
         grad_clips_config = self.params["grad_clips_config"]
         schedulers_config = self.params["schedulers_config"]
@@ -147,7 +148,6 @@ class LPROfflineDRLTrainer:
         train_data = self.objects["data"]["train"]
         idx = 0
         self.objects["logger"].info(f"{get_now_time()} start training")
-        agent.prepare4next_epoch()
         for epoch in range(1, max_epoch + 1):
             for model in models.values():
                 model.eval()
@@ -193,7 +193,16 @@ class LPROfflineDRLTrainer:
             self.evaluate()
             if self.stop_train():
                 break
-            agent.prepare4next_epoch()
+            
+            # 自由配置每隔多少个epoch，做什么操作
+            # step_action_config: dict[int, list[func]]
+            if interval_execute_config is not None:
+                for interval, target_funcs in interval_execute_config.items():
+                    to_execute_func = (epoch - 1) % interval == 0
+                    if to_execute_func:
+                        for target_func in target_funcs:
+                            self.objects["logger"].info(f"{get_now_time()} epoch {epoch:<4}, execute {target_func.__name__}")
+                            target_func()
 
     def evaluate(self):
         trainer_config = self.params["trainer_config"]
