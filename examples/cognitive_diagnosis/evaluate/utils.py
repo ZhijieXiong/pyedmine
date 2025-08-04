@@ -3,6 +3,7 @@ import numpy as np
 
 from edmine.utils.use_dgl import build_graph4rcd
 from edmine.model.module.Graph import HyperCDgraph
+from edmine.utils.data_io import read_csv
 
 
 def get_model_info(model_dir_name):
@@ -71,3 +72,13 @@ def config_hyper_cd(local_params, global_params, global_objects, setting_dir, tr
         "concept": Hc.to_tensor_nadj().to(global_params["device"]),
         "user": Hu.to_tensor_nadj().to(global_params["device"])
     }
+
+
+def config_hier_cdf(local_params, global_objects, setting_dir):
+    # 加载需要的数据
+    graph_dir = os.path.join(setting_dir, "HierCDF")
+    graph_path = os.path.join(graph_dir, f"{local_params['dataset_name']}_hier.csv")
+    global_objects["HierCDF"] = {
+        "know_graph": read_csv(graph_path)
+    }
+    

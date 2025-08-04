@@ -44,6 +44,8 @@ def config_dlcd(local_params):
         config_rcd(local_params, global_params, global_objects, setting_dir, train_file_name)
     elif model_name == "HyperCD":
         config_hyper_cd(local_params, global_params, global_objects, setting_dir, train_file_name)
+    elif model_name == "HierCDF":
+        config_hier_cdf(local_params, global_objects, setting_dir)
         
     # 配置cold start
     global_params["dlcd"] = {
