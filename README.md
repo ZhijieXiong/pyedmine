@@ -190,7 +190,7 @@ python data_preprocess/kt_data.py
 
 注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用交互序列最长5000名用户的数据
 
-或者你可以直接下载已处理好的[数据集文件](https://drive.google.com/drive/folders/1f5hw6PSKWDanVhVVqU1qS-_RxNYNdl9v?usp=sharing)
+或者你可以直接下载已处理好的[数据集文件](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing)（位于dataset/dataset_preprocessed下）
 
 ### 数据集划分
 你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/dataset/settings/[setting_name]`下
@@ -200,7 +200,8 @@ python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊�
 python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
 
 ```
-你也可以直接下载划分后的数据集文件（[pykt_setting](https://www.alipan.com/s/Lek2EDxPfUJ),[sfkt_setting](https://www.alipan.com/s/NfUiLwfoAsK), [ncd_setting](https://drive.google.com/drive/folders/1TDap7nmwPQ7EP4FUpyv6hvo8UkDBeh0R?usp=sharing), [ER_offline_setting](https://www.alipan.com/s/BJQHQn3waA6), [CD4ER_offline_setting](https://drive.google.com/drive/folders/13HHuyOQq31hCP9V8rNUF70ppWvlivxHS?usp=sharing)），然后将其存放在`/path/to/save/data/dataset/settings`目录下
+
+你也可以直接下载[划分后的数据集文件](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing)（位于dataset/settings下），然后将其存放在`/path/to/save/data/dataset/settings`目录下
 
 或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
 
@@ -300,7 +301,7 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 - OFFLINE_NDCG 将学生未来练习的习题作为标签，计算NDCG
 - PERSONALIZATION_INDEX 计算给不同学生推荐习题的差异度，作为个性化的指标
 #### 学习路径推荐
-$m_{start}$和$m_{end}$分别是目标知识点的初始分数和最终分数，$m_{full}$是知识点的满分，$l$是路径长度
+$m_{start}$ 和 $m_{end}$ 分别是目标知识点的初始分数和最终分数，$m_{full}$ 是知识点的满分，$l$ 是路径长度
 - AP = $m_{end} - m_{start}$
 - APR = $\frac{m_{end} - m_{start}}{l}$
 - RP = $\frac{AP}{m_{full}}$
@@ -308,7 +309,7 @@ $m_{start}$和$m_{end}$分别是目标知识点的初始分数和最终分数，
 - NRP = $\frac{AP}{m_{full} - m_{start}}$
 - NRPR = $\frac{NRP}{l}$
 
-你也可以下载已经[训练好的模型](https://drive.google.com/drive/folders/1KxLgcVDoZwswopCRQEVnBKn4K4gs3lRf?usp=sharing)在我们提供的实验设置上进行模型评估
+你也可以下载已经[训练好的模型](https://huggingface.co/dreamxzj123/pyedmine)（所有KT、CD、ER和LPR模型均在）在我们提供的实验设置上进行模型评估
 
 ### 模型自动调参
 PyEdmine还支持基于贝叶斯网络的自动调参功能，如
