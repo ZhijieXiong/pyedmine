@@ -40,6 +40,7 @@ def config_sequential_kt_dataset(local_params, global_params):
         },
     }
 
+
 def config_cd_dataset(local_params, global_params, global_objects):
     setting_dir = global_objects["file_manager"].get_setting_dir(local_params["setting_name"])
     data_statics_path = os.path.join(setting_dir, f"{local_params['dataset_name']}_statics.txt")
@@ -65,6 +66,25 @@ def config_clkt_dataset(local_params, global_params):
             "crop_prob": local_params["crop_prob"],
             "permute_prob": local_params["permute_prob"],
             "hard_neg_prob": 1
+        },
+        "valid": {
+            "setting_name": setting_name,
+            "file_name": valid_file_name,
+            "device": global_params["device"]
+        },
+    }
+
+
+def config_dis_kt_dataset(local_params, global_params):
+    setting_name = local_params["setting_name"]
+    train_file_name = local_params["train_file_name"]
+    valid_file_name = local_params["valid_file_name"]
+    global_params["datasets_config"] = {
+        "train": {
+            "setting_name": setting_name,
+            "file_name": train_file_name,
+            "device": global_params["device"],
+            "neg_prob": local_params["neg_prob"],
         },
         "valid": {
             "setting_name": setting_name,
