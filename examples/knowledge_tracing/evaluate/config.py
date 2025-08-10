@@ -55,8 +55,7 @@ def config_sequential_dlkt(local_params):
         "multi_step": local_params.get("multi_step", 1),
         "use_core": local_params.get("use_core", False),
         "evaluate_overall": local_params.get("evaluate_overall", True),
-        "bes_setting": local_params.get("bes_setting", 0),
-        "bes_use_time_decay": local_params.get("bes_use_time_decay", False),
+        "use_bes": local_params.get("use_bes", False)
     }
     config_q_table(local_params, global_params, global_objects)
     
@@ -91,19 +90,17 @@ def config_sequential_dlkt(local_params):
     bes_dir = os.path.join(setting_dir, "data4bes")
     if not os.path.exists(bes_dir):
         os.mkdir(bes_dir)
-    bes_setting = global_params["sequential_dlkt"]["bes_setting"]
-    train_data = None
-    if bes_setting in [1, 2, 3, 4, 6, 7]:
+    use_bes = global_params["sequential_dlkt"]["use_bes"]
+    if use_bes:
         train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
         train_data = read_kt_file(train_file_path)
-    if bes_setting in [1, 2, 4, 6]:
+        
+        # 统计知识点信息
+        # 计算知识点的样本参照r：（1）利用经过Laplace平滑的acc作为样本参照；（2）用 Naive-Bayes 风格的似然比 合成样本参照
         concept_acc_path = os.path.join(bes_dir, f"{train_file_name}_concept_acc.json")
-        if os.path.exists(concept_acc_path):
-            concept_acc = read_json(concept_acc_path)
-            global_objects["concept_acc"] = {int(c): acc for c, acc in concept_acc.items()}
-        else:
-            # 统计知识点信息
-            num_concept = global_objects["dataset"]["q_table"].shape[1]
+        concept_lr_path = os.path.join(bes_dir, f"{train_file_name}_concept_likelihood_ratio.json")
+        num_concept = global_objects["dataset"]["q_table"].shape[1]
+        if not os.path.exists(concept_acc_path) or not os.path.exists(concept_lr_path):
             q2c = global_objects["dataset"]["q2c"]
             concept_count = {}
             concept_correct = {}
@@ -119,7 +116,7 @@ def config_sequential_dlkt(local_params):
                             concept_correct[c] = 0
                         concept_count[c] += 1
                         concept_correct[c] += correctness
-            pi = sum(concept_correct.values()) / sum(concept_count.values())
+            pi = float(sum(concept_correct.values()) / sum(concept_count.values()))
             concept_acc = {}
             for c in range(num_concept):
                 if c not in concept_count:
@@ -128,15 +125,35 @@ def config_sequential_dlkt(local_params):
                     concept_acc[c] = Laplace(concept_count[c], concept_correct[c])
             global_objects["concept_acc"] = concept_acc
             write_json(concept_acc, concept_acc_path)
-
-    if bes_setting in [1, 3, 4, 7]:
-        # 统计习题信息
-        question_acc_path = os.path.join(bes_dir, f"{train_file_name}_question_acc.json")
-        if os.path.exists(question_acc_path):
-            question_acc = read_json(question_acc_path)
-            global_objects["question_acc"] = {int(q): acc for q, acc in question_acc.items()}
+            
+            concept_lr = {}
+            n_pos = sum(concept_correct.values())
+            n_neg = sum(concept_count.values()) - n_pos
+            for c in range(num_concept):
+                if c not in concept_count:
+                    # 等价于忽略该因子
+                    concept_lr[c] = 1
+                else:
+                    n_concept = concept_count[c]
+                    n_c_pos = concept_correct[c]
+                    n_c_neg = n_concept - n_c_pos
+                    P_c_pos = (n_c_pos + 1) / (n_pos + n_concept)
+                    P_c_neg = (n_c_neg + 1) / (n_neg + n_concept)
+                    concept_lr[c] = float(P_c_pos / P_c_neg)
+            global_objects["concept_lr"] = concept_lr
+            concept_lr["pi"] = pi
+            write_json(concept_lr, concept_lr_path)
         else:
-            num_question = global_objects["dataset"]["q_table"].shape[0]
+            concept_acc = read_json(concept_acc_path)
+            concept_lr = read_json(concept_lr_path)
+            global_objects["concept_acc"] = {int(c): acc for c, acc in concept_acc.items()}
+            global_objects["concept_lr"] = {int(c) if c != "pi" else c: lr for c, lr in concept_lr.items()}
+        
+        # 统计习题信息：同concept
+        question_acc_path = os.path.join(bes_dir, f"{train_file_name}_question_acc.json")
+        question_lr_path = os.path.join(bes_dir, f"{train_file_name}_question_likelihood_ratio.json")
+        num_question = global_objects["dataset"]["q_table"].shape[0]
+        if not os.path.exists(question_acc_path) or not os.path.exists(question_lr_path):
             question_count = {}
             question_correct = {}
             for user_data in train_data:
@@ -150,7 +167,7 @@ def config_sequential_dlkt(local_params):
                         question_correct[q] = 0
                     question_count[q] += 1
                     question_correct[q] += correctness
-            pi = sum(question_correct.values()) / sum(question_count.values())
+            pi = float(sum(question_correct.values()) / sum(question_count.values()))
             question_acc = {}
             for q in range(num_question):
                 if q not in question_count:
@@ -159,6 +176,29 @@ def config_sequential_dlkt(local_params):
                     question_acc[q] = Laplace(question_count[q], question_correct[q])
             global_objects["question_acc"] = question_acc
             write_json(question_acc, question_acc_path)
+            
+            question_lr = {}
+            n_pos = sum(question_correct.values())
+            n_neg = sum(question_count.values()) - n_pos
+            for q in range(num_question):
+                if q not in question_count:
+                    # 等价于忽略该因子
+                    question_lr[q] = 1
+                else:
+                    n_question = question_count[q]
+                    n_q_pos = question_correct[q]
+                    n_q_neg = n_question - n_q_pos
+                    P_q_pos = (n_q_pos + 1) / (n_pos + n_question)
+                    P_q_neg = (n_q_neg + 1) / (n_neg + n_question)
+                    question_lr[q] = float(P_q_pos / P_q_neg)
+            global_objects["question_lr"] = question_lr
+            question_lr["pi"] = pi
+            write_json(question_lr, question_lr_path)
+        else:
+            question_acc = read_json(question_acc_path)
+            question_lr = read_json(question_lr_path)
+            global_objects["question_acc"] = {int(q): acc for q, acc in question_acc.items()}
+            global_objects["question_lr"] = {int(q) if q != "pi" else q: lr for q, lr in question_lr.items()}
             
     warm_start_dir = os.path.join(setting_dir, "data4warm_start")
     if not os.path.exists(warm_start_dir):

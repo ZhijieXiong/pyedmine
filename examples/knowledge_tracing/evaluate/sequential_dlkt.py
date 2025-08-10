@@ -38,18 +38,8 @@ if __name__ == "__main__":
                         help="多步预测是accumulate还是non-accumulate的")
     # core指标
     parser.add_argument("--use_core", type=str2bool, default=False)
-    # Bias Exposure Score（BES）指标：用于衡量模型在多大程度上被训练数据的“表面相关性”（来自学生、知识点、习题三方面）驱动，从而在评估中产生偏差
-    parser.add_argument("--bes_setting", type=int, default=1,
-                        help="0: not calculate BES"
-                             "1: student && concept && question"
-                             "2: student && concept"
-                             "3: student && question"
-                             "4: concept && question"
-                             "5: student"
-                             "6: concept"
-                             "7: question")
-    parser.add_argument("--bes_use_time_decay", type=str2bool, default=False,
-                        help="在计算student的BES是否使用时间衰减（基于位置（rank）的线性位次权重时间衰减）")
+    # Bias Exposure Score（BES）指标：用于衡量模型在多大程度上被训练数据的“表面相关性”（来自学生、知识点、习题三方面）驱动，从而在评估中产生偏差，该值越大，说明模型偏差越大
+    parser.add_argument("--use_bes", type=str2bool, default=True)
     # ===========================================================================
     # 是否保存每个样本的测试结果
     parser.add_argument("--save_all_sample", type=str2bool, default=False)

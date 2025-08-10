@@ -9,12 +9,28 @@ from edmine.metric.knowledge_tracing import get_kt_metric, core_metric
 from edmine.utils.data_io import write_kt_file
 
 
+def calculate_bes(all_predict_score, all_r, all_correctness):
+    # 样本对齐度，越大越“靠近数据参照”
+    all_ps_r_align = [1 - abs(ps - r) for ps, r in zip(all_predict_score, all_r)]
+    # 模型预测和gt之间的误差度
+    all_model_brier = [(ps - y) ** 2 for ps, y in zip(all_predict_score, all_correctness)]
+    # 样本参照和gt之间的误差度
+    all_ref_brier = [(r - y) ** 2 for r, y in zip(all_r, all_correctness)]
+    # 两者之差表示“模型在该样本上比数据参照更差多少”（差 >0 表示模型更差）
+    all_delta_brier = [(mb - rb) for mb, rb in zip(all_model_brier, all_ref_brier)]
+    # 样本偏差证据：当ps与r接近（align 高）且model_brier大于ref_brier（ΔBrier>0）时，
+    # 偏差证据为正且较大——这是“被数据偏差误导并造成错误”的证据，若模型比参照好（ΔBrier<0），则样本偏差证据为负，说明模型抵抗了偏差
+    bias_evidence = [ps_r_align * delta_brier for ps_r_align, delta_brier in zip(all_ps_r_align, all_delta_brier)]
+    # 模型偏差分数曝光：BES
+    BES = sum(bias_evidence) / len(bias_evidence)
+    return BES
+
+
 class SequentialDLKTEvaluator(DLEvaluator):
     def __init__(self, params, objects):
         super().__init__(params, objects)
 
     def inference(self, model, data_loader):
-        evaluate_overall = self.params["sequential_dlkt"]["evaluate_overall"]
         seq_start = self.params["sequential_dlkt"]["seq_start"]
         que_start = self.params["sequential_dlkt"]["que_start"]
         use_core = self.params["sequential_dlkt"]["use_core"]
@@ -23,8 +39,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
         multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
-        bes_setting = self.params["sequential_dlkt"]["bes_setting"]
-        bes_use_time_decay = self.params["sequential_dlkt"]["bes_use_time_decay"]
+        use_bes = self.params["sequential_dlkt"]["use_bes"]
         all_sample_path = self.params["all_sample_path"]
         save_all_sample = all_sample_path is not None
 
@@ -139,7 +154,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 if q_id in warm_start_question:
                     predict_score_warm_start_q.append(ps)
                     ground_truth_warm_start_q.append(gt)
-            inference_result["question_warm_start"] = get_kt_metric(ground_truth_warm_start_q, predict_score_warm_start_q)
+            inference_result["double_warm_start"] = get_kt_metric(ground_truth_warm_start_q, predict_score_warm_start_q)
         
         if multi_step > 1:
             inference_result["multi_step"] = {}
@@ -150,7 +165,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 inference_result["multi_step"][f"last-{non}accumulate"] = self.multi_step_inference_last(model, data_loader, multi_step_accumulate)
 
         # 只在overall上计算，根据seq_start选择测试样本
-        if bes_setting > 0:
+        if use_bes:
             print("calculating BES metric ...")
             data4bes = []
             for batch_result in result_all_batch:
@@ -162,10 +177,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
                         "correctness_seq": correctness_seq[:seq_len].tolist(),
                         "predict_score_seq": predict_score_seq[:seq_len-1].tolist()
                     })
-            # r表示样本参照
-            all_concept_r = []
-            all_question_r = []
-            all_user_r = []
+            
             all_predict_score = []
             all_correctness = []
             for user_data in data4bes:
@@ -173,58 +185,156 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     all_predict_score.append(ps)
                 for correctness in user_data["correctness_seq"][seq_start-1:]:
                     all_correctness.append(correctness)
-            if bes_setting in [1, 2, 4, 6]:
-                # concept
-                q2c = self.objects["dataset"]["q2c"]
-                concept_acc = self.objects["concept_acc"]
-                for user_data in data4bes:
-                    for q_id in user_data["question_seq"][seq_start-2:]:
-                        q_concept_acc = []
-                        for c_id in q2c[q_id]:
-                            q_concept_acc.append(concept_acc[c_id])
-                        all_concept_r.append(float(sum(q_concept_acc) / len(q_concept_acc)))
-            if bes_setting in [1, 3, 4, 7]:
-                # question
-                question_acc = self.objects["question_acc"]
-                for user_data in data4bes:
-                    for q_id in user_data["question_seq"][seq_start-2:]:
-                        all_question_r.append(question_acc[q_id])
-            if bes_setting in [1, 2, 3, 5]:
-                # student
-                for user_data in data4bes:
-                    correctness_seq = user_data["correctness_seq"]
-                    for i in range(seq_start-1, len(correctness_seq)):
-                        user_acc = float((sum(correctness_seq[:i]) + 1) / (i + 2))
-                        all_user_r.append(user_acc)
+            
+            # 计算基于ACC的BES
+            acc_based_r = self.calculate_acc_based_r(data4bes)
+            all_concept_acc_r = acc_based_r["concept"]
+            all_question_acc_r = acc_based_r["question"]
+            all_user_acc_r = acc_based_r["user"]
+            
+            # 分别计算同时考虑学生、知识点和习题的样本参照，以及学生、知识点和习题的单独样本参照
+            all_acc_r = [0] * len(all_concept_acc_r)
+            for i in range(len(all_concept_acc_r)):
+                all_acc_r[i] += all_concept_acc_r[i]
+                all_acc_r[i] += all_question_acc_r[i]
+                all_acc_r[i] += all_user_acc_r[i]
+                all_acc_r[i] /= 3
 
-            num_sample = max(len(all_concept_r), len(all_question_r), len(all_user_r))
-            num_r_type = int(len(all_concept_r) > 0) + int(len(all_question_r) > 0) + int(len(all_user_r) > 0)
-            all_final_r = [0] * num_sample
-            for i in range(num_sample):
-                if len(all_concept_r) > 0:
-                    all_final_r[i] += all_concept_r[i]
-                if len(all_question_r) > 0:
-                    all_final_r[i] += all_question_r[i]
-                if len(all_user_r) > 0:
-                    all_final_r[i] += all_user_r[i]
-                all_final_r[i] /= num_r_type
+            concept_acc_based_bes = calculate_bes(all_predict_score, all_concept_acc_r, all_correctness)
+            question_acc_based_bes = calculate_bes(all_predict_score, all_question_acc_r, all_correctness)
+            user_acc_based_bes = calculate_bes(all_predict_score, all_user_acc_r, all_correctness)
+            acc_based_bes = calculate_bes(all_predict_score, all_acc_r, all_correctness)
+            
+            # 计算基于Likeihood Ratio的BES
+            lr_based_r = self.calculate_lr_based_r(data4bes)
+            all_concept_lr_r = lr_based_r["concept"]
+            all_question_lr_r = lr_based_r["question"]
+            all_user_lr_r = lr_based_r["user"]
+            all_lr_r = lr_based_r["all"]
 
-            # 样本对齐度，越大越“靠近数据参照”
-            all_ps_r_align = [1 - abs(ps - r) for ps, r in zip(all_predict_score, all_final_r)]
-            # 模型预测和gt之间的误差度
-            all_model_brier = [(ps - y) ** 2 for ps, y in zip(all_predict_score, all_correctness)]
-            # 样本参照和gt之间的误差度
-            all_ref_brier = [(r - y) ** 2 for r, y in zip(all_final_r, all_correctness)]
-            # 两者之差表示“模型在该样本上比数据参照更差多少”（差 >0 表示模型更差）
-            all_delta_brier = [(mb - rb) for mb, rb in zip(all_model_brier, all_ref_brier)]
-            # 样本偏差证据：当ps与r接近（align 高）且model_brier大于ref_brier（ΔBrier>0）时，
-            # 偏差证据为正且较大——这是“被数据偏差误导并造成错误”的证据，若模型比参照好（ΔBrier<0），则样本偏差证据为负，说明模型抵抗了偏差
-            bias_evidence = [ps_r_align * delta_brier for ps_r_align, delta_brier in zip(all_ps_r_align, all_delta_brier)]
-            # 模型偏差分数曝光：BES
-            BES = sum(bias_evidence) / len(bias_evidence)
-            inference_result["BES"] = BES
+            concept_lr_based_bes = calculate_bes(all_predict_score, all_concept_lr_r, all_correctness)
+            question_lr_based_bes = calculate_bes(all_predict_score, all_question_lr_r, all_correctness)
+            user_lr_based_bes = calculate_bes(all_predict_score, all_user_lr_r, all_correctness)
+            lr_based_bes = calculate_bes(all_predict_score, all_lr_r, all_correctness)
+
+            inference_result["BES"] = {
+                "concept": {
+                    "ACC_BES": concept_acc_based_bes,
+                    "LR_BES": concept_lr_based_bes
+                },
+                "question": {
+                    "ACC_BES": question_acc_based_bes,
+                    "LR_BES": question_lr_based_bes
+                },
+                "user": {
+                    "ACC_BES": user_acc_based_bes,
+                    "LR_BES": user_lr_based_bes
+                },
+                "all": {
+                    "ACC_BES": acc_based_bes,
+                    "LR_BES": lr_based_bes
+                }
+            }
 
         return inference_result
+    
+    def calculate_acc_based_r(self, data4bes):
+        seq_start = self.params["sequential_dlkt"]["seq_start"]
+        all_concept_r = []
+        all_question_r = []
+        all_user_r = []
+
+        # concept
+        q2c = self.objects["dataset"]["q2c"]
+        concept_acc = self.objects["concept_acc"]
+        for user_data in data4bes:
+            for q_id in user_data["question_seq"][seq_start-2:]:
+                q_concept_acc = []
+                for c_id in q2c[q_id]:
+                    q_concept_acc.append(concept_acc[c_id])
+                all_concept_r.append(float(sum(q_concept_acc) / len(q_concept_acc)))
+
+        # question
+        question_acc = self.objects["question_acc"]
+        for user_data in data4bes:
+            for q_id in user_data["question_seq"][seq_start-2:]:
+                all_question_r.append(question_acc[q_id])
+
+        # student
+        for user_data in data4bes:
+            correctness_seq = user_data["correctness_seq"]
+            for i in range(seq_start-1, len(correctness_seq)):
+                user_acc = float((sum(correctness_seq[:i]) + 1) / (i + 2))
+                all_user_r.append(user_acc)
+                
+        return {
+            "concept": all_concept_r,
+            "question": all_question_r,
+            "user": all_user_r
+        }
+        
+    def calculate_lr_based_r(self, data4bes):
+        seq_start = self.params["sequential_dlkt"]["seq_start"]
+        all_concept_r = []
+        all_question_r = []
+        all_user_r = []
+        all_r = []
+
+        # concept
+        q2c = self.objects["dataset"]["q2c"]
+        concept_lr = self.objects["concept_lr"]
+        pi = concept_lr["pi"]
+        for user_data in data4bes:
+            for q_id in user_data["question_seq"][seq_start-2:]:
+                q_concept_lr = 1
+                for c_id in q2c[q_id]:
+                    q_concept_lr *= concept_lr[c_id]
+                odds_c = pi / (1 - pi) * q_concept_lr
+                all_concept_r.append(odds_c / (1 + odds_c))
+
+        # question
+        question_lr = self.objects["question_acc"]
+        for user_data in data4bes:
+            for q_id in user_data["question_seq"][seq_start-2:]:
+                odds_q = pi / (1 - pi) * question_lr[q_id]
+                all_question_r.append(odds_q / (1 + odds_q))
+
+        # student
+        c_pi = concept_lr["pi"]
+        q_pi = concept_lr["pi"]
+        n = 0
+        for user_data in data4bes:
+            correctness_seq = user_data["correctness_seq"]
+            # 防止计算odds_u时出现ZeroDivisionError 
+            u_pi = min(float(sum(correctness_seq) / len(correctness_seq)), 0.999)
+            n_pos = sum(correctness_seq)
+            n_neg = len(correctness_seq) - n_pos
+            for i in range(seq_start-1, len(correctness_seq)):
+                n_u_pos = sum(correctness_seq[:i])
+                n_u_neg = i - n_u_pos
+                P_u_pos = (n_u_pos + 1) / (n_pos + i)
+                P_u_neg = (n_u_neg + 1) / (n_neg + i)
+                u_lr = float(P_u_pos / P_u_neg)
+                odds_u = u_pi / (1 - u_pi) * u_lr
+                all_user_r.append(odds_u / (1 + odds_u))
+                
+                q_id = user_data["question_seq"][i-1]
+                q_concept_lr = 1
+                for c_id in q2c[q_id]:
+                    q_concept_lr *= concept_lr[c_id]
+                q_lr = question_lr[q_id]
+                average_pi = (q_pi + c_pi + u_pi) / 3
+                odds_all = average_pi / (1 - average_pi) * q_concept_lr * q_lr * u_lr
+                all_r.append(odds_all / (1 + odds_all))
+                
+                n += 1
+                
+        return {
+            "concept": all_concept_r,
+            "question": all_question_r,
+            "user": all_user_r,
+            "all": all_r
+        }
 
     def multi_step_inference_overall(self, model, data_loader, use_accumulative=True):
         seq_start = self.params["sequential_dlkt"]["seq_start"]
@@ -311,7 +421,7 @@ class SequentialDLKTEvaluator(DLEvaluator):
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
         multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
-        bes_setting = self.params["sequential_dlkt"]["bes_setting"]
+        use_bes = self.params["sequential_dlkt"]["use_bes"]
 
         for data_loader_name, inference_result in self.inference_results.items():
             if evaluate_overall:
@@ -320,48 +430,48 @@ class SequentialDLKTEvaluator(DLEvaluator):
                 self.objects["logger"].info(
                     f"    overall performances (seq_start {seq_start}) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
             
-                if que_start > 0:
-                    performance = inference_result["question_warm_start"]
-                    self.objects["logger"].info(
-                        f"    overall performances (seq_start {seq_start}, que_start {que_start}) are AUC: "
-                        f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+            if que_start > 0:
+                performance = inference_result["double_warm_start"]
+                self.objects["logger"].info(
+                    f"    double warm start performances (seq_start {seq_start}, que_start {que_start}) are AUC: "
+                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
             if use_core:
                 performance = inference_result["core"]["repeated"]
                 self.objects["logger"].info(
                     f"    core performances (seq_start {seq_start}, repeated) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
                 performance = inference_result["core"]["non-repeated"]
                 self.objects["logger"].info(
                     f"    core performances (seq_start {seq_start}, non-repeated) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
             if user_cold_start >= 1:
                 performance = inference_result["user_cold_start"]
                 self.objects["logger"].info(
                     f"    user cold start performances (cold_start is {user_cold_start}) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
                 if question_cold_start >= 0:
                     performance = inference_result["double_cold_start"]
                     self.objects["logger"].info(
                         f"    double cold start performances (user_cold_start is {user_cold_start}, "
                         f"question_cold_start is {question_cold_start}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
                 
             if question_cold_start >= 0:
                 performance = inference_result["question_cold_start"]
                 self.objects["logger"].info(
                     f"    question cold start performances (cold_start is {question_cold_start}) are AUC: "
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
             if multi_step > 1:
                 if multi_step_overall and multi_step_accumulate:
@@ -369,29 +479,36 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     self.objects["logger"].info(
                         f"    overall accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
                 elif multi_step_overall and (not multi_step_accumulate):
                     performance = inference_result['multi_step']["overall-non-accumulate"]
                     self.objects["logger"].info(
                         f"    overall non-accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
                 elif (not multi_step_overall) and (not multi_step_accumulate):
                     performance = inference_result['multi_step']["last-non-accumulate"]
                     self.objects["logger"].info(
                         f"    last non-accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
                 else:
                     performance = inference_result['multi_step']["last-accumulate"]
                     self.objects["logger"].info(
                         f"    last accumulative multi step performances (seq_start is {seq_start}, multi_step is {multi_step}) are AUC: "
                         f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
-                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}, ")
+                        f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
-            if bes_setting >= 1:
-                BES = inference_result['BES']
+            if use_bes:
+                performance = inference_result["BES"]["all"]
                 self.objects["logger"].info(
-                    f"    model bias in{' s' if bes_setting in [1, 2, 3, 5] else ''}"
-                    f"{' c' if bes_setting in [1, 2, 4, 6] else ''}"
-                    f"{' q' if bes_setting in [1, 3, 4, 7] else ''} (seq_start is {seq_start}) are BES: {BES:<9.5}")
+                    f"    acc based model bias in u c q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                performance = inference_result["BES"]["user"]
+                self.objects["logger"].info(
+                    f"    acc based model bias in u (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                performance = inference_result["BES"]["concept"]
+                self.objects["logger"].info(
+                    f"    acc based model bias in c (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                performance = inference_result["BES"]["question"]
+                self.objects["logger"].info(
+                    f"    acc based model bias in q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
