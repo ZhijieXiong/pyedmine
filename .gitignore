@@ -26,3 +26,5 @@ script_result
 /README4PYPI.md
 /release_process.txt
 /examples/roster/*.png
+/check_train.py
+/delete_log.py

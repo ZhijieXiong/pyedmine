@@ -24,6 +24,10 @@ FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
 MODEL_DIR = settings["MODELS_DIR"]
 
 
+def Laplace(num_count, num_correct):
+    return float((num_correct + 1) / (num_count + 2))
+
+
 def config_sequential_dlkt(local_params):
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
@@ -50,7 +54,9 @@ def config_sequential_dlkt(local_params):
         "multi_step_overall": local_params.get("multi_step_overall", False),
         "multi_step": local_params.get("multi_step", 1),
         "use_core": local_params.get("use_core", False),
-        "evaluate_overall": local_params.get("evaluate_overall", True)
+        "evaluate_overall": local_params.get("evaluate_overall", True),
+        "bes_setting": local_params.get("bes_setting", 0),
+        "bes_use_time_decay": local_params.get("bes_use_time_decay", False),
     }
     config_q_table(local_params, global_params, global_objects)
     
@@ -62,7 +68,8 @@ def config_sequential_dlkt(local_params):
         os.mkdir(cold_start_dir)
     question_cold_start = global_params["sequential_dlkt"]["question_cold_start"]
     if question_cold_start >= 0:
-        cold_start_question_path = os.path.join(cold_start_dir, f"cold_start_question_{question_cold_start}.json")
+        cold_start_question_path = os.path.join(cold_start_dir,
+                                                f"{train_file_name}_cold_start_question_{question_cold_start}.json")
         if os.path.exists(cold_start_question_path):
             global_objects["cold_start_question"] = read_json(cold_start_question_path)
         else:
@@ -80,13 +87,86 @@ def config_sequential_dlkt(local_params):
                 if num_question <= question_cold_start:
                     global_objects["cold_start_question"].append(question_id)
             write_json(global_objects["cold_start_question"], cold_start_question_path)
+
+    bes_dir = os.path.join(setting_dir, "data4bes")
+    if not os.path.exists(bes_dir):
+        os.mkdir(bes_dir)
+    bes_setting = global_params["sequential_dlkt"]["bes_setting"]
+    train_data = None
+    if bes_setting in [1, 2, 3, 4, 6, 7]:
+        train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
+        train_data = read_kt_file(train_file_path)
+    if bes_setting in [1, 2, 4, 6]:
+        concept_acc_path = os.path.join(bes_dir, f"{train_file_name}_concept_acc.json")
+        if os.path.exists(concept_acc_path):
+            concept_acc = read_json(concept_acc_path)
+            global_objects["concept_acc"] = {int(c): acc for c, acc in concept_acc.items()}
+        else:
+            # 统计知识点信息
+            num_concept = global_objects["dataset"]["q_table"].shape[1]
+            q2c = global_objects["dataset"]["q2c"]
+            concept_count = {}
+            concept_correct = {}
+            for user_data in train_data:
+                seq_len = user_data["seq_len"]
+                question_seq = user_data["question_seq"][:seq_len]
+                correctness_seq = user_data["correctness_seq"][:seq_len]
+                for q, correctness in zip(question_seq, correctness_seq):
+                    for c in q2c[q]:
+                        if c not in concept_count:
+                            concept_count[c] = 0
+                        if c not in concept_correct:
+                            concept_correct[c] = 0
+                        concept_count[c] += 1
+                        concept_correct[c] += correctness
+            pi = sum(concept_correct.values()) / sum(concept_count.values())
+            concept_acc = {}
+            for c in range(num_concept):
+                if c not in concept_count:
+                    concept_acc[c] = pi
+                else:
+                    concept_acc[c] = Laplace(concept_count[c], concept_correct[c])
+            global_objects["concept_acc"] = concept_acc
+            write_json(concept_acc, concept_acc_path)
+
+    if bes_setting in [1, 3, 4, 7]:
+        # 统计习题信息
+        question_acc_path = os.path.join(bes_dir, f"{train_file_name}_question_acc.json")
+        if os.path.exists(question_acc_path):
+            question_acc = read_json(question_acc_path)
+            global_objects["question_acc"] = {int(q): acc for q, acc in question_acc.items()}
+        else:
+            num_question = global_objects["dataset"]["q_table"].shape[0]
+            question_count = {}
+            question_correct = {}
+            for user_data in train_data:
+                seq_len = user_data["seq_len"]
+                question_seq = user_data["question_seq"][:seq_len]
+                correctness_seq = user_data["correctness_seq"][:seq_len]
+                for q, correctness in zip(question_seq, correctness_seq):
+                    if q not in question_count:
+                        question_count[q] = 0
+                    if q not in question_correct:
+                        question_correct[q] = 0
+                    question_count[q] += 1
+                    question_correct[q] += correctness
+            pi = sum(question_correct.values()) / sum(question_count.values())
+            question_acc = {}
+            for q in range(num_question):
+                if q not in question_count:
+                    question_acc[q] = pi
+                else:
+                    question_acc[q] = Laplace(question_count[q], question_correct[q])
+            global_objects["question_acc"] = question_acc
+            write_json(question_acc, question_acc_path)
             
     warm_start_dir = os.path.join(setting_dir, "data4warm_start")
     if not os.path.exists(warm_start_dir):
         os.mkdir(warm_start_dir)
     que_start = global_params["sequential_dlkt"]["que_start"]
     if que_start > 0:
-        warm_start_question_path = os.path.join(warm_start_dir, f"warm_start_question_{que_start}.json")
+        warm_start_question_path = os.path.join(warm_start_dir,
+                                                f"{train_file_name}_warm_start_question_{que_start}.json")
         if os.path.exists(warm_start_question_path):
             global_objects["warm_start_question"] = read_json(warm_start_question_path)
         else:
