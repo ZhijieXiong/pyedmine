@@ -149,3 +149,35 @@ class CLKTSampker:
             correctness_seq[i] = 1 - correctness_seq[i]
 
         return correctness_seq
+
+
+class DisKTSampler:
+    def __init__(self, data_uniformed):
+        self.concept_accuracy = None
+        self.get_concept_accuracy(data_uniformed)
+
+    def get_concept_accuracy(self, data_uniformed):
+        concept_seqs = [item_data["concept_seq"][:item_data["seq_len"]] for item_data in data_uniformed]
+        correctness_seqs = [item_data["correctness_seq"][:item_data["seq_len"]] for item_data in data_uniformed]
+
+        concept_correctness = defaultdict(int)
+        concept_count = defaultdict(int)
+        for concept_seq, correctness_seq in zip(concept_seqs, correctness_seqs):
+            for c_id, correctness in zip(concept_seq, correctness_seq):
+                concept_correctness[c_id] += correctness
+                concept_count[c_id] += 1
+
+        self.concept_accuracy = {
+            c_id: concept_correctness[c_id] / float(concept_count[c_id]) for c_id in concept_correctness
+        }
+
+    def negative_seq(self, concept_seq, correctness_seq, neg_prob):
+        counter_mask_seq = []
+        for concept, correctness in zip(concept_seq, correctness_seq):
+            prob = random.random()
+            control_val = max(prob, 0.1) * (1 - correctness + (2 * correctness - 1) * self.concept_accuracy[concept])
+            if control_val < neg_prob:
+                counter_mask_seq.append(1)
+            else:
+                counter_mask_seq.append(0)
+        return counter_mask_seq

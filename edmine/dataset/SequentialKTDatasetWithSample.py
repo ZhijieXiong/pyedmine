@@ -91,3 +91,77 @@ class CLKTDataset(BasicSequentialKTDataset):
             aug_result.append(user_data_aug)
         return aug_result
     
+
+class DisKTDataset(BasicSequentialKTDataset):
+    def __init__(self, dataset_config, objects, train_mode=False):
+        self.data_sampler = None
+        self.train_mode = train_mode
+        super(DisKTDataset, self).__init__(dataset_config, objects)
+
+    def __len__(self):
+        return len(self.dataset_original)
+
+    def __getitem__(self, index):
+        if self.train_mode:
+            return self.getitem_train_mode(index)
+        else:
+            return self.getitem_test_mode(index)
+        
+    def process_dataset(self):
+        self.load_dataset()
+        self.add_concept_seq()
+        self.data_sampler = DisKTSampler(self.dataset_original)
+        
+    def add_concept_seq(self):
+        q2c = self.objects["dataset"]["q2c"]
+        for user_data in self.dataset_original:
+            user_data["concept_seq"] = list(map(lambda q_id: q2c[q_id][0], user_data["question_seq"]))
+
+    def getitem_test_mode(self, index):
+        # 修改为将padding放在前面的模式，以兼容DisKT原代码
+        result = dict()
+        max_seq_len = len(self.dataset_original[index]["correctness_seq"])
+        seq_len = self.dataset_original[index]["seq_len"]
+        for k, v in self.dataset_original[index].items():
+            if k in ["question_seq", "concept_seq", "correctness_seq"] or type(v) is not list:
+                if type(v) is list:
+                    if k == "correctness_seq":
+                        # DisKT使用-1填充correctness_seq的
+                        v_ = [-1] * (max_seq_len - seq_len) + v[:seq_len]
+                    else:
+                        v_ = [0] * (max_seq_len - seq_len) + v[:seq_len]
+                    result[k] = torch.tensor(v_).long().to(self.dataset_config["device"])
+                else:
+                    result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
+            elif k == "mask_seq":
+                # 因为在DisKT计算完之后，我的操作是通过移位将其变会在后面添加padding，所以mask不需要在前面添加padding
+                result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
+
+        return result
+
+    def getitem_train_mode(self, index):
+        result = dict()
+        max_seq_len = len(self.dataset_original[index]["correctness_seq"])
+        seq_len = self.dataset_original[index]["seq_len"]
+        concept_seq = self.dataset_original[index]["concept_seq"][:seq_len]
+        correctness_seq = self.dataset_original[index]["correctness_seq"][:seq_len]
+        neg_prob = self.dataset_config.get("neg_prob", 0.2)
+        counter_mask_seq = self.data_sampler.negative_seq(concept_seq, correctness_seq, neg_prob)
+        result["counter_mask_seq"] = torch.tensor(
+            [0] * (max_seq_len - seq_len) + counter_mask_seq
+        ).long().to(self.dataset_config["device"])
+        for k, v in self.dataset_original[index].items():
+            if k in ["question_seq", "concept_seq", "correctness_seq"] or type(v) is not list:
+                if type(v) is list:
+                    if k == "correctness_seq":
+                        # DisKT使用-1填充correctness_seq的
+                        v_ = [-1] * (max_seq_len - seq_len) + v[:seq_len]
+                    else:
+                        v_ = [0] * (max_seq_len - seq_len) + v[:seq_len]
+                    result[k] = torch.tensor(v_).long().to(self.dataset_config["device"])
+                else:
+                    result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
+            elif k == "mask_seq":
+                # 因为在DisKT计算完之后，我的操作是通过移位将其变会在后面添加padding，所以mask不需要在前面添加padding
+                result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
+        return result

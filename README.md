@@ -9,12 +9,11 @@
 
 PyEdmine是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
 
-PyEdmine提出了一个统一的实验流程，用于进行知识追踪、认知诊断、习题推荐和学习路径推荐的实验
+PyEdmine提出了一个统一的实验流程，用于进行***知识追踪***、***认知诊断***、***习题推荐***和***学习路径推荐***的实验
 
-PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持 14 个 benchmark dataset
+PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持***14个教育数据挖掘数据集***
 
-PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了26个知识追踪模型、7个认知诊断模型、3个习题推荐模型、4个学习路径推荐模型
-
+PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了***28个知识追踪模型、7个认知诊断模型、3个习题推荐模型、4个学习路径推荐模型***
 
 <p align="center">
   <img src="asset/img/ExperimentalFlowChart.jpg" alt="PeEdmine 实验流程图" width="600">
@@ -22,7 +21,20 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
   <b>图片</b>: PyEdmine 实验流程图
 </p>
 
-各任务的具体实验设置请查阅[模型榜单](https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html)上的说明
+各任务的具体实验设置请查阅[模型榜单](https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html)上的说明，以下是PyEdmine各版本发布的说明
+
+| Releases | Date      |Description|
+|----------|-----------|-----------|
+| v0.1.0   | 3/26/2025 |初始发布版本|
+| v0.1.1   | 3/31/2025 |修复了一些bug，新增ATDKT、CLKT、DTransformer、GRKT、HDLPKT模型|
+| v0.2.0   | 4/9/2025 |beta版本，但是GRKT模型训练会报错（NaN），尚未解决|
+| v0.2.1   | 1/8/2025 |修复了一些bug，集成了学习路径推荐任务|
+| v0.2.2   | 3/8/2025 |修复了学习路径推荐的一些bug|
+| v0.2.3   | 3/8/2025 |使用基于装饰器的模型注册机制，移除手动维护的 model_table|
+| v1.0.0   |          |稳定版（长期支持），新增qDKT_CORE、AKT_CORE和DisKT模型和BES指标
+
+
+`v1.0.0`是项目的第一个长期支持版本（LTS），与之前所有已发布版本完全向后兼容。未来更新仅会添加新模型，不会破坏现有接口或功能。**建议新用户直接使用此版本，老用户直接升级到此版本**
 
 
 - [安装](#安装)
@@ -42,7 +54,6 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
     - [学习路径推荐](#学习路径推荐)
   - [模型自动调参](#模型自动调参)
   - [绘制学生知识状态变化图](#绘制学生知识状态变化图)
-- [PyEdmine 重要发布](#pyedmine-重要发布)
 - [数据集扩展](#数据集扩展)
 - [参考代码库](#参考代码库)
 - [贡献](#贡献)
@@ -330,23 +341,6 @@ python examples/roster/kt_plot.py
 <img src="asset/img/trace_related_cs_change.png" alt="trace_related_cs_change" width="600">
 <img src="asset/img/trace_selected_cs_change.png" alt="trace_selected_cs_change" width="600">
 <img src="asset/img/trace_single_concept_change.png" alt="trace_single_concept_change" width="600">
-
-## PyEdmine 重要发布
-| Releases | Date      |
-|----------|-----------|
-| v0.1.0   | 3/26/2025 |
-| v0.1.1   | 3/31/2025 |
-| v0.2.0   | 4/9/2025 |
-| v0.2.1   | 1/8/2025 |
-| v0.2.2   | 3/8/2025 |
-| v0.2.3   | 3/8/2025 |
-
-- `v0.1.0` 初始发布版本
-- `v0.1.1` 修复了一些bug，增加了5个知识追踪模型，即ATDKT、CLKT、DTransformer、GRKT、HDLPKT
-- `v0.2.0` beta版本，但是GRKT模型训练会报错（NaN），尚未解决
-- `v0.2.1` 修复了一些bug，集成了学习路径推荐任务
-- `v0.2.2` 修复了学习路径推荐的一些bug
-- `v0.2.3` 使用基于装饰器的模型注册机制，移除手动维护的 model_table
 
 ## 数据集扩展
 [edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。

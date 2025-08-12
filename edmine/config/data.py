@@ -73,6 +73,25 @@ def config_clkt_dataset(local_params, global_params):
         },
     }
     
+
+def config_dis_kt_dataset(local_params, global_params):
+    setting_name = local_params["setting_name"]
+    train_file_name = local_params["train_file_name"]
+    valid_file_name = local_params["valid_file_name"]
+    global_params["datasets_config"] = {
+        "train": {
+            "setting_name": setting_name,
+            "file_name": train_file_name,
+            "device": global_params["device"],
+            "neg_prob": local_params["neg_prob"],
+        },
+        "valid": {
+            "setting_name": setting_name,
+            "file_name": valid_file_name,
+            "device": global_params["device"]
+        },
+    }
+    
     
 def config_dygkt_dataset(local_params, global_params):
     setting_name = local_params["setting_name"]

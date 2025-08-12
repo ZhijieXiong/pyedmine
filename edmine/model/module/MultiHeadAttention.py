@@ -416,3 +416,68 @@ class MultiHeadAttention4UKT(nn.Module):
         output_cov  = self.out_cov_proj(concat_cov)
 
         return output_mean, output_cov
+
+
+class MultiHeadAttention4DisKT(nn.Module):
+    def __init__(self, params):
+        super().__init__()
+
+        self.params = params
+        model_config = self.params["models_config"]["DisKT"]
+        dim_model = model_config["dim_model"]
+        num_head = model_config["num_head"]
+        key_query_same = model_config["key_query_same"]
+        dropout = model_config["dropout"]
+        dim_feature = dim_model // num_head
+        bias = True
+
+        self.dim_model = dim_model
+        self.dim_feature = dim_feature
+        self.num_head = num_head
+        self.key_query_same = key_query_same
+        self.v_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        self.k_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        if key_query_same is False:
+            self.q_linear = nn.Linear(dim_model, dim_model, bias=bias)
+        self.dropout = nn.Dropout(dropout)
+        self.proj_bias = bias
+        self.out_proj = nn.Linear(dim_model, dim_model, bias=bias)
+        self._reset_parameters()
+
+    def _reset_parameters(self):
+        xavier_uniform_(self.k_linear.weight)
+        xavier_uniform_(self.v_linear.weight)
+        if self.key_query_same is False:
+            xavier_uniform_(self.q_linear.weight)
+
+        if self.proj_bias:
+            constant_(self.k_linear.bias, 0.)
+            constant_(self.v_linear.bias, 0.)
+            if self.key_query_same is False:
+                constant_(self.q_linear.bias, 0.)
+            constant_(self.out_proj.bias, 0.)
+
+    def forward(self, q, k, v, mask, zero_pad):
+        bs = q.size(0)
+        k = self.k_linear(k).view(bs, -1, self.num_head, self.dim_feature)
+        if self.key_query_same is False:
+            q = self.q_linear(q).view(bs, -1, self.num_head, self.dim_feature)
+        else:
+            q = self.k_linear(q).view(bs, -1, self.num_head, self.dim_feature)
+        v = self.v_linear(v).view(bs, -1, self.num_head, self.dim_feature)
+
+        # transpose to get dimensions bs * h * sl * embedding_size
+
+        k = k.transpose(1, 2)
+        q = q.transpose(1, 2)
+        v = v.transpose(1, 2)
+        # calculate attention using function we will define next
+        scores = attention4dis_kt(q, k, v, self.dim_feature, mask, self.dropout, zero_pad)
+
+        # concatenate heads and put through final linear layer
+        concat = scores.transpose(1, 2).contiguous() \
+            .view(bs, -1, self.dim_model)
+
+        output = self.out_proj(concat)
+
+        return output

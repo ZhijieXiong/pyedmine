@@ -257,3 +257,53 @@ class TransformerLayer4UKT(nn.Module):
             query_cov = self.layer_norm2(self.activation2(query2_cov)+1)
 
         return query_mean, query_cov
+
+
+class TransformerLayer4DisKT(nn.Module):
+    def __init__(self, params):
+        super().__init__()
+
+        self.params = params
+        model_config = self.params["models_config"]["DisKT"]
+        dim_model = model_config["dim_model"]
+        dim_ff = model_config["dim_ff"]
+        dropout = model_config["dropout"]
+
+        # Multi-Head Attention Block
+        self.masked_attn_head = MultiHeadAttention4DisKT(params)
+
+        # Two layer norm layer and two dropout layer
+        self.layer_norm1 = nn.LayerNorm(dim_model)
+        self.dropout1 = nn.Dropout(dropout)
+
+        self.linear1 = nn.Linear(dim_model, dim_ff)
+        self.activation = nn.ReLU()
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_ff, dim_model)
+
+        self.layer_norm2 = nn.LayerNorm(dim_model)
+        self.dropout2 = nn.Dropout(dropout)
+
+    def forward(self, mask, query, key, values, apply_pos=True):
+        seq_len, batch_size = query.size(1), query.size(0)
+        device = query.device
+        no_peek_mask = np.triu(
+            np.ones((1, 1, seq_len, seq_len)), k=mask).astype('uint8')
+        src_mask = (torch.from_numpy(no_peek_mask) == 0).to(device)
+        if mask == 0:  # If 0, zero-padding is needed.
+            # Calls block.masked_attn_head.forward() method
+            query2 = self.masked_attn_head(
+                query, key, values, mask=src_mask,
+                zero_pad=True)  # 只能看到之前的信息，当前的信息也看不到，此时会把第一行score全置0，表示第一道题看不到历史的interaction信息，第一题attn之后，对应value全0
+        else:
+            # Calls block.masked_attn_head.forward() method
+            query2 = self.masked_attn_head(
+                query, key, values, mask=src_mask, zero_pad=False)
+
+        query = query + self.dropout1(query2)  # 残差1
+        query = self.layer_norm1(query)  # layer norm
+        if apply_pos:
+            query2 = self.linear2(self.dropout(self.activation(self.linear1(query))))
+            query = query + self.dropout2(query2)  # 残差
+            query = self.layer_norm2(query)  # lay norm
+        return query

@@ -249,3 +249,49 @@ def attention4ukt(q_mean, q_cov, k_mean, k_cov, v_mean, v_cov, d_k, mask, dropou
 
     return output_mean, output_cov
 
+
+def contradictory_attention4dis_kt(query, key, value1, value2, mask=None, dropout=None, counter_attention_mask=None):
+    bs, head, seq_len, d_k = query.size(0), query.size(1), query.size(2), query.size(-1)
+    device = query.device
+    scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
+
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, -1e32)
+
+    p_attn = F.softmax(scores, dim=-1)  # [batch_size, head, seq_len, seq_len]
+
+    expanded_mask = counter_attention_mask.unsqueeze(1).unsqueeze(1)  # [bs, 1, 1, seq_len]
+    expanded_mask = expanded_mask.expand(-1, head, seq_len, -1)  # [bs, head, seq_len, seq_len]
+
+    LOG_MIN = -1e32
+    masked_attn = torch.where(expanded_mask == 1,
+                              torch.ones_like(p_attn) * LOG_MIN,
+                              p_attn + 1e-10)
+
+    p_attn = F.softmax(masked_attn, dim=-1)
+
+    pad_zero = torch.zeros(bs, head, 1, seq_len).to(device)
+    p_attn = torch.cat([pad_zero, p_attn[:, :, 1:, :]], dim=2)
+
+    if dropout is not None:
+        p_attn = dropout(p_attn)
+
+    output_v1 = torch.matmul(p_attn, value1)
+    output_v2 = torch.matmul(p_attn, value2)
+    return output_v1, output_v2, p_attn
+
+
+def attention4dis_kt(q, k, v, d_k, mask, dropout, zero_pad):
+    # d_k: 每一个头的dim
+    scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)  # BS, 8, seq_len, seq_len
+    bs, head, seq_len = scores.size(0), scores.size(1), scores.size(2)
+    device = q.device
+
+    scores.masked_fill_(mask == 0, -1e32)
+    scores = F.softmax(scores, dim=-1)  # BS,8,seq_len,seq_len
+    if zero_pad:
+        pad_zero = torch.zeros(bs, head, 1, seq_len).to(device)
+        scores = torch.cat([pad_zero, scores[:, :, 1:, :]], dim=2)  # 第一行score置0
+    scores = dropout(scores)
+    output = torch.matmul(scores, v)
+    return output
