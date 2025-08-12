@@ -34,7 +34,7 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
 | v1.0.0   |          |稳定版（长期支持），新增qDKT_CORE、AKT_CORE和DisKT模型和BES指标
 
 
-`v1.0.0`是项目的第一个长期支持版本（LTS），与之前所有已发布版本完全向后兼容。未来更新仅会添加新模型，不会破坏现有接口或功能。**建议新用户直接使用此版本，老用户直接升级到此版本**
+`v1.0.0`是项目的第一个长期支持版本（LTS），并且与之前所有已发布版本完全向后兼容。未来更新仅会添加新模型，不会破坏现有接口或功能。**建议新用户直接使用此版本，老用户直接升级到此版本**
 
 
 - [安装](#安装)
@@ -295,12 +295,13 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 #### 知识追踪
 - overall 从序列的第2个交互开始预测
 - core 论文[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)提出的指标
-- user warm start, seqStart25 从序列的第25个交互开始预测
 - double warm start, seqStart5QueNum5 从序列的第5个交互开始预测，并且只预测训练中出现次数大于等于5的习题
 - user cold start, seqEnd5 只预测序列的前5个交互
 - question cold start, queNum5 只预测训练集中出现次数小于等于5的习题
+- double cold start, seqEnd5queNum5 只预测序列的前5个交互中训练集中出现次数小于等于5的习题
 - multi step 论文[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)中提到的两种多步预测
 - first trans 只预测每个学生交互序列中第一次接触到的知识点
+- BES 偏差曝光分数，即Bias Exposure Score，用于衡量模型受数据偏差影响的程度——其中偏差来自历史、知识点和习题，该值越小，模型受数据偏差影响越大
 #### 认知诊断
 - overall 预测全部测试集
 - user cold start, userNum5 只预测训练集中出现次数小于等于5的学生
