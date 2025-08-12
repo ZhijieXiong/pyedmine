@@ -51,9 +51,9 @@ if __name__ == "__main__":
     global_params, global_objects = config_dis_kt(params)
 
     global_objects["logger"].info(f"{get_now_time()} start loading and processing dataset")
-    dataset_train = DisKTDataset(global_params["datasets_config"]["train"], global_objects, train_mode=True)
+    dataset_train = DisKTDataset(global_params["datasets_config"]["train"], global_objects)
     dataloader_train = DataLoader(dataset_train, batch_size=params["train_batch_size"], shuffle=True)
-    dataset_valid = DisKTDataset(global_params["datasets_config"]["valid"], global_objects, train_mode=False)
+    dataset_valid = DisKTDataset(global_params["datasets_config"]["valid"], global_objects)
     dataloader_valid = DataLoader(dataset_valid, batch_size=params["train_batch_size"], shuffle=False)
 
     global_objects["data_loaders"] = {

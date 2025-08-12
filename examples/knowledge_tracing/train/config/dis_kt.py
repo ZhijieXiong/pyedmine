@@ -53,14 +53,16 @@ def config_dis_kt(local_params):
                     "dim_item": local_params["dim_model"]
                 },
                 "interaction": {
-                    "num_item": (local_params["num_concept"] * 2) if local_params["separate_qa"] else 2,
+                    "num_item": (local_params["num_concept"] * 2 + 1) if local_params["separate_qa"] else 3,
                     "dim_item": local_params["dim_model"]
                 },
                 "interaction_var": {
-                    "num_item": local_params["num_concept"] * 2,
+                    "num_item": local_params["num_concept"] * 2 + 1,
                     "dim_item": local_params["dim_model"]
                 }
             },
+            # 推理时也要这个参数
+            "neg_prob": local_params["neg_prob"],
             "num_concept": local_params["num_concept"],
             "num_question": local_params["num_question"],
             "dim_model": local_params["dim_model"],

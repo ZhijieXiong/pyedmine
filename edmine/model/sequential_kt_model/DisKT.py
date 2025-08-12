@@ -83,15 +83,15 @@ class DisKT(nn.Module, DLSequentialKTModel):
         return predict_score_batch
 
     def get_predict_score(self, batch, seq_start=2):
-        question_seq = batch['question_seq']
-        concept_seq = batch['concept_seq']
-        correctness_seq = batch['correctness_seq']
+        question_seq = batch['question_seq_new']
+        concept_seq = batch['concept_seq_new']
+        correctness_seq = batch['correctness_seq_new']
         counter_mask_seq = batch['counter_mask_seq']
         masked_r = correctness_seq * (correctness_seq > -1).long()
 
-        pos_question_emb, pos_interaction_emb, _ = self.rasch_emb(
+        _, pos_interaction_emb, _ = self.rasch_emb(
             masked_r * concept_seq, masked_r * question_seq, 2 - masked_r)
-        neg_question_emb, neg_interaction_emb, _ = self.rasch_emb(
+        _, neg_interaction_emb, _ = self.rasch_emb(
             (1 - masked_r) * concept_seq, (1 - masked_r) * question_seq, 2 * masked_r)
         question_emb, interaction_emb, question_diff_emb = self.rasch_emb(concept_seq, question_seq, masked_r)
 
@@ -111,7 +111,7 @@ class DisKT(nn.Module, DLSequentialKTModel):
         # 计算每行需要移动的位数
         max_seq_len = question_seq.shape[1]
         shift = max_seq_len - batch["seq_len"]
-        idx = (torch.arange(max_seq_len).unsqueeze(0) + shift.unsqueeze(1)) % max_seq_len
+        idx = (torch.arange(max_seq_len).unsqueeze(0).to(self.params["device"]) + shift.unsqueeze(1)) % max_seq_len
         # gather 按索引取值
         predict_score_batch = torch.gather(predict_score_batch, 1, idx)[:, 1:]
 
@@ -126,15 +126,15 @@ class DisKT(nn.Module, DLSequentialKTModel):
         }
 
     def get_predict_loss(self, batch, seq_start=2):
-        question_seq = batch['question_seq']
-        concept_seq = batch['concept_seq']
-        correctness_seq = batch['correctness_seq']
+        question_seq = batch['question_seq_new']
+        concept_seq = batch['concept_seq_new']
+        correctness_seq = batch['correctness_seq_new']
         counter_mask_seq = batch['counter_mask_seq']
         masked_r = correctness_seq * (correctness_seq > -1).long()
 
-        pos_question_emb, pos_interaction_emb, _ = self.rasch_emb(
+        _, pos_interaction_emb, _ = self.rasch_emb(
             masked_r * concept_seq, masked_r * question_seq, 2 - masked_r)
-        neg_question_emb, neg_interaction_emb, _ = self.rasch_emb(
+        _, neg_interaction_emb, _ = self.rasch_emb(
             (1 - masked_r) * concept_seq, (1 - masked_r) * question_seq, 2 * masked_r)
         question_emb, interaction_emb, question_diff_emb = self.rasch_emb(concept_seq, question_seq, masked_r)
 

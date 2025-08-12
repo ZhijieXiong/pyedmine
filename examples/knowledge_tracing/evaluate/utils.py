@@ -133,6 +133,8 @@ def select_dataset(model_name):
         return ATDKTDataset
     elif model_name == "CLKT":
         return CLKTDataset
+    elif model_name == "DisKT":
+        return DisKTDataset
     elif model_name == "DTransformer":
         return DTransformerDataset
     elif model_name == "GRKT":
