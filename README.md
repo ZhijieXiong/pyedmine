@@ -27,11 +27,11 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
 |----------|-----------|-----------|
 | v0.1.0   | 3/26/2025 |初始发布版本|
 | v0.1.1   | 3/31/2025 |修复了一些bug，新增ATDKT、CLKT、DTransformer、GRKT、HDLPKT模型|
-| v0.2.0   | 4/9/2025 |beta版本，但是GRKT模型训练会报错（NaN），尚未解决|
-| v0.2.1   | 1/8/2025 |修复了一些bug，集成了学习路径推荐任务|
-| v0.2.2   | 3/8/2025 |修复了学习路径推荐的一些bug|
-| v0.2.3   | 3/8/2025 |使用基于装饰器的模型注册机制，移除手动维护的 model_table|
-| v1.0.0   |          |稳定版（长期支持），新增qDKT_CORE、AKT_CORE和DisKT模型和BES指标
+| v0.2.0   | 4/9/2025  |beta版本，但是GRKT模型训练会报错（NaN），尚未解决|
+| v0.2.1   | 1/8/2025  |修复了一些bug，集成了学习路径推荐任务|
+| v0.2.2   | 3/8/2025  |修复了学习路径推荐的一些bug|
+| v0.2.3   | 3/8/2025  |使用基于装饰器的模型注册机制，移除手动维护的 model_table|
+| v1.0.0   | 15/8/2025 |稳定版（长期支持），新增qDKT_CORE、AKT_CORE和DisKT模型和一些新的KT指标
 
 
 `v1.0.0`是项目的第一个长期支持版本（LTS），并且与之前所有已发布版本完全向后兼容。未来更新仅会添加新模型，不会破坏现有接口或功能。**建议新用户直接使用此版本，老用户直接升级到此版本**
@@ -299,9 +299,15 @@ python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [
 - user cold start, seqEnd5 只预测序列的前5个交互
 - question cold start, queNum5 只预测训练集中出现次数小于等于5的习题
 - double cold start, seqEnd5queNum5 只预测序列的前5个交互中训练集中出现次数小于等于5的习题
+- user warm start, seqStart50 只预测序列第50个之后的交互
 - multi step 论文[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)中提到的两种多步预测
 - first trans 只预测每个学生交互序列中第一次接触到的知识点
+- hard sample metric, question hard sample-th0.05 记习题在训练集中的正确率为acc_q，对于一次交互，若acc_q >= (0.5 + 0.05)且做对当前习题，或者acc_h <= (0.5 - 0.05)且做错当前习题，则将其视为一个hard sample (from question)
+- hard sample metric, concept hard sample-th0.05 类似question hard sample
+- hard sample metric, history hard sample-th0.05 类似question hard sample，使用学生的历史正确率作为参照 
 - BES 偏差曝光分数，即Bias Exposure Score，用于衡量模型受数据偏差影响的程度——其中偏差来自历史、知识点和习题，该值越小，模型受数据偏差影响越大
+  - 请注意，该指标未经过验证！！！
+  
 #### 认知诊断
 - overall 预测全部测试集
 - user cold start, userNum5 只预测训练集中出现次数小于等于5的学生

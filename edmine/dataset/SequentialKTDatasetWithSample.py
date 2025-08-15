@@ -123,6 +123,7 @@ class DisKTDataset(BasicSequentialKTDataset):
                     else:
                         v_ = [0] * (max_seq_len - seq_len) + v[:seq_len]
                         result[k+"_new"] = torch.tensor(v_).long().to(self.dataset_config["device"])
+                        result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
                 else:
                     result[k] = torch.tensor(v).long().to(self.dataset_config["device"])
             elif k == "mask_seq":

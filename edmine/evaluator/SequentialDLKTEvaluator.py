@@ -40,6 +40,9 @@ class SequentialDLKTEvaluator(DLEvaluator):
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
         multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
         use_bes = self.params["sequential_dlkt"]["use_bes"]
+        user_hard_th = self.params["sequential_dlkt"]["user_hard_th"]
+        concept_hard_th = self.params["sequential_dlkt"]["concept_hard_th"]
+        question_hard_th = self.params["sequential_dlkt"]["question_hard_th"]
         all_sample_path = self.params["all_sample_path"]
         save_all_sample = all_sample_path is not None
 
@@ -235,6 +238,65 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     "LR_BES": lr_based_bes
                 }
             }
+            
+        # 只在overall上计算，根据seq_start选择测试样本
+        if user_hard_th > 0:
+            print("calculating user hard sample metric in user history ...")
+            data4hard_sample = []
+            for batch_result in result_all_batch:
+                for seq_len, question_seq, correctness_seq, predict_score_seq in zip(
+                    batch_result["seq_len"], batch_result["question"], batch_result["correctness_full"], batch_result["predict_score"]
+                ):
+                    data4hard_sample.append({
+                        "correctness_seq": correctness_seq[:seq_len].tolist(),
+                        "predict_score_seq": predict_score_seq[:seq_len-1].tolist()
+                    })
+            predict_score_hard_u = []
+            ground_truth_hard_u = []
+            for user_data in data4hard_sample:
+                correctness_seq = user_data["correctness_seq"]
+                for i in range(seq_start-1, len(correctness_seq)):
+                    gt = correctness_seq[i]
+                    ps = user_data["predict_score_seq"][i-1]
+                    user_acc = float((sum(correctness_seq[:i]) + 1) / (i + 2))
+                    if (((user_acc - 0.5) >= question_hard_th) and (gt == 0)) or \
+                        (((0.5 - user_acc) >= question_hard_th) and (gt == 1)):
+                            predict_score_hard_u.append(ps)
+                            ground_truth_hard_u.append(gt)
+            inference_result["hard_history"] = get_kt_metric(ground_truth_hard_u, predict_score_hard_u)
+        
+        if concept_hard_th > 0:
+            concept_acc4hard_sample = self.objects["concept_acc4hard_sample"]
+            q2c = self.objects["dataset"]["q2c"]
+            predict_score_hard_c = []
+            ground_truth_hard_c = []
+            print("calculating hard sample metric in concept ...")
+            for q_id, ps, gt in zip(question_id_all, predict_score_all, ground_truth_all):
+                max_c_acc = -1
+                for c_id in q2c[q_id]:
+                    if c_id in concept_acc4hard_sample:
+                        c_acc = concept_acc4hard_sample[c_id]
+                        if c_acc > max_c_acc:
+                            max_c_acc = concept_acc4hard_sample[c_id]
+                if (((max_c_acc - 0.5) >= concept_hard_th) and (gt == 0)) or \
+                    (((0.5 - max_c_acc) >= concept_hard_th) and (gt == 1)):
+                    predict_score_hard_c.append(ps)
+                    ground_truth_hard_c.append(gt)
+            inference_result["hard_concept"] = get_kt_metric(ground_truth_hard_c, predict_score_hard_c)
+        
+        if question_hard_th > 0:
+            question_acc4hard_sample = self.objects["question_acc4hard_sample"]
+            predict_score_hard_q = []
+            ground_truth_hard_q = []
+            print("calculating hard sample metric in question ...")
+            for q_id, ps, gt in zip(question_id_all, predict_score_all, ground_truth_all):
+                if q_id in question_acc4hard_sample:
+                    q_acc = question_acc4hard_sample[q_id]
+                    if (((q_acc - 0.5) >= question_hard_th) and (gt == 0)) or \
+                        (((0.5 - q_acc) >= question_hard_th) and (gt == 1)):
+                        predict_score_hard_q.append(ps)
+                        ground_truth_hard_q.append(gt)
+            inference_result["hard_question"] = get_kt_metric(ground_truth_hard_q, predict_score_hard_q)
 
         return inference_result
     
@@ -421,6 +483,9 @@ class SequentialDLKTEvaluator(DLEvaluator):
         multi_step = self.params["sequential_dlkt"]["multi_step"]
         multi_step_accumulate = self.params["sequential_dlkt"]["multi_step_accumulate"]
         multi_step_overall = self.params["sequential_dlkt"]["multi_step_overall"]
+        user_hard_th = self.params["sequential_dlkt"]["user_hard_th"]
+        concept_hard_th = self.params["sequential_dlkt"]["concept_hard_th"]
+        question_hard_th = self.params["sequential_dlkt"]["question_hard_th"]
         use_bes = self.params["sequential_dlkt"]["use_bes"]
 
         for data_loader_name, inference_result in self.inference_results.items():
@@ -473,6 +538,27 @@ class SequentialDLKTEvaluator(DLEvaluator):
                     f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
                     f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
 
+            if user_hard_th > 0:
+                performance = inference_result["hard_history"]
+                self.objects["logger"].info(
+                    f"    hard history performances (seq_start is {seq_start}, threshold is {user_hard_th}) are AUC: "
+                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
+            
+            if concept_hard_th > 0:
+                performance = inference_result["hard_concept"]
+                self.objects["logger"].info(
+                    f"    hard concept performances (seq_start is {seq_start}, threshold is {concept_hard_th}) are AUC: "
+                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
+                
+            if question_hard_th > 0:
+                performance = inference_result["hard_question"]
+                self.objects["logger"].info(
+                    f"    hard question performances (seq_start is {seq_start}, threshold is {question_hard_th}) are AUC: "
+                    f"{performance['AUC']:<9.5}, ACC: {performance['ACC']:<9.5}, "
+                    f"RMSE: {performance['RMSE']:<9.5}, MAE: {performance['MAE']:<9.5}")
+            
             if multi_step > 1:
                 if multi_step_overall and multi_step_accumulate:
                     performance = inference_result['multi_step']["overall-accumulate"]
@@ -502,13 +588,13 @@ class SequentialDLKTEvaluator(DLEvaluator):
             if use_bes:
                 performance = inference_result["BES"]["all"]
                 self.objects["logger"].info(
-                    f"    acc based model bias in u c q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                    f"    model bias in u c q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
                 performance = inference_result["BES"]["user"]
                 self.objects["logger"].info(
-                    f"    acc based model bias in u (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                    f"    model bias in u (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
                 performance = inference_result["BES"]["concept"]
                 self.objects["logger"].info(
-                    f"    acc based model bias in c (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                    f"    model bias in c (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
                 performance = inference_result["BES"]["question"]
                 self.objects["logger"].info(
-                    f"    acc based model bias in q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")
+                    f"    model bias in q (seq_start is {seq_start}) are LR_BES: {performance['LR_BES']:<9.5}, ACC_BES: {performance['ACC_BES']:<9.5}")

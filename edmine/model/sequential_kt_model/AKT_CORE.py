@@ -116,7 +116,7 @@ class AKT_CORE(nn.Module, DLSequentialKTModel):
     def get_predict_score(self, batch, seq_start=2):
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
         _, _, _, logit_core = self.forward(batch)
-        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, seq_start - 2:, 1]
+        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, :, 1]
         predict_score = torch.masked_select(predict_score_batch[:, seq_start - 2:], mask_bool_seq[:, seq_start - 1:])
 
         return {
@@ -127,7 +127,7 @@ class AKT_CORE(nn.Module, DLSequentialKTModel):
     def get_predict_loss(self, batch, seq_start=2):
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
         z_nde_pred, q_pred, z_qks_pred, logit_core = self.forward(batch)
-        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, seq_start - 2:, 1]
+        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, :, 1]
         predict_score = torch.masked_select(predict_score_batch[:, seq_start - 2:], mask_bool_seq[:, seq_start - 1:])
         ground_truth = torch.masked_select(batch["correctness_seq"][:, 1:], mask_bool_seq[:, 1:])
 

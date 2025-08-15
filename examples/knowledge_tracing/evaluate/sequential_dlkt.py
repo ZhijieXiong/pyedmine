@@ -12,13 +12,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # 加载模型参数配置（如果不修改trainer中save代码，那么只需要修改model_dir_name参数）
     parser.add_argument("--model_dir_name", type=str, help="",
-                        default="qDKT@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-03-06@09-25-42")
+                        default="qDKT_CORE@@pykt_setting@@assist2009_train_fold_0@@seed_0@@2025-08-12@08-49-41")
     parser.add_argument("--model_file_name", type=str, help="文件名", default="saved.ckt")
     parser.add_argument("--model_name_in_ckt", type=str, help="文件名", default="best_valid")
     # 测试配置（通常只需要修改dataset_name和test_file_name参数）
     parser.add_argument("--dataset_name", type=str, default="assist2009")
     parser.add_argument("--test_file_name", type=str, help="文件名", default="assist2009_test.txt")
-    parser.add_argument("--seq_start", type=int, default=2, help="序列中seq_start（自然序列，从1开始）之前的元素不参与评估")
+    parser.add_argument("--seq_start", type=int, default=5, help="序列中seq_start（自然序列，从1开始）之前的元素不参与评估")
     parser.add_argument("--que_start", type=int, default=0, help="训练集中出现次数小于que_startd的习题不参与评估")
     parser.add_argument("--evaluate_batch_size", type=int, default=256)
     # ===============================不同场景指标设置===============================
@@ -39,7 +39,15 @@ if __name__ == "__main__":
     # core指标
     parser.add_argument("--use_core", type=str2bool, default=False)
     # Bias Exposure Score（BES）指标：用于衡量模型在多大程度上被训练数据的“表面相关性”（来自学生、知识点、习题三方面）驱动，从而在评估中产生偏差，该值越大，说明模型偏差越大
-    parser.add_argument("--use_bes", type=str2bool, default=True)
+    # 该指标只计算seq_start之后的样本
+    # ！！！该指标并未经过验证，还在改进中
+    parser.add_argument("--use_bes", type=str2bool, default=False)
+    # hard sample指标
+    # 例如user_hard_th为0.1，记学生历史正确率为acc_h，若acc_h >= (0.5 + 0.1)且做对当前习题，或者acc_h <= (0.5 - 0.1)且做错当前习题，则将其视为hard sample
+    # 该指标只计算seq_start之后的样本
+    parser.add_argument("--user_hard_th", type=float, default=0, help="[0, 0.5), 0表示不开启测试")
+    parser.add_argument("--concept_hard_th", type=float, default=0, help="[0, 0.5), 0表示不开启测试")
+    parser.add_argument("--question_hard_th", type=float, default=0, help="[0, 0.5), 0表示不开启测试")
     # ===========================================================================
     # 是否保存每个样本的测试结果
     parser.add_argument("--save_all_sample", type=str2bool, default=False)

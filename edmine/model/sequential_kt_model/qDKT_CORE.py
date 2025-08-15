@@ -37,7 +37,7 @@ class qDKT_CORE(nn.Module, DLSequentialKTModel):
             self.encoder_layer = nn.GRU(dim_emb, dim_latent, batch_first=True, num_layers=num_rnn_layer)
         self.predict_layer = PredictorLayer(model_config["predictor_config"])
         self.question_net = nn.Sequential(
-            nn.Linear(dim_question, 32),
+            nn.Linear(dim_question + dim_concept, 32),
             nn.ReLU(),
             nn.Linear(32, 64),
             nn.ReLU(),
@@ -75,7 +75,7 @@ class qDKT_CORE(nn.Module, DLSequentialKTModel):
         latent, _ = self.encoder_layer(interaction_emb)
 
         logits = self.predict_layer(torch.cat([latent, qc_emb[:, 1:]], dim=-1))
-        q_logits = self.question_net(question_emb[:, 1:].detach())
+        q_logits = self.question_net(qc_emb[:, 1:].detach())
         s_logits = self.user_net(latent.detach())
 
         z_QKS = self.fusion(logits, q_logits, s_logits, Q_fact=True, K_fact=True, S_fact=True)
@@ -96,7 +96,7 @@ class qDKT_CORE(nn.Module, DLSequentialKTModel):
     def get_predict_score(self, batch, seq_start=2):
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
         _, _, _, logit_core = self.forward(batch)
-        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, seq_start - 2:, 1]
+        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, :, 1]
         predict_score = torch.masked_select(predict_score_batch[:, seq_start - 2:], mask_bool_seq[:, seq_start - 1:])
 
         return {
@@ -107,7 +107,7 @@ class qDKT_CORE(nn.Module, DLSequentialKTModel):
     def get_predict_loss(self, batch, seq_start=2):
         mask_bool_seq = torch.ne(batch["mask_seq"], 0)
         z_nde_pred, q_pred, z_qks_pred, logit_core = self.forward(batch)
-        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, seq_start - 2:, 1]
+        predict_score_batch = torch.softmax(logit_core, dim=-1)[:, :, 1]
         predict_score = torch.masked_select(predict_score_batch[:, seq_start - 2:], mask_bool_seq[:, seq_start - 1:])
         ground_truth = torch.masked_select(batch["correctness_seq"][:, 1:], mask_bool_seq[:, 1:])
         predict_loss = torch.nn.functional.cross_entropy(z_qks_pred, ground_truth) + \

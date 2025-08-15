@@ -28,6 +28,63 @@ def Laplace(num_count, num_correct):
     return float((num_correct + 1) / (num_count + 2))
 
 
+def get_concept_acc(train_data, q2c, num_concept=None):
+    concept_count = {}
+    concept_correct = {}
+    for user_data in train_data:
+        seq_len = user_data["seq_len"]
+        question_seq = user_data["question_seq"][:seq_len]
+        correctness_seq = user_data["correctness_seq"][:seq_len]
+        for q, correctness in zip(question_seq, correctness_seq):
+            for c in q2c[q]:
+                if c not in concept_count:
+                    concept_count[c] = 0
+                if c not in concept_correct:
+                    concept_correct[c] = 0
+                concept_count[c] += 1
+                concept_correct[c] += correctness
+    pi = float(sum(concept_correct.values()) / sum(concept_count.values()))
+    if num_concept is None:
+        concepts = concept_count.keys()
+    else:
+        concepts = list(range(num_concept))
+    concept_acc = {}
+    for c in concepts:
+        if c not in concept_count:
+            concept_acc[c] = pi
+        else:
+            concept_acc[c] = Laplace(concept_count[c], concept_correct[c])
+    return concept_acc, concept_count, concept_correct
+
+
+def get_question_acc(train_data, num_question=None):
+    question_count = {}
+    question_correct = {}
+    for user_data in train_data:
+        seq_len = user_data["seq_len"]
+        question_seq = user_data["question_seq"][:seq_len]
+        correctness_seq = user_data["correctness_seq"][:seq_len]
+        for q, correctness in zip(question_seq, correctness_seq):
+            if q not in question_count:
+                question_count[q] = 0
+            if q not in question_correct:
+                question_correct[q] = 0
+            question_count[q] += 1
+            question_correct[q] += correctness
+    pi = float(sum(question_correct.values()) / sum(question_count.values()))
+    if num_question is None:
+        questions = question_count.keys()
+    else:
+        questions = list(range(num_question))
+    question_acc = {}
+    for q in questions:
+        if q not in question_count:
+            question_acc[q] = pi
+        else:
+            question_acc[q] = Laplace(question_count[q], question_correct[q])
+    return question_acc, question_count, question_correct
+
+
 def config_sequential_dlkt(local_params):
     global_params = {}
     global_objects = {"file_manager": FileManager(FILE_MANAGER_ROOT)}
@@ -55,7 +112,10 @@ def config_sequential_dlkt(local_params):
         "multi_step": local_params.get("multi_step", 1),
         "use_core": local_params.get("use_core", False),
         "evaluate_overall": local_params.get("evaluate_overall", True),
-        "use_bes": local_params.get("use_bes", False)
+        "use_bes": local_params.get("use_bes", False),
+        "user_hard_th": local_params.get("user_hard_th", 0),
+        "concept_hard_th": local_params.get("concept_hard_th", 0),
+        "question_hard_th": local_params.get("question_hard_th", 0),
     }
     config_q_table(local_params, global_params, global_objects)
     
@@ -111,7 +171,8 @@ def config_sequential_dlkt(local_params):
                 if num_question >= que_start:
                     global_objects["warm_start_question"].append(question_id)
             write_json(global_objects["warm_start_question"], warm_start_question_path)
-
+    
+    dataset_name = local_params["dataset_name"]
     bes_dir = os.path.join(setting_dir, "data4bes")
     if not os.path.exists(bes_dir):
         os.mkdir(bes_dir)
@@ -119,7 +180,6 @@ def config_sequential_dlkt(local_params):
     if use_bes:
         train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
         train_data = read_kt_file(train_file_path)
-        dataset_name = local_params["dataset_name"]
         
         # 统计知识点信息
         # 计算知识点的样本参照r：（1）利用经过Laplace平滑的acc作为样本参照；（2）用 Naive-Bayes 风格的似然比 合成样本参照
@@ -132,27 +192,8 @@ def config_sequential_dlkt(local_params):
         num_concept = global_objects["dataset"]["q_table"].shape[1]
         if not os.path.exists(concept_acc_path) or not os.path.exists(concept_lr_path):
             q2c = global_objects["dataset"]["q2c"]
-            concept_count = {}
-            concept_correct = {}
-            for user_data in train_data:
-                seq_len = user_data["seq_len"]
-                question_seq = user_data["question_seq"][:seq_len]
-                correctness_seq = user_data["correctness_seq"][:seq_len]
-                for q, correctness in zip(question_seq, correctness_seq):
-                    for c in q2c[q]:
-                        if c not in concept_count:
-                            concept_count[c] = 0
-                        if c not in concept_correct:
-                            concept_correct[c] = 0
-                        concept_count[c] += 1
-                        concept_correct[c] += correctness
+            concept_acc, concept_count, concept_correct = get_concept_acc(train_data, q2c, num_concept)
             pi = float(sum(concept_correct.values()) / sum(concept_count.values()))
-            concept_acc = {}
-            for c in range(num_concept):
-                if c not in concept_count:
-                    concept_acc[c] = pi
-                else:
-                    concept_acc[c] = Laplace(concept_count[c], concept_correct[c])
             global_objects["concept_acc"] = concept_acc
             write_json(concept_acc, concept_acc_path)
             
@@ -184,26 +225,8 @@ def config_sequential_dlkt(local_params):
         question_lr_path = os.path.join(bes_dir, f"{train_file_name}_question_likelihood_ratio.json")
         num_question = global_objects["dataset"]["q_table"].shape[0]
         if not os.path.exists(question_acc_path) or not os.path.exists(question_lr_path):
-            question_count = {}
-            question_correct = {}
-            for user_data in train_data:
-                seq_len = user_data["seq_len"]
-                question_seq = user_data["question_seq"][:seq_len]
-                correctness_seq = user_data["correctness_seq"][:seq_len]
-                for q, correctness in zip(question_seq, correctness_seq):
-                    if q not in question_count:
-                        question_count[q] = 0
-                    if q not in question_correct:
-                        question_correct[q] = 0
-                    question_count[q] += 1
-                    question_correct[q] += correctness
+            question_acc, question_count, question_correct = get_question_acc(train_data, num_question)
             pi = float(sum(question_correct.values()) / sum(question_count.values()))
-            question_acc = {}
-            for q in range(num_question):
-                if q not in question_count:
-                    question_acc[q] = pi
-                else:
-                    question_acc[q] = Laplace(question_count[q], question_correct[q])
             global_objects["question_acc"] = question_acc
             write_json(question_acc, question_acc_path)
             
@@ -230,6 +253,39 @@ def config_sequential_dlkt(local_params):
             global_objects["question_acc"] = {int(q): acc for q, acc in question_acc.items()}
             global_objects["question_lr"] = {int(q) if q != "pi" else q: lr for q, lr in question_lr.items()}
             
+    hard_sample_dir = os.path.join(setting_dir, "data4hard_sample")
+    if not os.path.exists(hard_sample_dir):
+        os.mkdir(hard_sample_dir)
+        
+    concept_hard_th = global_params["sequential_dlkt"]["concept_hard_th"]
+    if concept_hard_th > 0:
+        if "single-concept" in dataset_name:
+            concept_acc_path = os.path.join(hard_sample_dir, f"{train_file_name}_concept_acc_single_concept.json")
+        else:
+            concept_acc_path = os.path.join(hard_sample_dir, f"{train_file_name}_concept_acc.json")
+        if not os.path.exists(concept_acc_path):
+            train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
+            train_data = read_kt_file(train_file_path)
+            q2c = global_objects["dataset"]["q2c"]
+            concept_acc, concept_count, concept_correct = get_concept_acc(train_data, q2c)
+            global_objects["concept_acc4hard_sample"] = concept_acc
+            write_json(concept_acc, concept_acc_path)
+        else:
+            concept_acc = read_json(concept_acc_path)
+            global_objects["concept_acc4hard_sample"] = {int(c): acc for c, acc in concept_acc.items()}
+            
+    question_hard_th = global_params["sequential_dlkt"]["question_hard_th"]
+    if question_hard_th > 0:
+        question_acc_path = os.path.join(hard_sample_dir, f"{train_file_name}_question_acc.json")
+        if not os.path.exists(question_acc_path):
+            train_file_path = os.path.join(setting_dir, train_file_name + ".txt")
+            train_data = read_kt_file(train_file_path)
+            question_acc, question_count, question_correct = get_question_acc(train_data)
+            global_objects["question_acc4hard_sample"] = question_acc
+            write_json(question_acc, question_acc_path)
+        else:
+            question_acc = read_json(question_acc_path)
+            global_objects["question_acc4hard_sample"] = {int(q): acc for q, acc in question_acc.items()}
     
     # ABQR的config必须放在load_dl_model前面，因为初始化模型是需要gcn_adj
     if model_name == "ABQR":

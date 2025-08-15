@@ -17,11 +17,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[setup_common_args(), setup_scheduler_args(), setup_grad_acc_args()], 
                                      add_help=False)
     # batch size
-    parser.add_argument("--train_batch_size", type=int, default=64)
-    parser.add_argument("--evaluate_batch_size", type=int, default=128)
+    parser.add_argument("--train_batch_size", type=int, default=512)
+    parser.add_argument("--evaluate_batch_size", type=int, default=1024)
     # 优化器
     parser.add_argument("--optimizer_type", type=str, default="adam", choices=("adam", "sgd"))
-    parser.add_argument("--learning_rate", type=float, default=0.0001)
+    parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--weight_decay", type=float, default=0.00001)
     parser.add_argument("--momentum", type=float, default=0.9)
     # 梯度裁剪
