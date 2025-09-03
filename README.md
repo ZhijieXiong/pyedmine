@@ -1,11 +1,12 @@
 [![](./asset/img/pypi_icon.png)](https://pypi.org/project/edmine/)
 
-[文档] | [相关论文列表] | [数据集信息] | [模型榜单]
+[文档] | [相关论文列表] | [数据集信息] | [模型榜单] | [参与贡献]
 
 [文档]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
 [数据集信息]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
 [相关论文列表]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
 [模型榜单]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
+[参与贡献]: https://github.com/ZhijieXiong/pyedmine/blob/main/CONTRIBUTING.md
 
 PyEdmine是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
 
@@ -56,7 +57,6 @@ PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该
   - [绘制学生知识状态变化图](#绘制学生知识状态变化图)
 - [数据集扩展](#数据集扩展)
 - [参考代码库](#参考代码库)
-- [贡献](#贡献)
 - [免责声明](#免责声明)
 
 
@@ -370,20 +370,6 @@ python examples/roster/kt_plot.py
 - [RecBole](https://github.com/RUCAIBox/RecBole)
 - [More_Simple_Reinforcement_Learning](https://github.com/lansinuote/More_Simple_Reinforcement_Learning)
 - [其它论文代码仓库](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
-
-## 贡献
-
-如果您遇到错误或有任何建议，请通过 [Issue](https://github.com/ZhijieXiong/pyedmine/issuesWe) 进行反馈
-
-我们欢迎任何形式的贡献，包括推荐论文将其添加到[论文列表](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)中、修复 bug、添加新特性、或提供已训练的模型权重。
-
-如果您希望推荐论文，请在[Discussion](https://github.com/ZhijieXiong/pyedmine/discussions/7)中进行推荐。
-
-如果您希望贡献代码，且没有合并冲突，可以直接提交 Pull Request；若存在潜在冲突或重大更改，请先通过 issue 描述问题，再提交 Pull Request。
-
-如果您希望提供已训练模型的权重，请发送邮件至 18800118477@163.com，并附上模型权重和训练脚本，或包含这些内容的可访问链接。
-
-若您提供的是 PyEdmine 尚未实现的模型，请先通过 Pull Request 贡献模型实现代码，再通过邮件联系。
 
 ## 免责声明
 PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的
