@@ -1,0 +1,1423 @@
+id,question_rich_text,question_title,explanation,hint_text,question_text,difficulty
+219,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> which are executed in the schedule below:<br>
+<br>
+<center><table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> read(D)</td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td>write(D) </td>
+  </tr>
+ <tr>
+    <td> read(A)</td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> write(A)</td>
+    <td>  </td>
+  </tr>
+
+<tr>
+    <td>  </td>
+    <td> commit </td>
+  </tr>
+<tr>
+    <td> read(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> write(B) </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td> abort </td>
+    <td> </td>
+  </tr>
+</table></center>
+<br>
+If the database server goes down right after executing commit from <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>and no changes
+have been written to disk yet, what will a transaction manager do after the database server
+is up later?",Q10-20,,,"Consider two transactions and which are executed in the schedule below: read(D) write(D) read(A) write(A) commit read(B) write(B) abort If the database server goes down right after executing commit from and no changes have been written to disk yet, what will a transaction manager do after the database server is up later?",3
+218,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> which are executed in the schedule below:<br>
+<br>
+<center><table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> read(D)</td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td>write(D) </td>
+  </tr>
+ <tr>
+    <td> read(A)</td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> write(A)</td>
+    <td>  </td>
+  </tr>
+
+<tr>
+    <td>  </td>
+    <td> commit </td>
+  </tr>
+<tr>
+    <td> read(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> write(B) </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td> abort </td>
+    <td> </td>
+  </tr>
+</table></center>
+<br>
+After executing abort from <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> , what will the transaction manager do?",Q10-19,,,"Consider two transactions and which are executed in the schedule below: read(D) write(D) read(A) write(A) commit read(B) write(B) abort After executing abort from , what will the transaction manager do?",3
+217,"Consider the following two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>, which transfer money between
+different accounts. If the transaction isolation level is “read uncommitted”, which of the
+following schedules is not serializable?<br>
+<html>
+<head>
+<meta name=""viewport"" content=""width=device-width, initial-scale=1"">
+<style>
+* {
+  box-sizing: border-box;
+}
+.column {
+  float: left;
+  width: 20%;
+  padding:9px;
+  height: 400px; 
+}
+.row:after {
+  content: """";
+  display: table;
+  clear: both;
+}
+</style>
+</head>
+<body>
+<div class=""row""display= ""table"">
+  <div class=""column"" >
+    <h2>1</h2>
+   <table style=""padding: 20px;text-align: center;width: 90%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> A=A-10</td>
+    <td> </td>
+  </tr>
+ <tr>
+    <td> write(A)</td>
+    <td> </td>
+  </tr>
+
+<tr>
+    <td> read(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> B=B+10 </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>write(B)  </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> read(B)</td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>B=B-20 </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(B) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>read(D) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>D=D+20 </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(D) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit </td>
+  </tr>
+</table>
+  </div>
+  <div class=""column"" >
+    <h2>2</h2>
+<table style=""padding: 20px;text-align: center;width: 90%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td>read(B) </td>
+  </tr>
+ <tr>
+    <td> A=A-10</td>
+    <td> </td>
+  </tr>
+
+<tr>
+    <td>  </td>
+    <td>  B=B-20</td>
+  </tr>
+<tr>
+    <td> write(A) </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(B) </td>
+  </tr>
+<tr>
+    <td>read(B) </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> read(D)</td>
+  </tr>
+<tr>
+    <td>  B=B+10</td>
+    <td> </td>
+  </tr>
+<tr>
+    <td> write(B) </td>
+    <td></td>
+  </tr>
+<tr>
+    <td> commit </td>
+    <td></td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>D=D+20 </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(D) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit </td>
+  </tr>
+</table>
+  </div>
+<div class=""column"" >
+    <h2>3</h2>
+   <table style=""padding: 20px;text-align: center;width: 90%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>A=A-10 </td>
+    <td> </td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td>read(B) </td>
+  </tr>
+
+<tr>
+    <td>  write(A)</td>
+    <td> </td>
+  </tr>
+<tr>
+    <td> read(B) </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>B=B-20 </td>
+  </tr>
+<tr>
+    <td> </td>
+    <td> write(B)</td>
+  </tr>
+<tr>
+    <td>  B=B+10</td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>read(D) </td>
+  </tr>
+<tr>
+    <td> write(B) </td>
+    <td></td>
+  </tr>
+<tr>
+    <td> commit </td>
+    <td></td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>D=D+20 </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(D) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit </td>
+  </tr>
+</table>
+  </div>
+</div>
+</body>
+</html>
+",Q10-18,,,"Consider the following two transactions and , which transfer money between different accounts. If the transaction isolation level is “read uncommitted”, which of the following schedules is not serializable? * { box-sizing: border-box; } .column { float: left; width: 20%; padding:9px; height: 400px; } .row:after { content: """"; display: table; clear: both; } 1 read(A) A=A-10 write(A) read(B) B=B+10 write(B) commit read(B) B=B-20 write(B) read(D) D=D+20 write(D) commit 2 read(A) read(B) A=A-10 B=B-20 write(A) write(B) read(B) read(D) B=B+10 write(B) commit D=D+20 write(D) commit 3 read(A) A=A-10 read(B) write(A) read(B) B=B-20 write(B) B=B+10 read(D) write(B) commit D=D+20 write(D) commit",3
+216,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>, and the following schedules in which A and B are two records. Which of the following schedules can result in a deadlock?<br>
+<br>
+<html>
+<head>
+<meta name=""viewport"" content=""width=device-width, initial-scale=1"">
+<style>
+* {
+  box-sizing: border-box;
+}
+.column {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  height: 300px; 
+}
+.row:after {
+  content: """";
+  display: table;
+  clear: both;
+}
+</style>
+</head>
+<body>
+<div class=""row""display= ""table"">
+  <div class=""column"" >
+    <h2>1</h2>
+   <table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> write(A) </td>
+    <td> </td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> read(A) </td>
+  </tr>
+
+<tr>
+    <td>  </td>
+    <td> write(A) </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit </td>
+  </tr>
+
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+</table>
+  </div>
+  <div class=""column"" >
+    <h2>2</h2>
+   <table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+<tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td> read(B)</td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> write(A)</td>
+  </tr>
+
+<tr>
+    <td> write(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit </td>
+  </tr>
+
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+</table>
+  </div>
+<div class=""column"" >
+    <h2>3</h2>
+   <table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td> write(B)</td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> read(A) </td>
+  </tr>
+
+<tr>
+    <td> write(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> commit</td>
+  </tr>
+
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+</table>
+  </div>
+<div class=""column"" >
+    <h2>4</h2>
+   <table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td> read(A)</td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> write(A) </td>
+  </tr>
+
+<tr>
+    <td> write(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> commit</td>
+  </tr>
+
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+</table>
+  </div>
+</div>
+</body>
+</html>
+
+",Q10-17,,,"Consider two transactions and , and the following schedules in which A and B are two records. Which of the following schedules can result in a deadlock? * { box-sizing: border-box; } .column { float: left; width: 20%; padding: 10px; height: 300px; } .row:after { content: """"; display: table; clear: both; } 1 read(A) write(A) read(A) write(A) commit commit 2 read(A) read(B) write(A) write(B) commit commit 3 read(A) write(B) read(A) write(B) commit commit 4 read(A) read(A) write(A) write(B) commit commit",3
+214,"Consider the table Worker(name, payrate, hours) with name as the primary key and
+the following transaction:<br>
+<br>
+Begin transaction;<br>
+update Worker set hours = 20 where name = ‘Tom';<br>
+update Worker set payrate = 1.5*payrate where name = ‘Tom';<br>
+Commit;<br>
+Rollback;<br>
+<br>
+What does Rollback do?",Q10-16,,,"Consider the table Worker(name, payrate, hours) with name as the primary key and the following transaction: Begin transaction; update Worker set hours = 20 where name = ‘Tom'; update Worker set payrate = 1.5*payrate where name = ‘Tom'; Commit; Rollback; What does Rollback do?",2
+213,"Consider the table Worker(name, payrate, hours) with name as the primary key and the
+following two concurrent transactions:<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = 1.2*payrate where name = ‘Tom';<br>
+update Worker set payrate = 1.5*payrate where name = ‘Tom';<br>
+Commit;<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = payrate+20 where name = ‘Tom';<br>
+update Worker set payrate = payrate+10 where name = ‘Tom';<br>
+Commit;<br>
+<br>
+Assume Tom’s pay rate is 20 before the transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> begin.<br>
+<br>
+If the transaction isolation level is “read uncommitted”, what are the possible values
+for Tom’s pay rate after executing these two transactions?",Q10-15,,,"Consider the table Worker(name, payrate, hours) with name as the primary key and the following two concurrent transactions: : Begin Transaction; update Worker set payrate = 1.2*payrate where name = ‘Tom'; update Worker set payrate = 1.5*payrate where name = ‘Tom'; Commit; : Begin Transaction; update Worker set payrate = payrate+20 where name = ‘Tom'; update Worker set payrate = payrate+10 where name = ‘Tom'; Commit; Assume Tom’s pay rate is 20 before the transactions and begin. If the transaction isolation level is “read uncommitted”, what are the possible values for Tom’s pay rate after executing these two transactions?",3
+212,"Consider the table Worker(name, payrate, hours) with name as the primary key and the
+following two concurrent transactions:<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = 1.2*payrate where name = ‘Tom';<br>
+update Worker set payrate = 1.5*payrate where name = ‘Tom';<br>
+Commit;<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = payrate+20 where name = ‘Tom';<br>
+update Worker set payrate = payrate+10 where name = ‘Tom';<br>
+Commit;<br>
+<br>
+Assume Tom’s pay rate is 20 before the transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> begin.<br>
+<br>
+If the transaction isolation level is “read committed”, what are the possible values for
+Tom’s pay rate after executing these two transactions?",Q10-14,,,"Consider the table Worker(name, payrate, hours) with name as the primary key and the following two concurrent transactions: : Begin Transaction; update Worker set payrate = 1.2*payrate where name = ‘Tom'; update Worker set payrate = 1.5*payrate where name = ‘Tom'; Commit; : Begin Transaction; update Worker set payrate = payrate+20 where name = ‘Tom'; update Worker set payrate = payrate+10 where name = ‘Tom'; Commit; Assume Tom’s pay rate is 20 before the transactions and begin. If the transaction isolation level is “read committed”, what are the possible values for Tom’s pay rate after executing these two transactions?",3
+211,"Consider the table Worker(name, payrate, hours) with name as the primary key and the
+following two concurrent transactions:<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = 1.2*payrate where name = ‘Tom';<br>
+update Worker set payrate = 1.5*payrate where name = ‘Tom';<br>
+Commit;<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>:<br>
+<br>
+Begin Transaction;<br>
+update Worker set payrate = payrate+20 where name = ‘Tom';<br>
+update Worker set payrate = payrate+10 where name = ‘Tom';<br>
+Commit;<br>
+<br>
+Assume Tom’s pay rate is 20 before the transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> begin.<br>
+<br>
+If the transaction isolation level is “serializable”, what are the possible values for Tom's
+pay rate after executing these two transactions?",Q10-13,,,"Consider the table Worker(name, payrate, hours) with name as the primary key and the following two concurrent transactions: : Begin Transaction; update Worker set payrate = 1.2*payrate where name = ‘Tom'; update Worker set payrate = 1.5*payrate where name = ‘Tom'; Commit; : Begin Transaction; update Worker set payrate = payrate+20 where name = ‘Tom'; update Worker set payrate = payrate+10 where name = ‘Tom'; Commit; Assume Tom’s pay rate is 20 before the transactions and begin. If the transaction isolation level is “serializable”, what are the possible values for Tom's pay rate after executing these two transactions?",3
+210,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>, and the following schedule in which A and B are two records.<br>
+<br>
+<center><table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td> read(A)</td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> write(A) </td>
+  </tr>
+
+<tr>
+    <td> read(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td> write(A) </td>
+    <td> </td>
+  </tr>
+
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>commit  </td>
+  </tr>
+</table></center>
+<br>
+Which of the following problems may occur in this schedule?",Q10-12,,,"Consider two transactions and , and the following schedule in which A and B are two records. read(A) read(A) write(A) read(B) write(A) commit commit Which of the following problems may occur in this schedule?",2
+209,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/>, and the following schedule in which A and B are two records.<br>
+<br>
+<center><table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(B) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>  </td>
+    <td> read(A)</td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> write(A) </td>
+  </tr>
+
+<tr>
+    <td> read(A) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> read(B)</td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>write(B) </td>
+  </tr>
+<tr>
+    <td>commit  </td>
+    <td> </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td>Abort  </td>
+  </tr>
+</table></center>
+<br>
+Which of the following problems may occur in this schedule?",Q10-11,,,"Consider two transactions and , and the following schedule in which A and B are two records. read(B) read(A) write(A) read(A) read(B) write(B) commit Abort Which of the following problems may occur in this schedule?",2
+208,"Consider two transactions <img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/> , and the following schedule in which A and B are two records.<br>
+<br>
+<center><table style=""padding: 20px;text-align: center;width: 30%;"" border=""1"">
+
+  <tr>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{1}"" border=""0""/></th>
+    <th><center><img src=""http://latex.codecogs.com/gif.latex?T_{2}"" border=""0""/></th>
+  </tr>
+  <tr>
+    <td> read(A) </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> write(A) </td>
+    <td> </td>
+  </tr>
+ <tr>
+    <td> </td>
+    <td> read(A) </td>
+  </tr>
+<tr>
+    <td> </td>
+    <td> write(A) </td>
+  </tr>
+<tr>
+    <td> read(B) </td>
+    <td>  </td>
+  </tr>
+<tr>
+    <td>  </td>
+    <td> commit </td>
+  </tr>
+<tr>
+    <td> abort  </td>
+    <td> </td>
+  </tr>
+</table></center>
+<br>
+Which of the following problems may occur in this schedule?",Q10-10,,,"Consider two transactions and , and the following schedule in which A and B are two records. read(A) write(A) read(A) write(A) read(B) commit abort Which of the following problems may occur in this schedule?",2
+207,Which properties are ensured by the transaction manager through logging?,Q10-9,,,Which properties are ensured by the transaction manager through logging?,1
+206,Which of the following are the advantages of concurrent transactions?,Q10-8,,,Which of the following are the advantages of concurrent transactions?,2
+205,"Which of the following problems occurs when a transaction re-reads a table and
+finds new rows that were inserted into a table by other transactions since its prior read?",Q10-7,,,Which of the following problems occurs when a transaction re-reads a table and finds new rows that were inserted into a table by other transactions since its prior read?,2
+204,"For the two-phase locking protocol, which of the following statements is true?",Q10-6,,,"For the two-phase locking protocol, which of the following statements is true?",2
+203,"What operation(s) can a transaction perform if this transaction acquires an exclusive
+lock?",Q10-5,,,What operation(s) can a transaction perform if this transaction acquires an exclusive lock?,2
+202,What is the correctness criterion for concurrent transactions?,Q10-4,,,What is the correctness criterion for concurrent transactions?,1
+201,Which transaction isolation level does not allow dirty reads but does allow unrepeatable reads and phantom reads?,Q10-3,,,Which transaction isolation level does not allow dirty reads but does allow unrepeatable reads and phantom reads?,1
+200,"Given two transactions <img src=""http://latex.codecogs.com/gif.latex? T_{1}"" border=""0""/> and <img src=""http://latex.codecogs.com/gif.latex? T_{2}"" border=""0""/> , which of the following statements is true?",Q10-2,,,"Given two transactions and , which of the following statements is true?",2
+199,"Which of the following is responsible for ensuring the property isolation of database
+transactions?",Q10-1,,,Which of the following is responsible for ensuring the property isolation of database transactions?,1
+198,"An internet banking system requires a user to enter their password, then the system
+sends an SMS to the user’s registered mobile phone, containing another sequence of
+characters, and the user must enter this as well. Which of the following terms describes
+this example of authentication?",Q9-20,,,"An internet banking system requires a user to enter their password, then the system sends an SMS to the user’s registered mobile phone, containing another sequence of characters, and the user must enter this as well. Which of the following terms describes this example of authentication?",1
+197,What is a covert channel?,Q9-19,,,What is a covert channel?,1
+196,Which of the following is not true regarding Trojan horse attacks?,Q9-18,,,Which of the following is not true regarding Trojan horse attacks?,2
+195,"Which Bell-LaPadula rule prevents lower-level subjects from retrieving information
+from objects with a higher security level?",Q9-17,,,Which Bell-LaPadula rule prevents lower-level subjects from retrieving information from objects with a higher security level?,2
+194,"What is the objective of database security which says that people shouldn’t change
+data unless they are supposed to change it, and they also shouldn’t change data in ways
+different from how they are supposed to change it.",Q9-16,,,"What is the objective of database security which says that people shouldn’t change data unless they are supposed to change it, and they also shouldn’t change data in ways different from how they are supposed to change it.",1
+193,"Assuming that Linda is the owner of the relation Event, after completing the following
+three actions, which of the following statements is correct?<br>
+Step | By | Action<br>
+1 | Linda| GRANT select TO Amy, Peter ON Event WITH GRANT OPTION;<br>
+2 |Amy| GRANT select TO Peter ON Event;<br>
+3 |Linda| REVOKE select ON Event FROM Amy CASCADE;<br>",Q9-15,,,"Assuming that Linda is the owner of the relation Event, after completing the following three actions, which of the following statements is correct? Step | By | Action 1 | Linda| GRANT select TO Amy, Peter ON Event WITH GRANT OPTION; 2 |Amy| GRANT select TO Peter ON Event; 3 |Linda| REVOKE select ON Event FROM Amy CASCADE;",3
+192,"Assuming that Linda is the owner of the relation Event, after completing the following
+three actions, which of the following statements is correct?<br>
+Step | By | Action<br>
+1 | Linda| GRANT select TO Amy ON Event WITH GRANT OPTION;<br>
+2 |Amy| GRANT select TO Peter ON Event;<br>
+3 |Linda| REVOKE GRANT OPTION FOR select ON Event FROM Amy CASCADE;<br>
+",Q9-14,,,"Assuming that Linda is the owner of the relation Event, after completing the following three actions, which of the following statements is correct? Step | By | Action 1 | Linda| GRANT select TO Amy ON Event WITH GRANT OPTION; 2 |Amy| GRANT select TO Peter ON Event; 3 |Linda| REVOKE GRANT OPTION FOR select ON Event FROM Amy CASCADE;",3
+191,What is an authentication method?,Q9-13,,,What is an authentication method?,1
+190,"You work as a database administrator at ToyWorld. They manage database security using a Role Based Access Control (RBAC) model. There are three types of resources, including files, printers, and mailboxes, and four departments with distinct functions: Sales, Marketing, Management, and Production in ToyWorld. Each department needs access to different resources. Each user has a workstation. Which roles should you create to support this RBAC model?",Q9-12,,,"You work as a database administrator at ToyWorld. They manage database security using a Role Based Access Control (RBAC) model. There are three types of resources, including files, printers, and mailboxes, and four departments with distinct functions: Sales, Marketing, Management, and Production in ToyWorld. Each department needs access to different resources. Each user has a workstation. Which roles should you create to support this RBAC model?",1
+189,Which of the following can potentially cause a SQL injection attack?,Q9-11,,,Which of the following can potentially cause a SQL injection attack?,3
+188,Which of the following are used to make access decisions in Mandatory Access Control (MAC)?,Q9-10,,,Which of the following are used to make access decisions in Mandatory Access Control (MAC)?,1
+187,Which of the following is an inherent flaw in Discretionary Access Control (DAC)?,Q9-9,,,Which of the following is an inherent flaw in Discretionary Access Control (DAC)?,2
+186,"For Discretionary Access Control (DAC), which of the following statements is true?",Q9-8,,,"For Discretionary Access Control (DAC), which of the following statements is true?",2
+185,Which of the following is true regarding views?,Q9-7,,,Which of the following is true regarding views?,3
+184,Which of the following is used to avoid cascading of revoking privileges?,Q9-6,,,Which of the following is used to avoid cascading of revoking privileges?,1
+183,Which of the following statements are not correct?,Q9-5,,,Which of the following statements are not correct?,2
+182,Which of the following is a characteristic of Mandatory Access Control (MAC)?,Q9-4,,,Which of the following is a characteristic of Mandatory Access Control (MAC)?,1
+181,"If we wish to grant a privilege to a user and also allow the user to pass the privilege on to other users, which of the following should we append to the appropriate grant command?",Q9-3,,,"If we wish to grant a privilege to a user and also allow the user to pass the privilege on to other users, which of the following should we append to the appropriate grant command?",1
+180,Which technology is not used to enforce confidentiality of database security?,Q9-2,,,Which technology is not used to enforce confidentiality of database security?,1
+179,"In SQL, which of the following cannot be granted privileges using the GRANT command?",Q9-1,,,"In SQL, which of the following cannot be granted privileges using the GRANT command?",1
+178,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs output the titles and production years of the movies which were written by writers born after 1980?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year}(Writer\bowtie (\sigma_{year born>1980}(Person))) }"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year}(\pi_{title,production year}(Writer)\bowtie (\sigma_{year born>1980}(Person))) }"" border=""0""/>",Q8-16,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs output the titles and production years of the movies which were written by writers born after 1980? A: 1980}(Person))) }"" border=""0""/> B: 1980}(Person))) }"" border=""0""/>",3
+177,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs output the titles and production years of the movies which were written by writers born after 1980?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year} (Movie\bowtie (Writer\bowtie (\sigma_{year born>1980}(Person)))) }"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year}(Writer\bowtie (\sigma_{year born>1980}(Person))) }"" border=""0""/>",Q8-15,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs output the titles and production years of the movies which were written by writers born after 1980? A: 1980}(Person)))) }"" border=""0""/> B: 1980}(Person))) }"" border=""0""/>",3
+176,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs output the ids of the directors who have directed any comedy or action movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie (\sigma_{major genre=' comedy'}(Movie)\cup\sigma_{major genre=' action'}(Movie))) }"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id} (\sigma_{major genre=' comedy'}(Director\bowtie Movie))\cup\pi_{id}(\sigma_{major genre=' action'}(Director\bowtie Movie)) }"" border=""0""/>",Q8-14,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs output the ids of the directors who have directed any comedy or action movies? A: B:",3
+175,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the ids of the directors who have directed any comedy or action movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie (\sigma_{major genre=' comedy'\vee major genre=' action'}(Movie))) }"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie (\sigma_{major genre=' comedy'}(Movie)\cup\sigma_{major genre=' action'}(Movie))) }"" border=""0""/>",Q8-13,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the ids of the directors who have directed any comedy or action movies? A: B:",3
+174,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will give you the ids of the directors who have directed both comedy movies and action movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie (\sigma_{major genre=' comedy'\wedge  major genre=' action'}(Movie))) }"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie (\sigma_{major genre=' comedy'}(Movie)\cap\sigma_{major genre=' action'}(Movie))) }"" border=""0""/>",Q8-12,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will give you the ids of the directors who have directed both comedy movies and action movies? A: B:",3
+173,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will give you the ids of the directors who have directed both comedy movies and action movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(Director\bowtie(\sigma_{major genre=' comedy'}(Movie)\cap\sigma_{major genre=' action'}(Movie)) )}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(\sigma_{major genre=' comedy'}(Director\bowtie Movie))\cap\pi_{id}(\sigma_{major genre=' action'}(Director\bowtie Movie)) }"" border=""0""/>",Q8-11,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will give you the ids of the directors who have directed both comedy movies and action movies? A: B:",3
+172,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the ids of the writers who have written movies produced in year 2000 but not in year 2010?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(\sigma_{productionyear=2000}(Writer)-\sigma_{productionyear=2010}(Writer))}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{id}(\sigma_{productionyear=2000\wedge productionyear\neq 2010}(Writer))}"" border=""0""/>",Q8-10,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the ids of the writers who have written movies produced in year 2000 but not in year 2010? A: B:",3
+171,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the first and last names of the directors who have never written any movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(Person \bowtie (Director\bowtie _{Director.id \neq Writer.id}Writer))}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(Person \bowtie (\pi_{id}(Director)- \pi_{id}(Writer)))}"" border=""0""/>",Q8-9,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the first and last names of the directors who have never written any movies? A: B:",2
+170,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the first and last names of the directors who have never written any movies?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(Person \bowtie (Director-Writer))}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(Director \bowtie Person)-\pi_{firstname,lastname}(Writer\bowtie Person)}"" border=""0""/>",Q8-8,," Different persons may have the same first and last names. Consider one director named John Smith (id=001) has never written any movies, but there is also one writer named John Smith (id = 002).","Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the first and last names of the directors who have never written any movies? A: B:",3
+169,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the first and last names of the writers who were born in 1970 and have written movies produced in 2010?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(\sigma_{yearborn=1970}(Writer\bowtie Person)\bowtie \sigma_{productionyear=2010}(Movie ))}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(\sigma_{yearborn=1970 \wedge production year=2010}(Writer\bowtie Person\bowtie Movie ))}"" border=""0""/>",Q8-7,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the first and last names of the writers who were born in 1970 and have written movies produced in 2010? A: B:",2
+168,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Which of the following RAs will output the first and last names of the directors who have directed movies produced in USA?<br>
+<br>
+A: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(\sigma_{country=' USA'}((Movie\bowtie Director)\bowtie Person))}"" border=""0""/><br>
+B: <img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{firstname,lastname}(\sigma_{country=' USA'}((Movie\bowtie Person)\bowtie Director ))}"" border=""0""/>",Q8-6,,Consider the order of natural joins. ,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Which of the following RAs will output the first and last names of the directors who have directed movies produced in USA? A: B:",3
+167,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Are the following two RA expressions equivalent?<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\sigma_{title=' Jurassic Park'  \wedge 
+ year born=1945}(Director\bowtie Person)}"" border=""0""/><br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\sigma_{title=' Jurassic Park'}(Director)\bowtie \sigma_{year born=1945} (Person)}"" border=""0""/>",Q8-5,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Are the following two RA expressions equivalent?",2
+166,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Are the following two RA expressions equivalent?<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year}(\sigma_{last name='Cameron'}(Person)\bowtie Director)}"" border=""0""/><br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year}(\sigma_{last name='Cameron'}(Person)\bowtie \pi_{title,production year}Director)}"" border=""0""/>",Q8-4,,Consider what attributes are needed for the natural join between Person and Director.,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Are the following two RA expressions equivalent?",2
+165,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Are the following two RA expressions equivalent?<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title}(\pi_{title,production year}(Movie\bowtie Writer))}"" border=""0""/><br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,production year} {(\pi_{title}(Movie\bowtie Writer))}}"" border=""0""/>",Q8-3,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Are the following two RA expressions equivalent?",1
+164,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Are the following two RA expressions equivalent?<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} {\pi_{title,credits}(Movie\bowtie Writer)}"" border=""0""/><br>
+<img src=""http://latex.codecogs.com/gif.latex?\bf \large \color{red} { ({\pi_{title,credits}(Movie))\bowtie (Writer)}}"" border=""0""/>",Q8-2,,Consider what attributes are needed for the natural join between Movie and Writer.,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Are the following two RA expressions equivalent?",1
+163,"Consider the following database schema:<br> 
+<br> 
+Movie(title, production year, country, run time, major genre)<br> 
+primary key : {title, production year}<br> 
+<br> 
+Person(id, first name, last name, year born)<br> 
+primary key : {id}<br> 
+<br> 
+Director(id, title, production year)<br> 
+primary key : {title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br> 
+Writer(id, title, production year, credits)<br> 
+primary key : {id, title, production year}<br> 
+foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id]<br> 
+<br>
+Are the following two RA expressions equivalent?<br>
+<br>
+<img src=""http://latex.codecogs.com/gif.latex?\color{red} {\bf \large \sigma_{title='TheCove'}(\sigma_{production year=2007}(Movie))}"" border=""0""/><br>
+<img src=""http://latex.codecogs.com/gif.latex?\color{red} {\bf \large \sigma_{production year=2007}(\sigma_{title='TheCove'}(Movie))}"" border=""0""/>
+",Q8-1,,,"Consider the following database schema: Movie(title, production year, country, run time, major genre) primary key : {title, production year} Person(id, first name, last name, year born) primary key : {id} Director(id, title, production year) primary key : {title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Writer(id, title, production year, credits) primary key : {id, title, production year} foreign keys : [title, production year] ⊆ Movie[title, production year], [id] ⊆ Person[id] Are the following two RA expressions equivalent?",1
+162,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{E1.StudentID,E2.StudentID}(\rho_{E1}(Enrol)\bowtie_{(E1.CourseNo=E2.CourseNo)\wedge(E1.StudentID\neq E2.StudentID)}\rho_{E2}(Enrol))}"" border=""0""/>",Q7-17,,,How many rows will be in the result for the following relational algebra expression?,3
+161,"How many rows will be in the result for the following relational algebra expression?<br>
+ <img src=""http://latex.codecogs.com/gif.latex?\large \large \bf \color{red} {\rho_{E1}(Enrol)\bowtie_{E1.CourseNo=E2.CourseNo}\rho_{E2}(Enrol)}"" border=""0""/>",Q7-16,,,How many rows will be in the result for the following relational algebra expression?,2
+160,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{C1.CourseNo,C2.CourseNo}(\rho_{C1}(Course)\times\rho_{C2} (Course))}"" border=""0""/>",Q7-15,,,How many rows will be in the result for the following relational algebra expression?,2
+159,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {Course\bowtie_{Course.CourseNo\neq Enrol.CourseNo} Enrol}"" border=""0""/>",Q7-14,,,How many rows will be in the result for the following relational algebra expression?,3
+158,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\sigma_{Year = 2018}(Course\bowtie_{Course.CourseNo=Enrol.CourseNo} Enrol)}"" border=""0""/>",Q7-13,,"Join R1 ⋈ R2 is introduced as the combination of Cartesian product and selection.
+",How many rows will be in the result for the following relational algebra expression?,2
+157,"How many rows will be in the result for the following relational algebra expression?<br>
+ <img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {Course\bowtie Course}"" border=""0""/>",Q7-12,,"Join R1 ⋈ R2 is introduced as the combination of Cartesian product and selection.
+",How many rows will be in the result for the following relational algebra expression?,2
+156,"How many rows will be in the result for the following relational algebra expression?<br>
+ <img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {Course\bowtie Enrol}"" border=""0""/>",Q7-11,,,How many rows will be in the result for the following relational algebra expression?,1
+155,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {Course\bowtie_{Course.CourseNo=Enrol.CourseNo} Enrol}"" border=""0""/>",Q7-10,,"Join R1 ⋈ R2 is introduced as the combination of Cartesian product and selection.
+",How many rows will be in the result for the following relational algebra expression?,1
+154,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{Course.CourseNo,Enrol.StudentID}(Course\times Enrol)}"" border=""0""/>",Q7-9,,Projection chooses columns. Cartesian product R1 × R2 combines tuples from two relations in a combinatorial fashion.,How many rows will be in the result for the following relational algebra expression?,1
+153,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {Course\times Enrol}"" border=""0""/>",Q7-8,,Cartesian product R1 × R2 combines tuples from two relations in a combinatorial fashion.,How many rows will be in the result for the following relational algebra expression?,1
+152,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{CourseNo}(\sigma_{StudentID=102}(Study)- \sigma_{StudentID=103}(Study))}"" border=""0""/>",Q7-7,,,How many rows will be in the result for the following relational algebra expression?,2
+151,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{CourseNo}(\sigma_{StudentID=102}(Study))- \pi_{CourseNo}(\sigma_{StudentID=103}(Study))}"" border=""0""/>",Q7-6,,,How many rows will be in the result for the following relational algebra expression?,1
+150,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{StudentID}(\sigma_{CourseNo='COMP2400'}(Study))\cup \pi_{StudentID}(\sigma_{CourseNo='STAT2001'}(Study))}"" border=""0""/>",Q7-5,,,How many rows will be in the result for the following relational algebra expression?,1
+149,"How many rows will be in the result for the following relational algebra expression?<br>
+ <img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{CourseNo}(\sigma_{StudentID = 102}(Study)\cup\sigma_{StudentID = 103}(Study))}"" border=""0""/>",Q7-4,,"Selection chooses rows and Projection chooses columns. Union, denoted as R1 ∪ R2, results in a relation that includes all tuples either in R1 or in R2. Duplicate tuples are eliminated.",How many rows will be in the result for the following relational algebra expression?,1
+148,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{CourseNo}(Study)}"" border=""0""/>",Q7-3,"<center><table style=""padding: 8px;text-align: center;"" border=""1"">
+  <tr>
+    <th>CourseNo</th>
+  </tr>
+  <tr>
+    <td>COMP2400</td>
+  </tr>
+  <tr>
+    <td>STAT2001</td>
+  </tr>
+ <tr>
+    <td>BUSN2011</td>
+  </tr>
+</table></center>
+",,How many rows will be in the result for the following relational algebra expression?,1
+147,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\sigma_{name=' Fran'}(Study)}"" border=""0""/>",Q7-2,,"Selection (σ) chooses tuples that satisfy the condition  φ from a relation R
+",How many rows will be in the result for the following relational algebra expression?,1
+146,"How many rows will be in the result for the following relational algebra expression?<br> 
+<img src=""http://latex.codecogs.com/gif.latex?\large \bf \color{red} {\pi_{StudentID,Name}(Study)}"" border=""0""/>",Q7-1,"<center><table style=""padding: 8px;text-align: center;"" border=""1"">
+  <tr>
+    <th>StudentID</th>
+    <th>Name</th>
+  </tr>
+  <tr>
+    <td>100</td>
+    <td>Tom</td>
+  </tr>
+  <tr>
+    <td>101</td>
+    <td>Tom</td>
+  </tr>
+ <tr>
+    <td>102</td>
+    <td>Peter</td>
+  </tr>
+<tr>
+    <td>103</td>
+    <td>Fran</td>
+  </tr>
+</table></center>
+","Projection(π) only keeps a number of specified attributes (columns) from a relation R, while the other attributes are discarded.",How many rows will be in the result for the following relational algebra expression?,1
+143,Which of the following is correct?,Q6-14,,3NF is a less restrictive normal form such that a lossless and dependency preserving decomposition can always be found.,Which of the following is correct?,2
+142,Which of the following is correct?,Q6-13,,3NF is a less restrictive normal form such that a lossless and dependency preserving decomposition can always be found.,Which of the following is correct?,2
+141,Which of the following is correct?,Q6-12,,"A relation schema R is in BCNF if whenever a non-trivial FD X →A holds in R, then X is a superkey.
+A relation schema R is in 3NF if whenever a non-trivial FD X → A holds in R, then X is a superkey or A is a prime attribute.
+",Which of the following is correct?,1
+140,Which of the following is correct about 3NF?,Q6-11,,"A relation schema R is in 3NF if whenever a non-trivial FD X → A holds in R, then X is a superkey or A is a prime attribute.",Which of the following is correct about 3NF?,1
+139,Which of the following is correct about BCNF?,Q6-10,,"A relation schema R is in BCNF if whenever a non-trivial FD X → A holds in R, then X is a superkey.
+
+",Which of the following is correct about BCNF?,1
+138,"R={A,B,C,D}, Σ={AB→ CD, C→ A}. Which of the following is correct?  ",Q6-9,,,"R={A,B,C,D}, Σ={AB→ CD, C→ A}. Which of the following is correct?",3
+137,"R={A,B,C,D}, Σ={AB→ CD, BC→ A}. Which of the following is correct?  ",Q6-8,,"A relation schema R is in BCNF if whenever a non-trivial FD X →A holds in R, then X is a superkey.
+
+A relation schema R is in 3NF if whenever a non-trivial FD X → A holds in R, then X is a superkey or A is a prime attribute.
+","R={A,B,C,D}, Σ={AB→ CD, BC→ A}. Which of the following is correct?",3
+136,"R={A,B,C}, Σ={A→ B, B→ C}. Which of the following is correct?  ",Q6-7,,,"R={A,B,C}, Σ={A→ B, B→ C}. Which of the following is correct?",2
+135,"R={A,B,C}, Σ={A→ BC, BC→ A}. Which of the following is correct?  ",Q6-6,,"A relation schema R is in BCNF if whenever a non-trivial FD X → A holds in R, then X is a superkey.
+
+A relation schema R is in 3NF if whenever a non-trivial FD X → A holds in R, then X is a superkey or A is a prime attribute.
+","R={A,B,C}, Σ={A→ BC, BC→ A}. Which of the following is correct?",2
+134,"R={A, B, C} and Σ = {A→BC}. Which of the following is correct?  ",Q6-5,,"A relation schema R is in BCNF if whenever a non-trivial FD X → A holds in R, then X is a superkey.
+
+A relation schema R is in 3NF if whenever a non-trivial FD X → A holds in R, then X is a superkey or A is a prime attribute.
+","R={A, B, C} and Σ = {A→BC}. Which of the following is correct?",1
+133,Which of the following is correct? ,Q6-4,,,Which of the following is correct?,1
+132,"R={A, B, C} and Σ = {A→B, B→C, A→C}. The decomposition of R into R1 = {A, B} and R2 = {B, C}",Q6-3,,,"R={A, B, C} and Σ = {A→B, B→C, A→C}. The decomposition of R into R1 = {A, B} and R2 = {B, C}",1
+131,"R={A, B, C} and Σ = {A→B, B→C, A→C}. The decomposition of R into R1 = {A, B} and R2 = {A, C}",Q6-2,,,"R={A, B, C} and Σ = {A→B, B→C, A→C}. The decomposition of R into R1 = {A, B} and R2 = {A, C}",1
+130,"R={A, B, C} and Σ = {A→B, B→C}. The decomposition of R into R1 = {A, B} and R2 = {B, C}",Q6-1,,"Lossless join – “ capture the same data ” To disallow the possibility of generating spurious tuples when a NATURAL JOIN operation is applied to the relations after decomposition.
+
+ Dependency preservation – “ capture the same meta-data ” To ensure that each functional dependency can be inferred from functional dependencies after decomposition.
+","R={A, B, C} and Σ = {A→B, B→C}. The decomposition of R into R1 = {A, B} and R2 = {B, C}",1
+129,"R={A,B,C, D}, Σ={A→BCD, CD→AB}. Is the following statement true or false?  A is the only CK of R.",Q5-21,,,"R={A,B,C, D}, Σ={A→BCD, CD→AB}. Is the following statement true or false? A is the only CK of R.",3
+128,"R={A,B,C, D}, Σ={A→ B, B→ AD, CD→AB}. Is the following statement true or false?  C must be part of each CK of R.",Q5-20,,,"R={A,B,C, D}, Σ={A→ B, B→ AD, CD→AB}. Is the following statement true or false? C must be part of each CK of R.",3
+127,"R={A,B,C}, Σ={A→ B, B→ C, C→A}. Is the following statement true or false?  A, B and C are all prime attributes.",Q5-19,,A prime attribute is an attribute occurring in a candidate key.,"R={A,B,C}, Σ={A→ B, B→ C, C→A}. Is the following statement true or false? A, B and C are all prime attributes.",2
+126,"R={A,B,C}, Σ={A→ B, B→ C, C→A}. Is the following statement true or false?  A is the only CK of R ",Q5-18,,,"R={A,B,C}, Σ={A→ B, B→ C, C→A}. Is the following statement true or false? A is the only CK of R",2
+125,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false?  A is the only CK of R ",Q5-17,,,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false? A is the only CK of R",2
+124,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false?  AB is a CK of R ",Q5-16,,A minimal superkey is called a candidate key.,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false? AB is a CK of R",2
+123,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false? A is a CK of R ",Q5-15,,A minimal superkey is called a candidate key.,"R={A,B,C}, Σ={A→ B, AB→ C}. Is the following statement true or false? A is a CK of R",2
+122,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, A→ C}. Is the following statement true or false?  Σ2 is a minimal cover of Σ1 ",Q5-14,,,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, A→ C}. Is the following statement true or false? Σ2 is a minimal cover of Σ1",2
+121,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, B→ C}. Is the following statement true or false? Σ2 is a minimal cover of Σ1 ",Q5-13,,A minimal cover of a set of FDs F is a minimal set of functional dependencies that is equivalent to F.,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, B→ C}. Is the following statement true or false? Σ2 is a minimal cover of Σ1",2
+120,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, A→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent ",Q5-12,,,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, A→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent",2
+119,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, B→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent ",Q5-11,,,"R={A,B,C}, Σ1={A→ B, AB→ C} and Σ2={A→ B, B→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent",2
+118,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ2 ⊨  Σ1 ",Q5-10,,,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ2 ⊨ Σ1",2
+117,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ1 ⊨  Σ2 ",Q5-9,,,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ1 ⊨ Σ2",2
+116,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent ",Q5-8,,,"R={A,B,C}, Σ1={A→ B, B→ C} and Σ2={A→ C, B→ C}. Is the following statement true or false? Σ1 and Σ2 are equivalent",2
+115,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? Σ ⊨ D→ AC",Q5-7,,,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? Σ ⊨ D→ AC",1
+114,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? D is a SK of R",Q5-6,,A subset of the attributes of a relation schema R is a superkey if it uniquely determines all attributes of R.,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? D is a SK of R",1
+113,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. The closure of D is ",Q5-5,,"The closure of D, is the set of all attributes that are dependent on D.","R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. The closure of D is",1
+112," R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? Σ ⊨  A→ C",Q5-4,,,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? Σ ⊨ A→ C",1
+111,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? A is a SK of R",Q5-3,,A subset of the attributes of a relation schema R is a superkey if it uniquely determines all attributes of R.,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. Is the following statement true or false? A is a SK of R",1
+110,"R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. The closure of A is ",Q5-2,,"The closure of A, is the set of all attributes that are dependent on A.","R={A,B,C,D} and Σ={A→ B, B→ C, D→ABC}. The closure of A is",1
+109,Which of the following is a trival FD?,Q5-1,,"Trivial − If a functional dependency (FD) X → Y holds, where Y is a subset of X, then it is called a trivial FD. Trivial FDs always hold.",Which of the following is a trival FD?,1
+108,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following statements can be modelled by the ER diagram?",Q4-18,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following statements can be modelled by the ER diagram?",2
+107,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+If we model ""administrator"" as an entity type, which of the following is its key attribute?",Q4-17,,Key attribute: refers to an attribute that uniquely defines an entity in an entity set.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. If we model ""administrator"" as an entity type, which of the following is its key attribute?",1
+106,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. What is the best way to model the ""speciality""of ""trainer""?",Q4-16,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. What is the best way to model the ""speciality""of ""trainer""?",2
+105,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Suppose that ""instruct"" is a relationship type between two entity types ""trainer"" and ""fitness class"". What is the participation constraint on ""fitness class"" in ""instruct""?",Q4-15,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Suppose that ""instruct"" is a relationship type between two entity types ""trainer"" and ""fitness class"". What is the participation constraint on ""fitness class"" in ""instruct""?",1
+104,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Suppose that ""instruct"" is a relationship type between two entity types ""trainer"" and ""fitness class"". What is the participation constraint on ""trainer"" in ""instruct""?
+",Q4-14,,The participation constraint specifies whether the existence of any entity depends on its being related to another entity via the relationship type.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Suppose that ""instruct"" is a relationship type between two entity types ""trainer"" and ""fitness class"". What is the participation constraint on ""trainer"" in ""instruct""?",1
+103,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+What is the cardinality ratio of the relationship between ""trainer"" and ""fitness class""?
+",Q4-13,,The cardinality ratio specifies the maximum number of relationships that an entity can participate in.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. What is the cardinality ratio of the relationship between ""trainer"" and ""fitness class""?",1
+102,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Suppose that ""participate"" is a relationship type between two entity types ""member"" and ""fitness class"". What is the participation constraint on ""fitness class"" in ""participate""?
+",Q4-12,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Suppose that ""participate"" is a relationship type between two entity types ""member"" and ""fitness class"". What is the participation constraint on ""fitness class"" in ""participate""?",1
+101,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Suppose that ""participate"" is a relationship type between two entity types ""member"" and ""fitness class"". What is the participation constraint on ""member"" in ""participate""?",Q4-11,,The participation constraint specifies whether the existence of any entity depends on its being related to another entity via the relationship type.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Suppose that ""participate"" is a relationship type between two entity types ""member"" and ""fitness class"". What is the participation constraint on ""member"" in ""participate""?",1
+100,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+What is the cardinality ratio of the relationship between ""member"" and ""fitness class""?
+",Q4-10,,The cardinality ratio specifies the maximum number of relationships that an entity can participate in.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. What is the cardinality ratio of the relationship between ""member"" and ""fitness class""?",1
+99,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following best models the relationship between ""employee"", and ""trainers""/""administrators""/""technicians""?",Q4-9,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following best models the relationship between ""employee"", and ""trainers""/""administrators""/""technicians""?",1
+98,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as a key attribute?
+",Q4-8,,Key attribute: refers to an attribute that uniquely defines an entity in an entity set.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as a key attribute?",1
+97,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as a weak entity type?",Q4-7,,A weak entity type is an entity type that does not have sufficient attributes to form a primary key.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as a weak entity type?",2
+96,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as an attribute?
+",Q4-6,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as an attribute?",2
+95,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as an attribute?
+",Q4-5,,Attributes: properties that describe entities and relationships.,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as an attribute?",1
+94,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as an entity type?",Q4-4,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as an entity type?",1
+93,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year.</br>
+</br>
+Which of the following can be modelled as an entity type?",Q4-3,,,"Consider a database that stores names, addresses and unique IDs of employees in a fitness centre. The employees are classified into three categories: trainers, administrators and technicians. Each trainer has one or more specialities, e.g., weight gain, weight loss, strength building, etc. An administrator can register new members and be reached through a landline phone number. Each member is identified by an email address. The fitness centre organises fitness classes for members. Each class has a name, a start date, an end date, and a daily time slot. No two fitness classes have the same daily time slot, and for each fitness class the start date must be before the end date. A member may choose to participate in one or more fitness classes and may also choose one of the trainers as their personal trainer. Each fitness class is attended by one or more members and instructed by only one trainer. Not all trainers deliver fitness classes. After receiving the approval from an administrator, a member may choose to add multiple associate members who will have partial access to the services provided by the fitness centre, and an associate number (i.e., 1, 2, . . .) and the name of each associate member are recorded in the database. The database keeps track of equipment available in the fitness centre. Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken. Each technician has a mobile phone number. Technicians maintain equipment in the fitness centre and the database records the date of each maintenance event. Each piece of equipment should be maintained at least twice a year. Which of the following can be modelled as an entity type?",1
+92,"In ER diagram, weak entity is represented by a______________.",Q4-2,,A weak entity type is an entity type that does not have sufficient attributes to form a primary key.,"In ER diagram, weak entity is represented by a______________.",1
+91,Which constraint can be captured by the ER diagram?,Q4-1,,,Which constraint can be captured by the ER diagram?,1
+87,Which of the following Select statement correctly list the CourseNo and the corresponding number of students enrolled for all courses in 2019?,Q3-31,,,Which of the following Select statement correctly list the CourseNo and the corresponding number of students enrolled for all courses in 2019?,2
+86,"How many rows, columns will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course c</br>
+<font color=""blue"">WHERE NOT EXISTS</font> (<font color=""blue"">SELECT</font> *</br>
+                                                     <font color=""blue"">FROM</font> Enrol e</br>
+                 <font color=""blue"">WHERE</font> c.CourseNo=e.CourseNo);",Q3-30,,,"How many rows, columns will be in the query result for the following Select statement? SELECT * FROM Course c WHERE NOT EXISTS (SELECT * FROM Enrol e WHERE c.CourseNo=e.CourseNo);",3
+85,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Enrol e</br>
+<font color=""blue"">WHERE</font> e.CourseNo <font color=""blue"">IN</font> (<font color=""blue"">SELECT</font> c.CourseNo</br>
+                          	        <font color=""blue""> FROM</font> Course c</br>
+		        <font color=""blue""> WHERE</font> CourseName = ‘Relational Databases’);",Q3-29,,IN subquery tests if a tuple occurs in the result of the subquery.,How many rows will be in the query result for the following Select statement? SELECT * FROM Enrol e WHERE e.CourseNo IN (SELECT c.CourseNo FROM Course c WHERE CourseName = ‘Relational Databases’);,3
+84,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course c</br>
+<font color=""blue"">WHERE EXISTS</font> (<font color=""blue"">SELECT</font> *</br>
+                         <font color=""blue""> FROM</font> Enrol e</br>
+                         <font color=""blue""> WHERE</font> c.CourseNo=e.CourseNo);",Q3-28,,,How many rows will be in the query result for the following Select statement? SELECT * FROM Course c WHERE EXISTS (SELECT * FROM Enrol e WHERE c.CourseNo=e.CourseNo);,3
+83,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Enrol e</br>
+<font color=""blue"">WHERE EXISTS</font> (<font color=""blue"">SELECT </font>*</br>
+                                                    <font color=""blue"">FROM</font> Course c</br>
+                                                           <font color=""blue"">WHERE</font> c.CourseNo=e.CourseNo);",Q3-27,,The EXISTS operator is used to test for the existence of any record in a subquery and returns true if the subquery returns one or more tuples.,How many rows will be in the query result for the following Select statement? SELECT * FROM Enrol e WHERE EXISTS (SELECT * FROM Course c WHERE c.CourseNo=e.CourseNo);,3
+82,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course, Enrol</br>
+<font color=""blue"">WHERE</font> Course.CourseNo=Enrol.CourseNo <font color=""blue"">AND</font> Year = 2018;",Q3-26,,,"How many rows will be in the query result for the following Select statement? SELECT * FROM Course, Enrol WHERE Course.CourseNo=Enrol.CourseNo AND Year = 2018;",2
+81,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course <font color=""blue"">LEFT JOIN</font> Enrol <font color=""blue"">ON</font> Course.CourseNo=Enrol.CourseNo;",Q3-25,,The LEFT JOIN returns all records from the left table (Course) and the matched records from the right table (Enrol). The result is NULL from the right side if there is no match.,How many rows will be in the query result for the following Select statement? SELECT * FROM Course LEFT JOIN Enrol ON Course.CourseNo=Enrol.CourseNo;,2
+80,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course <font color=""blue"">NATURAL JOIN</font> Enrol;",Q3-24,,"Natural Join: A natural join retains all the data of the two tables for only the matched rows, without duplication.",How many rows will be in the query result for the following Select statement? SELECT * FROM Course NATURAL JOIN Enrol;,2
+79,"How many rows will be in the query result for the following Select statement?
+</br><font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course <font color=""blue"">INNER JOIN</font> Enrol <font color=""blue"">ON</font> Course.CourseNo=Enrol.CourseNo;",Q3-23,,The INNER JOIN joins tuples in two tables that satisfy the joining condition.,How many rows will be in the query result for the following Select statement? SELECT * FROM Course INNER JOIN Enrol ON Course.CourseNo=Enrol.CourseNo;,2
+78,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> *</br>
+<font color=""blue"">FROM</font> Course, Enrol;",Q3-22,"4X7=28
+28 rows   5 columns",,"How many rows will be in the query result for the following Select statement? SELECT * FROM Course, Enrol;",2
+77,"How many rows will be in the result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> CourseNo</br> <font color=""blue"">FROM</font> Study</br>
+<font color=""blue"">WHERE</font> StudentID=102</br>
+<font color=""blue"">EXCEPT</font></br>
+<font color=""blue"">SELECT</font> CourseNo </br><font color=""blue"">FROM</font> Study</br>
+<font color=""blue"">WHERE</font> StudentID=103;",Q3-21,,"In SQL, EXCEPT corresponds to the set difference in the relational data model.",How many rows will be in the result for the following Select statement? SELECT CourseNo FROM Study WHERE StudentID=102 EXCEPT SELECT CourseNo FROM Study WHERE StudentID=103;,2
+76,"How many rows will be in the result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> StudentID</br>
+<font color=""blue"">FROM</font> Study</br>
+<font color=""blue"">WHERE</font> CourseNo='COMP2400'</br>
+<font color=""blue"">UNION</font></br>
+<font color=""blue"">SELECT</font> StudentID</br>
+<font color=""blue"">FROM</font> Study</br>
+<font color=""blue"">WHERE</font> CourseNo='STAT2001';",Q3-20,,The UNION operator is used to union two tables and duplicated tuples will be removed.,How many rows will be in the result for the following Select statement? SELECT StudentID FROM Study WHERE CourseNo='COMP2400' UNION SELECT StudentID FROM Study WHERE CourseNo='STAT2001';,2
+75,"How many rows will be in the result for the following Select statement? </br>
+<font color=""blue"">SELECT</font> CourseNo, <font color=""blue"">COUNT</font>(*) </br>
+<font color=""blue"">FROM</font> Study </br>
+<font color=""blue""> GROUP BY</font> CourseNo </br>
+<font color=""blue""> Having COUNT</font>(*) > 1;",Q3-19,,,"How many rows will be in the result for the following Select statement? SELECT CourseNo, COUNT(*) FROM Study GROUP BY CourseNo Having COUNT(*) > 1;",2
+74,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> StudentID, <font color=""blue"">COUNT</font>(*)</br>
+<font color=""blue"">FROM</font> Study</br>
+<font color=""blue"">GROUP BY</font> StudentID;",Q3-18,,COUNT(*) returns the total number of rows. GROUP BY StudentID groups tuples together if they have the same StudentID.,"How many rows will be in the query result for the following Select statement? SELECT StudentID, COUNT(*) FROM Study GROUP BY StudentID;",2
+73,"What is the query result for the following Select statement? </br>
+<font color=""blue"">SELECT COUNT</font>(units),<font color=""blue""> MIN</font>(units)  </br>
+<font color=""blue"">FROM</font>  Study;",Q3-17,,,"What is the query result for the following Select statement? SELECT COUNT(units), MIN(units) FROM Study;",1
+72,"How many rows will be in the result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> CourseNo </br>
+<font color=""blue"">FROM</font> Study </br>
+<font color=""blue"">WHERE</font> (StudentID = 102) <font color=""blue"">OR</font> (StudentID = 103);",Q3-16,,,How many rows will be in the result for the following Select statement? SELECT CourseNo FROM Study WHERE (StudentID = 102) OR (StudentID = 103);,2
+71,"How many rows will be in the result for the following Select statement?</br>
+<font color=""blue"">SELECT DISTINCT</font> CourseNo </br>
+<font color=""blue"">FROM</font> Study;",Q3-15,,The SELECT DISTINCT statement is used to remove duplicated rows in the result.,How many rows will be in the result for the following Select statement? SELECT DISTINCT CourseNo FROM Study;,2
+70,"How many rows will be in the query result for the following Select statement?</br>
+<font color=""blue"">SELECT</font> * </br>
+<font color=""blue"">FROM</font> Study </br>
+<font color=""blue"">WHERE</font> lower(Name) = 'tom';",Q3-14,,,How many rows will be in the query result for the following Select statement? SELECT * FROM Study WHERE lower(Name) = 'tom';,2
+69,"How many rows will be in the query result for the following Select statement?</br>
+ <font color=""blue"">SELECT</font> *</br>
+<font color=""blue""> FROM</font> Study </br>
+<font color=""blue"">WHERE</font> Name = 'Tom';",Q3-13,,,How many rows will be in the query result for the following Select statement? SELECT * FROM Study WHERE Name = 'Tom';,2
+68,"How many rows will be in the query result for the following Select statement?</br>
+ <font color=""blue""> SELECT</font> StudentID, Name</br>
+ <font color=""blue""> FROM </font>Study;",Q3-12,,,"How many rows will be in the query result for the following Select statement? SELECT StudentID, Name FROM Study;",1
+67,"What referential integrity constraints do the following statements define? </br>
+<font color=""blue"">CREATE TABLE </font>Student(StudentID<font color=""blue""> INT  PRIMARY KEY</font>, Name <font color=""blue"">VARCHAR</font>(50)); </br>
+<font color=""blue"">CREATE TABLE</font> Enrol (StudentID<font color=""blue""> INT</font>, CourseNo <font color=""blue"">VARCHAR</font>(20), Semester<font color=""blue""> VARCHAR</font>(50),<font color=""blue""> FOREIGN KEY</font>(StudentID) <font color=""blue"">REFERENCES</font> Student(StudentID));",Q3-11,,,"What referential integrity constraints do the following statements define? CREATE TABLE Student(StudentID INT PRIMARY KEY, Name VARCHAR(50)); CREATE TABLE Enrol (StudentID INT, CourseNo VARCHAR(20), Semester VARCHAR(50), FOREIGN KEY(StudentID) REFERENCES Student(StudentID));",1
+66,"If {StudentID, CourseNo, Semester} is the primary key for  the relation schema Enrol, then the entity integrity constraints guarantee ___________.",Q3-10,,,"If {StudentID, CourseNo, Semester} is the primary key for the relation schema Enrol, then the entity integrity constraints guarantee ___________.",1
+65,"Which of the following statement correctly creates the relation schema Enrol(StudentID:<font color=""blue""> INT</font>, CourseNo: <font color=""blue""> STRING</font>, Semester: <font color=""blue""> STRING</font>)?",Q3-9,,,"Which of the following statement correctly creates the relation schema Enrol(StudentID: INT, CourseNo: STRING, Semester: STRING)?",1
+64,"What will be the output of the following query?  </br>
+<font color=""blue"">SELECT COUNT</font>(*) </br>
+<font color=""blue"">FROM</font> person;",Q3-8,,"SQL provides the SELECT statement for retrieving data from a database.
+COUNT(*) returns the total number of rows.",What will be the output of the following query? SELECT COUNT(*) FROM person;,1
+63,"What will be the output of the following query? </br>            
+<font color=""blue"">SELECT </font> * </br>    
+<font color=""blue"">FROM </font> person;",Q3-7,,SQL provides the SELECT statement for retrieving data from a database.,What will be the output of the following query? SELECT * FROM person;,1
+62,"The _____ operation combines two relations by merging pairs of matching tuples, one from each relation, into a single tuple.",Q3-6,,,"The _____ operation combines two relations by merging pairs of matching tuples, one from each relation, into a single tuple.",1
+61,Which of the following commands do we use to delete all the tuples from a relation (R)?,Q3-5,The delete from the command is used to delete all the tuples in a relation.,The delete from the command is used to delete all the tuples in a relation. The drop table totally deletes the relation schema.,Which of the following commands do we use to delete all the tuples from a relation (R)?,1
+60,"What is the syntax to add a new tuple to a relation? (Consider D as the relation and (a, b, c) as the new tuple)",Q3-4,,,"What is the syntax to add a new tuple to a relation? (Consider D as the relation and (a, b, c) as the new tuple)",1
+59,"In SQL, which command is used to add new rows to a table?",Q3-3,,,"In SQL, which command is used to add new rows to a table?",1
+58,"In SQL, which of the following is included in DML (Data Manipulation Language)?",Q3-2,,"A data manipulation language (DML) is a part of the structured query language (SQL) that handles data manipulation including querying (selecting), adding (inserting), deleting, and modifying (updating) data in a database.","In SQL, which of the following is included in DML (Data Manipulation Language)?",1
+57,The ________ clause is used to list the attributes desired in the result of a query.,Q3-1,,,The ________ clause is used to list the attributes desired in the result of a query.,1
+56,The basic data type char(n) is a _____-length character string and varchar(n) is _____-length character string.,Q2-21,Varchar changes its length accordingly whereas char has a specific length which has to be filled by either letters or spaces.,"In database systems, a field can have a fixed or a variable length. A variable-length field is one whose length can be different in each record, depending on what data is stored in the field.",The basic data type char(n) is a _____-length character string and varchar(n) is _____-length character string.,1
+55," The command <font  color=""blue"">“CREATE TABLE”</font> belongs to  ________.",Q2-20,Data Definition Language is the language which performs all the operation in defining the relation schema.,,The command “CREATE TABLE” belongs to ________.,1
+54,Which of the following commands can be used to remove attribute A from a relation R?,Q2-19,"We can delete an attribute from a relation using the alter table command with the following syntax
+alter table drop","The ALTER TABLE statement is used to modify an existing relation schema.
+The DROP TABLE statement is used to remove an existing relation schema.",Which of the following commands can be used to remove attribute A from a relation R?,2
+53,Which of the following commands is used to remove relation schema R from a database?,Q2-18,The drop table command is used to delete a relation from a database whereas the delete from table removes all the tuples from a relation.,The DROP TABLE statement is used to remove an existing relation schema from a database schema.,Which of the following commands is used to remove relation schema R from a database?,1
+52,Which of the following commands is used to create a new relation in PostgreSQL?,Q2-17,"We use the create table command to create a new relation schema in the database. The syntax is
+create table(…);",,Which of the following commands is used to create a new relation in PostgreSQL?,1
+51,Which of the following data types is not supported in PostgreSQL?,Q2-16,"PostgreSQL does not support String(n) but it supports char, varchar, and Bit.",,Which of the following data types is not supported in PostgreSQL?,1
+50,Which of the following is true?,Q2-15,,"A subset of the attributes of a relation schema R is a superkey if it uniquely identifies any tuple in r (R).
+A superkey K is called a candidate key if no proper subset of K is a superkey.
+The primary key is chosen from the candidate keys and the primary key is one of the candidate keys.",Which of the following is true?,1
+49,"If {a} is a superkey key in R(a,b,c), then_______________.",Q2-14,,,"If {a} is a superkey key in R(a,b,c), then_______________.",2
+48,"If {a,b} is a candidate key in R(a,b,c), then___________.",Q2-13,,,"If {a,b} is a candidate key in R(a,b,c), then___________.",3
+47,"If {a,b} is a superkey in R(a,b,c), then",Q2-12,,,"If {a,b} is a superkey in R(a,b,c), then",2
+46,"If {a,b} is a superkey in R(a,b,c), then________________.",Q2-11,,"A subset of the attributes of a relation schema R is a superkey if it uniquely identifies any tuple in r (R).
+A superkey K is called a candidate key if no proper subset of K is a superkey.","If {a,b} is a superkey in R(a,b,c), then________________.",2
+45,"If a relation has a foreign key, then it is called a ______ relation of the foreign key dependency.",Q2-10,"If a relation has a foreign key, then it is called a referencing relation of the foreign key dependency.",,"If a relation has a foreign key, then it is called a ______ relation of the foreign key dependency.",1
+44,Choose the correct statement regarding superkeys,Q2-9,A superkey is an attribute or a set of multiple attributes that can uniquely identify a tuple. It is used to differentiate between tuples.,,Choose the correct statement regarding superkeys,1
+43,"In the relational data model, a _________ is used to enforce referential integrity between two tables.",Q2-8,,,"In the relational data model, a _________ is used to enforce referential integrity between two tables.",1
+42,Which one of the following is a set of one or more attributes taken collectively to uniquely identify a tuple?,Q2-7,Super key is the superset of all the keys in a relation.,,Which one of the following is a set of one or more attributes taken collectively to uniquely identify a tuple?,1
+41,The order of tuples in a relation is ____. The order of attributes in a relation is _________.,Q2-6,,,The order of tuples in a relation is ____. The order of attributes in a relation is _________.,1
+40,"Consider a relation schema <font  color=""blue"">Course(courseID,courseName,semester)</font>. Here the courseID, courseName and semester are __________.",Q2-5,"The relation course has three attributes: courseID, courseName and semester",A relation schema has a relation name and a list of attributes.,"Consider a relation schema Course(courseID,courseName,semester). Here the courseID, courseName and semester are __________.",1
+39,The term _______ is used to refer to a row in the relational data model.,Q2-4,Tuple is one entry of the relation with several attributes which are fields.,,The term _______ is used to refer to a row in the relational data model.,1
+38,An attribute is a __________ in a table in the relational data model.,Q2-3,An attribute is a column in a table. A tuple is a row in a table.,,An attribute is a __________ in a table in the relational data model.,1
+37,_________ is the sets of all possible values for an attribute.,Q2-2,,,_________ is the sets of all possible values for an attribute.,1
+36,"In the relational data model, a table is considered as____________.",Q2-1,,,"In the relational data model, a table is considered as____________.",1
+35,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A x B ⊆ C x D=_________.",Q1-34,,,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A x B ⊆ C x D=_________.",2
+34,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A x A ⊆ A x C =__________.",Q1-33,,,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A x A ⊆ A x C =__________.",2
+33,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then (A x A) ⊆ (C x C) =____________.",Q1-32,,,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then (A x A) ⊆ (C x C) =____________.",2
+32,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then B ⊆ B x B =_________.",Q1-31,,"Cartesian product B×B is the set of all possible combinations of values from B and B.
+B is a subset of ( B×B) if every element of B is in (B×B).","If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then B ⊆ B x B =_________.",2
+31,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A ⊆ A x B=__________.",Q1-30,,,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then A ⊆ A x B=__________.",2
+30,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then (C x D)  –  (A x B) = _________.",Q1-29,"A x B = {(1,a), (1,b) , (2,a) , (2,b)}
+C x D = {(1,a),(1,b),(1,c),(2,a),(2,b),(2,c),(3,a),(3,b),(3,c)}
+C x D - A x B = {(1,c) ,(2,c),(3,a),(3,b),(3,c)}",,"If A = {1,2}, B = {a,b}, C = {1,2,3}, and D = {a,b,c}, then (C x D) – (A x B) = _________.",2
+29,"The cardinality of a set, |X|, is the number of elements of the set X. If |A| = 10, |B| = 5, and |A ∩ B| = 2, then 
+|A U B|=__________.",Q1-28,10 + 5 – 2 = 13.,,"The cardinality of a set, |X|, is the number of elements of the set X. If |A| = 10, |B| = 5, and |A ∩ B| = 2, then |A U B|=__________.",2
+28,"The cardinality of a set, |X|, is the number of elements of the set X. If |A| = 3 and |B| = 2. then |A x B| =__________.",Q1-27,"|A| = 3, |B| = 2, |A x B| = |A| * |B| = 6.",Cartesian product A×B is the set of all possible combinations of values from A and B.,"The cardinality of a set, |X|, is the number of elements of the set X. If |A| = 3 and |B| = 2. then |A x B| =__________.",1
+27,The shaded area of the figure is best described by,Q1-26,The region is B-A-C or B-C-A.,,The shaded area of the figure is best described by,2
+26,The shaded area of the figure is best described by,Q1-25,The region is (A U B) – (A ∩ B) or (A - B) U (B - A).,,The shaded area of the figure is best described by,2
+25,The shaded area of the figure is best described by,Q1-24,The region is A - B or (A U B) - B.,,The shaded area of the figure is best described by,2
+24,The shaded area of the figure is best described by _________,Q1-23,The region is A intersection B.,,The shaded area of the figure is best described by _________,1
+23,In which of the following set definitions is A - B equal to B – A?,Q1-22,A – B = B - A = Empty Set.,"Two sets are equal if and only if they have the same elements.
+Two empty sets are always equal.",In which of the following set definitions is A - B equal to B – A?,2
+22,"If A = {1, 2, 3} and A ∩ B = {2, 3}, then the number of elements in B cannot be________.",Q1-21,,,"If A = {1, 2, 3} and A ∩ B = {2, 3}, then the number of elements in B cannot be________.",3
+21,"If S = {1,2} and T = {1,2,3}, then (S x T) - (S x S) is________.",Q1-20,,,"If S = {1,2} and T = {1,2,3}, then (S x T) - (S x S) is________.",2
+20,"If S = {1,2} and T = {1,2,3}, then S x (T - S) =____________.",Q1-19,,"(T -S) is the set of elements that are in T but not in S.
+Cartesian product S× (T -S)  is the set of all possible combinations of values from S and (T -S).","If S = {1,2} and T = {1,2,3}, then S x (T - S) =____________.",2
+19,"If S = {1,2} and T = {1,2,3}, then S x S =_______.",Q1-18,,,"If S = {1,2} and T = {1,2,3}, then S x S =_______.",1
+18,"Let A = {1, 2, 3} and B = {1, 2, 5}, then (A - B) ∪ (B - A)=  _______.",Q1-17,,,"Let A = {1, 2, 3} and B = {1, 2, 5}, then (A - B) ∪ (B - A)= _______.",2
+17,"Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement.
+B ⊄ (A ∩ C)=____________.",Q1-16,,,"Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement. B ⊄ (A ∩ C)=____________.",2
+16,"Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement.
+B ⊂ (A ∪ B)=_________.",Q1-15,,"(A ∪B) is the set of elements that are in A or in B.
+B is a subset of (A ∪B)  if every element of B is in (A ∪B).","Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement. B ⊂ (A ∪ B)=_________.",2
+15,"Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement. 
+(A ∪ C) ⊂ B =__________.",Q1-14,,"(A ∪C) is the set of elements that are in A or in C. 
+(A ∪C) is a subset of B if every element of (A ∪C) is in B.","Set A, B, and C are defined as follows: A = {2,3,4,5,6,7, 8, 9}, B = {3,5,7}, C = {3,5,7,9}. Select true or false for the following statement. (A ∪ C) ⊂ B =__________.",2
+14,"If A and B are two sets, and A × B consists of 6 elements: If three elements of A × B are (2, 5) (3, 7) (4, 7) then A × B=____.",Q1-13,"Since, (2, 5) (3, 7) and (4, 7) are elements of A × B. 
+So, we can say that 2, 3, 4 are the elements of A and 5, 7 are the elements of B. 
+So, A = {2, 3, 4} and B = {5, 7} 
+Now, A × B = {(2, 5); (2, 7); (3, 5); (3, 7); (4, 5); (4, 7)} 
+Thus, A × B contain six ordered pairs.","Assume (2,5) ∈ A × B then 2∈A, 5∈B.","If A and B are two sets, and A × B consists of 6 elements: If three elements of A × B are (2, 5) (3, 7) (4, 7) then A × B=____.",3
+13,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A - D) ∩ (B - C)=__________.",Q1-12,,,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A - D) ∩ (B - C)=__________.",2
+12,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A ∪ B) ∩ C=___________.",Q1-11,,A ∪B is the set of elements that are in A or in B. (A ∪B) ∩ C is the set of elements that are in (A ∪B) and in C.,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A ∪ B) ∩ C=___________.",2
+11,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A ∪ B) ∪ C=_________.",Q1-10,,A ∪B ∪C is the set of elements that are in A or in B or in C.,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then (A ∪ B) ∪ C=_________.",2
+10,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then A - (A ∩ B)=________.",Q1-9,,,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then A - (A ∩ B)=________.",2
+9,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then A - B=___________.",Q1-8,,A ˗ B is the set of elements that are in A but not in B.,"If A = {2, 3, 4, 5}, B = {4, 5, 6, 7}, C = {6, 7, 8, 9}, D = {8, 9, 10, 11}, then A - B=___________.",1
+8,"If A × B = {(p, x), (p, y), (q, x), (q, y)}, then A = _____and B = ______.",Q1-7,"A is a set of all first entries in ordered pairs in A × B.  B is a set of all second entries in ordered pairs in A × B. 
+Thus A = {p, q} and B = {x, y}",,"If A × B = {(p, x), (p, y), (q, x), (q, y)}, then A = _____and B = ______.",2
+7,Which of the following two sets are equal?,Q1-6,,Two sets are equal if and only if they have the same elements. The order of the elements does not matter!,Which of the following two sets are equal?,1
+6,The cardinality of a set is the number of elements of the set. What is the cardinality of the set of odd positive integers less than 10?,Q1-5,"Set S, comprising all odd positive integer less than 10, is {1, 3, 5, 7, 9}. Then, the cardinality of set S = |S| is 5.","Set S, comprising all odd positive integer less than 10, is {1, 3, 5, 7, 9}.",The cardinality of a set is the number of elements of the set. What is the cardinality of the set of odd positive integers less than 10?,1
+5,The Cartesian product B x A is always equal to the Cartesian product A x B. Is it true or false?,Q1-4,"Let A = {1, 2} and B = {a, b}. The Cartesian product A x B = {(1, a), (1, b), (2, a), (2, b)} and the Cartesian product B x A = {(a, 1), (a, 2), (b, 1), (b, 2)}.",,The Cartesian product B x A is always equal to the Cartesian product A x B. Is it true or false?,2
+4,"What is the Cartesian product of A = {1, 2} and B = {a, b}?",Q1-3," A × B = {(1, a), (2, a), (1, b), (2, b)}.",Cartesian product A×B is the set of all possible combinations of values from A and B.,"What is the Cartesian product of A = {1, 2} and B = {a, b}?",1
+3,The set that consists of all odd positive integers less than 10 is represented by _____________.,Q1-2,"Odd numbers less than 10 is {1, 3, 5, 7, 9}.",,The set that consists of all odd positive integers less than 10 is represented by _____________.,1
+2,"A __________ is a collection of distinct elements.
+
+
+",Q1-1,A set is a collection of distinct elements.,,A __________ is a collection of distinct elements.,1

@@ -1,0 +1,104 @@
+"id","name","description"
+56,Data Model,Data Models are fundamental entities to introduce abstraction in a DBMS. Data models define how data is connected to each other and how they are processed and stored inside the system.
+12,Subset,"If A and B are two sets, and every element of set A is also an element of set B, then A is called a subset of B"
+24,CREATE TABLE,"The CREATE TABLE statement is used to create a new relation schema by specifying its name, its attributes and, optionally, its constraints."
+33,Join,"When we want to retrieve data from more than one relation, we often need to use join operations."
+14,Relational data model,The relational model represents the database as a collection of relations.
+15,Domain,Domains are the sets of all possible values for attributes.
+19,Foreign key,A foreign key is a column or group of columns in a relational database table that provides a link between data in two tables.
+13,Tuple,A tuple is an ordered list of n elements.
+17,Relation,A relation is a subset of a Cartesian product of sets.
+20,Schema,A relation schema has a relation name and a list of attributes.
+7,Cardinality,the cardinality of a set is a measure of the number of elements of the set.
+23,Data type,Data Types define the type of value that can be stored in a table column.
+29,SELECT,SQL provides the SELECT statement for retrieving data from a database
+30,INSERT,The INSERT statement is used to add tuples into a relation.
+31,DELETE,The DELETE statement is used to remove tuples from a relation.
+32,Query,A query is a request for data or information from a database table or combination of tables.
+35,SELECT DISTINCT,"The SELECT DISTINCT statement is used to return only distinct (different) values. Inside a table, a column often contains many duplicate values; and sometimes you only want to list the different (distinct) values."
+37,COUNT,COUNT returns the total number of argument values
+38,MIN,MIN returns the minimum value of the arguments
+39,HAVING,We can use HAVING condition to add the condition on the groups.
+47,Relationship,Relationship types are represented as diamonds.
+27,Candidate key,A candidate key is a combination of attributes that can be uniquely used to identify a database record without referring to any other data.
+34,Primary Key,A primary key is a special relational database table column (or combination of columns) designated to uniquely identify all table records.
+55,Superclass,This type of relationship between subclass and superclass is often described as an ISA relationship type.
+60,One-To-Many,A one-to-many relationship is where one occurrence in an entity relates to many occurrences in another entity.
+6,Cartesian product,The Cartesian product operation takes an ordered list of sets and returns a set of tuples.
+42,Natural Join,"A natural join retains all the data of the two tables for only the matched rows, without duplication."
+65,Trivial,A FD is trivial if it can always be satisfied
+51,weak entity ,"A weak entity type is an entity type that does not have sufficient attributes
+to form a primary key."
+61,One-To-One,"One-to-one is where one occurrence of an entity relates to only one occurrence in another entity, eg if a man only marries one woman and a woman only marries one man, it is a one-to-one (1:1) relationship."
+48,Entity,"An entity is a real-world thing that can be distinctly identified as a person, place, or concept. It is an object which is distinguishable from others."
+16,Attribute,"Attributes are used to describe the properties of information. In the relational model, they usually refer to atomic data."
+57,Cardinality ratios,Specifies the maximum number of relationships that an entity can participate in.
+50,Data integrity,"Data integrity refers to the accuracy and consistency of data stored in a database or a data warehouse. Data with “integrity” is said to have a complete structure, i.e. all characteristics defining the data must be correct."
+11,Difference,The difference of two sets A and B is defined as the lists of all the elements that are in set A but that are not present in set B.
+25,DROP TABLE,The DROP TABLE statement is used to remove an existing relation schema from a database schema.
+45,Entity-Relationship Model,"An Entity–relationship model (ER model) describes the structure of a database with the help of a diagram, which is known as Entity Relationship Diagram (ER Diagram). An ER model is a design or blueprint of a database that can later be implemented as a database. "
+8,Equality,Set equality is the term that is used to indicate that two sets are equal.
+64,Functional dependencies,Functional Dependency (FD) is a constraint that determines the relation of one attribute to another attribute in a Database Management System (DBMS).
+41,Inner Join,Inner Join is tuples are included in the result only if there is at least one matching in both relations.
+36,GROUP BY,GROUP BY attribute list groups tuples for each value combination in the attribute list.
+10,Intersection,The intersection of two given sets is the set that contains all the elements that are common to both sets.
+52,Key attributes,A key attribute is the unique characteristic of the entity.
+59,Many-To-Many, a many-to-many relationship where many occurrences in an entity relate to many occurrences in another entity.
+9,union,The union of two sets is a set containing all elements that are in A or in B (possibly both).
+49,Total ,"It specifies that each entity present in the entity set must mandatorily participate in at least one relationship instance of that relationship set,for this reason, it is also called as mandatory participation"
+63,partial,It specifies that each entity in the entity set may or may not participate in the relationship instance in that relationship set.
+18,Superkey,A superkey SK of R is a subset of attributes of R.
+4,Set,"In mathematics, a set is nothing more than a collection of objects. Similarly, in databases, records within a table can be treated as objects in a set - i.e. the table becomes a set of records. The SET operator allows the tables of a database to be treated as objects in a set when performing a query."
+67,Implied,"To design a good database, we need to consider all possible FDs."
+69,Minimal Cover,A minimal cover of a set of FDs F is a minimal set of functional dependencies that is equivalent to F.
+70,Prime Attribute,A prime attribute is an attribute occurring in a candidate key
+76,Relational Algebra,Relational algebra (RA) provides an intermediate step for evaluating SQL.
+77,Projection,"choose certain attributes (i.e., columns)."
+85,SQL Injection,SQL injection attacks from internal and external users
+86,REVOKE,REVOKE takes away privileges from users.
+87,Specifying Privileges - Views,Views provide an important mechanism for discretionary authorization.
+97,Logging,Logging is a technique for recovery (assuring atomicity and durability of transactions).
+72,Lossless Join,To disallow the possibility of generating spurious tuples when a NATURAL JOIN operation is applied to the relations after decomposition.
+101,Read Uncommitted,Read Uncommitted is the least restrictive isolation level.
+22,DDL,"A data definition language (DDL) is a computer language used to create and modify the structure of database objects in a database. These database objects include views, schemas, tables, indexes, etc."
+81,Access Control,"Access control is done by creating user accounts and to control login process by the DBMS. So, that database access of sensitive data is possible only to those people (database users) who are allowed to access such data and to restrict access to unauthorized persons. "
+92,ACID Properties,"DBMSs ensure the following properties of transactions. Atomicity is the execution of each transaction is atomic, i.e., either all operations are completed or not done at all. Consistency is the states of a database that are consistent (w.r.t. defined business rules) before and after each transaction. Isolation is execution results of each transaction should be unaffected by other concurrently executing transactions. Durability is once a transaction has been successfully completed, its effects should persist in the database"
+26,ALTER TABLE,"ALTER TABLE is used to add, delete/drop or modify columns in the existing table. It is also used to add and drop various constraints on the existing table."
+89,Authentication,Authentication is the process of confirming that a user logs in only in accordance with the rights to perform the activities he is authorized to perform. User authentication can be performed at the operating system level or database level itself.
+74,Boyce-Codd normal form (BCNF),Boyce-Codd Normal Form (BCNF) is one of the forms of database normalization. A database table is in BCNF if and only if there are no non-trivial functional dependencies of attributes on anything other than a superset of a candidate key.
+66,Closure,"The set of all those attributes which can be functionally determined from an attribute set is called as the closure of that attribute set.
+"
+95,Concurrent Transactions,Concurrent transaction or execution includes multiple transactions which are executed concurrently or simultaneously in the system.
+80,Database Security,Database security refers to the collective measures used to protect and secure a database or database management software from illegitimate use and malicious cyber threats and attacks.
+46,Data structure,"The data structure is a data organization, management, and storage format that enables efficient access and modification. More precisely, a data structure is a collection of data values, the relationships among them, and the functions or operations that can be applied to the data."
+73,Dependency preservation,To ensure that each functional dependency can be inferred from functional dependencies after decomposition.
+82,Discretionary access control (DAC),Based on the concept of access privileges for giving users such privileges. SQL support DAC; most commercial DBMSs also support DAC.
+28,DML,"A data manipulation language (DML) is a computer programming language used for adding (inserting), deleting, and modifying (updating) data in a database. A DML is often a sublanguage of a broader database language such as SQL, with the DML comprising some of the operators in the language."
+53,Enhanced Entity-Relationship,Enhanced entity-relationship diagrams are advanced database diagrams very similar to regular ER diagrams which represent requirements and complexities of complex databases.  It is a diagrammatic technique for displaying the Sub Class and Super Class; Specialization and Generalization; Union or Category; Aggregation. 
+83,GRANT,GRANT gives privileges to users.
+93,Isolation,"In database systems, isolation determines how transaction integrity is visible to other users and systems."
+84,Mandatory Access Control (MAC),Restrict access to objects based on the sensitivity of the information contained in the objects and the formal authorization of subjects to access information of such sensitivity.
+90,Trojan Horse attacks,"Trojan Horse attacks: If Steve tricks Bob into copying data from table R into table R0, then the access control on table R doesn’t apply to the copy of the data in table R0."
+75,Third normal form (3NF),The third normal form — or 3NF — is part of a set of concepts for database normalization that also includes first normal form (1NF) and second normal form (2NF).
+99,The Unrepeatable Read Problem,The unrepeatable problem occurs when two or more read operations of the same transaction read different values of the same variable.
+100,The Lost Update Problem,"In the lost update problem, an update done to a data item by a transaction is lost as it is overwritten by the update done by another transaction. "
+102,Read Committed,"Read Committed is One transaction only sees committed changes by other
+transactions."
+91,Transactions,A transaction is a sequence of database operations grouped together for execution as a logic unit in a DBMS.
+79,Renaming,"Renaming is used to rename either the relation name or the attribute names, or both."
+98,The Dirty Read Problem,"Dirty read is a read of uncommitted data. If a particular row is modified by another running application and not yet committed, we also run an application to read the same row with the same uncommitted data."
+103,Serializable,Serializable is the highest solution level. All transactions are totally isolated from other transactions. It is safe but may cause significant performance hit.
+68,Equivalent,"Two or more than two sets of functional dependencies are called equivalence if the right-hand side of one set of functional dependency can be determined using the second FD set, similarly, the right-hand side of the second FD set can be determined using the first FD set."
+40,EXCEPT,"The SQL EXCEPT clause/operator is used to combine two SELECT statements and returns rows from the first SELECT statement that are not returned by the second SELECT statement. This means EXCEPT returns only rows, which are not available in the second SELECT statement"
+44,EXISTS,"The EXISTS condition in SQL is used to check whether the result of a correlated nested query is empty (contains no tuples) or not. The result of EXISTS is a boolean value True or False. It can be used in a SELECT, UPDATE, INSERT or DELETE statement."
+43,Left Join,A left join retains all rows of the left table regardless of whether there is a row that matches on the right table.
+94,Locking,Locking protocols are used in database management systems as a means of concurrency control. Multiple transactions may request a lock on a data item simultaneously.
+96,Two-Phase Locking (2PL) Protocol,Two-Phase Locking Protocol is also known as 2PL protocol is a method of concurrency control in DBMS that ensures serializability by applying a lock to the transaction data which blocks other transactions to access the same data simultaneously. Two-Phase Locking protocol helps to eliminate the concurrency problem in DBMS.
+71,Normalisation,A common approach starts with a universal relation and applies decomposition to create new relations that satisfy certain normal forms (i.e. normalization).
+58,Participation constraints,Specifies whether the existence of any entity depends on its being related to another entity via the relationship type.
+88,Role-Based Access Control (RBAC),"Access rights are grouped by roles, and the use of resources is restricted to individuals assigned to specific roles.
+"
+78,Selection,"Select operation chooses the subset of tuples from the relation that satisfies the given condition mentioned in the syntax of selection. The selection operation is also known as horizontal partitioning since it partitions the table or relation horizontally.
+"
+21,SQL,SQL stands for Structured Query Language.  It is used for storing and managing data in a relational database management system (RDMS).
+54,Subclass,A subclass is a class derived from the superclass. It inherits the properties of the superclass and also contains attributes of its own.

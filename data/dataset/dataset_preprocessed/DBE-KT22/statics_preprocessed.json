@@ -1,0 +1,10 @@
+{
+  "num_user": 1214,
+  "num_interaction": 158342,
+  "num_concept": 93,
+  "num_question": 212,
+  "average_seq_len": 130.43,
+  "average_question_acc": 0.7646,
+  "question_sparsity": 0.3861,
+  "concept_sparsity": 0.3534
+}

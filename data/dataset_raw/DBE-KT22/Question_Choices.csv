@@ -1,0 +1,757 @@
+"id","choice_text","is_correct","question_id"
+5,Relation,false,2
+6,Function,false,2
+7,Set,true,2
+8,Tuple,false,2
+9,"{1, 2, 3}",false,3
+10,"{1, 3, 5, 7, 9}",true,3
+11,"{1, 2, 5, 9}",false,3
+12,"{1, 5, 7, 9, 11}",false,3
+13,"{(1, a), (1, b), (2, a), (b, b)}",false,4
+14,"{(1, 1), (2, 2), (a, a), (b, b)}",false,4
+15,"{(1, a), (2, a), (1, b), (2, b)}",true,4
+16,"{(a, 1), (a, 2), (b, 1), (b, 2)}",false,4
+17,True,false,5
+18,False,true,5
+19,"10",false,6
+20,"5",true,6
+21,"3",false,6
+22,"20",false,6
+23,"A = {1, 2} and B = {1}",false,7
+24,"A = {1, 2} and B = {1, 2, 3}",false,7
+25,"A = {1, 2, 3} and B = {2, 1, 3}",true,7
+26,"A = {1, 2, 4} and B = {1, 2, 3}",false,7
+27,"A = {p, q} and B = {x, y}",true,8
+28,"A = {p, q, x} and B = { y}",false,8
+29,"A = {p} and B = {q, x, y}",false,8
+30,"A ={x, y} and B = {p, q}",false,8
+31,"{2,3}",true,9
+32,"{6,7}",false,9
+33,"{2,3,4,5}",false,9
+34,"{4,5,6,7}",false,9
+35,"{2,3}",true,10
+36,"{6,7}",false,10
+37,"{2,3,4,5}",false,10
+38,"{4,5,6,7}",false,10
+39,"{2, 4, 5, 9, 10, 11, 8}",false,11
+40,"{2, 3, 4, 5, 6, 7, 8, 9}",true,11
+41,"{1, 4, 9, 7,8,11,10}",false,11
+42,"{4, 5,7,8,9,10,11}",false,11
+43,"{2, 3, 4}",false,12
+44,"{6, 7}",true,12
+45,"{2, 3, 8, 9}",false,12
+46,"{4, 5}",false,12
+47,"{6,7}",false,13
+48,"{2,3}",false,13
+49,"{4,5}",true,13
+50,"{8,9}",false,13
+51,"{(2, 2), (7, 7), (5, 5), (3, 3), (4, 4),(4,7)}",false,14
+52,"{(2, 5), (2, 7), (3, 5), (3, 7), (3,4), (4,3)}",false,14
+53,"{(2, 5), (2, 7), (3, 5), (3, 7), (4,5), (4,7)}",true,14
+55,True,false,15
+56,False,true,15
+57,True,true,16
+58,False,false,16
+59,True,false,17
+60,False,true,17
+61,"{1,2,3,5}",false,18
+62,"{1,2}",false,18
+63,"{3,5}",true,18
+64,"{1,2,3}",false,18
+65,"{1, 2, 3}",false,19
+66,"{(1,1), (1,2), (2,1), (2,2)}",true,19
+67,"{1, 2}",false,19
+68,"{1, 2, 3}",false,20
+69,"{(1,1), (1,2), (1,3)}",false,20
+70,"{(1,3), (2,3)}",true,20
+71,"{(1,1), (2,2)}",false,21
+72,"{(1,1), (1,2), (1,3)}",false,21
+73,"{(1,3), (2,3)}",true,21
+74,"1",true,22
+75,"2",false,22
+76,"3",false,22
+77,"4",false,22
+78,"A = {1, 2, 3}, B = {2, 3, 4}",false,23
+79,"A = {1, 2, 3}, B = {1, 2, 3, 4}",false,23
+80,"A = {1, 2, 3}, B = {2, 3, 1}",true,23
+81,"A = {1, 2, 3, 4, 5, 6}, B = {2, 3, 4, 5, 1}",false,23
+82,A ∩ B,true,24
+83,A U B,false,24
+84,A,false,24
+85,B,false,24
+86,A,false,25
+87,(A U B) -B,true,25
+88,A ∩ B,false,25
+89,B- (A ∩ B),false,25
+90,A U B,false,26
+91,(A U B) – (A ∩ B),true,26
+92,A – B,false,26
+93,A ∩ B,false,26
+94,A U C  –  B,false,27
+95,B – A – C,true,27
+96,(A ∩ C) ∩ B,false,27
+97,(AUC) – (B ∩ A) – (B ∩C),false,27
+98,"5",false,28
+99,"6",true,28
+100,"12",false,28
+101,"24",false,28
+102,"11",false,29
+103,"12",false,29
+104,"13",true,29
+105,"14",false,29
+106,"{(1,c) ,(2,c),(3,a),(3,b),(3,c)}",true,30
+107,"{(1,a), (1,b) , (2,a) , (2,b)}",false,30
+108,"{(1,a),(1,b),(1,c),(2,a),(2,b),(2,c)}",false,30
+109,True,false,31
+110,False,true,31
+111,True,false,32
+112,False,true,32
+113,True,true,33
+114,False,false,33
+115,True,true,34
+116,False,false,34
+117,True,true,35
+118,False,false,35
+119,Range,false,36
+120,Domain,false,36
+121,Relation,true,36
+122,Tuple,false,36
+123,Table,false,37
+124,Tuple,false,37
+125,Attribute,false,37
+126,Domain,true,37
+127,Row,false,38
+128,Column,true,38
+129,Value,false,38
+130,Tuple,false,38
+131,Attribute,false,39
+132,Tuple,true,39
+133,Field,false,39
+134,Instance,false,39
+135,Relations,false,40
+136,Attributes,true,40
+137,Tuples,false,40
+138,Instances,false,40
+140,Important; Important,false,41
+143,Domain,false,42
+144,Subkey,false,42
+145,Superkey,true,42
+146,Foreign key,false,42
+147,Candidate key,false,43
+148,Foreign key,true,43
+149,Superkey,false,43
+150,Primary key,false,43
+139,Important; Not important,false,41
+141,Not important; Important,true,41
+142,Not important; Not important,false,41
+151,A superkey is an attribute or a set of attributes that can uniquely identify a tuple in a relation,true,44
+54,"{(2, 5), (3, 7), (5, 5), (4, 7), (2,7), (3,5)}",false,14
+152,A superkey is a tuple or a set of multiple tuples that can uniquely identify an attribute in a relation,false,44
+153,Every superkey is a candidate key,false,44
+154,A superkey is an attribute or a set of attributes that distinguish the relation from other relations,false,44
+155,Referenced,false,45
+156,Referencing,true,45
+157,"{a,b,c} must not be a superkey",false,46
+158,"{a,b,c} must not be a candidate key",true,46
+159,"{a,b,c} must be a primary key",false,46
+160,"{a,b,c} must be a superkey",true,47
+161,"{a,b,c} must not be a superkey",false,47
+162,"{a,b,c} must be a candidate key",false,48
+163,"{a,b,c} must be a superkey",true,48
+164,{a} must be a superkey,false,48
+165,"{a,b} must not be a superkey",false,49
+166,"{a,c} must be a candidate key",false,49
+167,{a} must be a candidate key,true,49
+168,A superkey is always a candidate key,false,50
+169,A candidate key is always a superkey,true,50
+170,A superkey is always a primary key,false,50
+171,A candidate key is always a primary key,false,50
+172,Char(n),false,51
+173,String(n),true,51
+174,Varchar(n),false,51
+175,Bit(n),false,51
+176,create table(…),true,52
+177,create relation(…),false,52
+178,New table(…),false,52
+179,New relation(…),false,52
+180,Drop table R,true,53
+181,Drop relation R,false,53
+182,Delete table R,false,53
+183,Delete from R,false,53
+184,Alter table R delete A,false,54
+185,Alter table R drop column A,true,54
+186,Alter table drop A from R,false,54
+187,Delete A from R,false,54
+188,DML,false,55
+189,DDL,true,55
+190,DCL,false,55
+191,TCL,false,55
+192,"Fixed, Fixed",false,56
+193,"Variable, Variable",false,56
+194,"Fixed, Variable",true,56
+195,"Variable, Fixed",false,56
+196,Select,true,57
+197,Update,false,57
+198,Delete,false,57
+199,Create,false,57
+203,Create,false,58
+204,Alter Table,false,59
+205,Add row,false,59
+206,Insert,true,59
+207,Append,false,59
+208,"enter into D (a, b, c);",false,60
+209,"insert into D values (a, b, c);",true,60
+210,"insert into D (a, b, c);",false,60
+211,"insert (a, b, c) values into D;",false,60
+212,delete table R,false,61
+213,drop table R,false,61
+214,delete from R,true,61
+215,drop from R,false,61
+216,Select,false,62
+217,Join,true,62
+218,Union,false,62
+219,Show all rows and columns of table “person”,true,63
+220,Show the number of rows of table “person”,false,63
+221,Show the number of columns of table “person”,false,63
+222,Show all rows and columns of table “person”,false,64
+223,Show the number of rows of table “person”,true,64
+224,Show the number of columns of table “person”,false,64
+225,"CREATE TABLE Enrol(StudentID INT; CourseNo VARCHAR(20); Semester VARCHAR(50)),",false,65
+226,"CREATE TABLE Enrol(StudentID INT, CourseNo VARCHAR(20), Semester VARCHAR(50)),",false,65
+227,"CREATE TABLE Enrol(StudentID INT, CourseNo VARCHAR(20), Semester VARCHAR(50));",true,65
+228,At least one of the attributes in the primary key is not null,false,66
+229,None of the attributes in the primary key can be null,true,66
+230,All the attributes in the primary key can be null,false,66
+233,StudentID cannot be null in Student,false,67
+234,StudentID cannot be null in Enrol,false,67
+235,"6",true,68
+236,"4",false,68
+237,"2",false,68
+238,"0",false,68
+239,"3",false,69
+240,"2",false,69
+241,"1",true,69
+242,"0",false,69
+243,"3",false,70
+244,"2",true,70
+245,"1",false,70
+246,"0",false,70
+247,"4",false,71
+248,"3",true,71
+249,"2",false,71
+250,"1",false,71
+251,"4",true,72
+252,"3",false,72
+253,"2",false,72
+254,"1",false,72
+255,"4, 6",false,73
+256,"3, 4",false,73
+257,"6, 4",true,73
+258,"4, 3",false,73
+259,"6",false,74
+260,"4",true,74
+261,"2",false,74
+262,"1",false,74
+263,"4",false,75
+264,"3",false,75
+265,"2",true,75
+266,"1",false,75
+267,"6",false,76
+268,"5",false,76
+269,"4",true,76
+270,"3",false,76
+271,"4",false,77
+272,"3",false,77
+273,"2",false,77
+274,"1",true,77
+275,"28",true,78
+276,"12",false,78
+277,"7",false,78
+278,"4",false,78
+279,"28",false,79
+280,"12",false,79
+281,"7",true,79
+282,"4",false,79
+283,"28",false,80
+284,"12",false,80
+285,"7",true,80
+286,"4",false,80
+287,"13",false,81
+288,"8",true,81
+289,"4",false,81
+290,"1",false,81
+291,"12",false,82
+292,"9",false,82
+293,"7",false,82
+231,Every StudentID appearing in Enrol must exist in Student,true,67
+294,"3",true,82
+295,"11",false,83
+296,"8",false,83
+297,"7",true,83
+298,"4",false,83
+299,"11",false,84
+300,"7",false,84
+301,"4",false,84
+302,"3",true,84
+303,"7",false,85
+304,"3",false,85
+305,"2",true,85
+306,"1",false,85
+307,"1,2",true,86
+308,"3,3",false,86
+309,"3,2",false,86
+310,"1,3",false,86
+311,"SELECT CourseNo, COUNT(*) AS NoOfStudents      FROM Enrol      WHERE Year = 2019      GROUP BY CourseNo;",true,87
+313,"SELECT CourseNo, COUNT(*) AS NoOfStudents      FROM Student      WHERE Year = 2019      GROUP BY CourseNo;",false,87
+314,"SELECT CourseNo, COUNT(*) AS NoOfStudents      FROM Student      WHERE Year = 2019      GROUP BY StudentID;",false,87
+312,"SELECT CourseNo, COUNT(*) AS NoOfStudents      FROM Enrol   WHERE Year = 2019      GROUP BY StudentID;",false,87
+201,Alter Table,false,58
+200,Drop Table,false,58
+202,Update,true,58
+232,Every  StudentID appearing in Student must exist in Enrol,false,67
+315,Primary key constraint,true,91
+316,Foreign key constraint,false,91
+317,Domain constraint,false,91
+318,Diamond,false,92
+319,Rectangle,false,92
+320,Double diamond,false,92
+321,Double rectangle,true,92
+322,Fitness centre,false,93
+323,Fitness class,true,93
+324,Trainers’ speciality,false,93
+325,Equipment ID,false,93
+326,Report of each maintenance event,false,94
+327,Status type of equipment,false,94
+328,Employee of fitness centre,true,94
+329,Time slot of fitness class,false,94
+330,Associate member,false,95
+331,Employee ID,true,95
+332,Fitness class,false,95
+333,Fitness centre,false,95
+334,Weight gain,false,96
+335,Weight loss,false,96
+336,Strength building,false,96
+337,Speciality,true,96
+338,Equipments' status,false,97
+339,Fitness class,false,97
+340,Associate member,true,97
+341,Trainers’ speciality,false,97
+342,Phone number of technician,false,98
+343,Date of maintenance event,false,98
+344,Name of employee,false,98
+345,Time slot of fitness class,true,98
+346,Attribute and domain,false,99
+347,Entity and relationship,false,99
+348,Superclass and subclass,true,99
+349,Entity and attribute,false,99
+350,"1 : 1",false,100
+351,"1: N",false,100
+353,Partial,true,101
+354,Total,false,101
+355,Partial,false,102
+356,Total,true,102
+357,"1 : 1",false,103
+358,"1: N",true,103
+360,Partial,true,104
+361,Total,false,104
+362,Partial,false,105
+363,Total,true,105
+365,"Model ""trainer"" as an entity and model ""speciality"" as an attribute",false,106
+366,"Model ""trainer"" as an entity and model ""speciality"" as a multi-valued attribute",true,106
+368,Landline number,false,107
+369,Address,false,107
+370,ID,true,107
+371,Name,false,107
+372,For each fitness class the start date must be before the end date.,false,108
+373,Each piece of equipment should be maintained at least twice a year.,false,108
+374,Each fitness class is instructed by only one trainer and not all trainers deliver fitness classes.,true,108
+375,"Each piece of equipment has a unique ID and must have one of the following three status types: new, working or broken.",false,108
+359,N:N,false,103
+376,XY→XYZ,false,109
+377,X→YZ,false,109
+378,XYZ→Z,true,109
+379,YZ→X,false,109
+380,A,false,110
+381,AB,false,110
+382,ABC,true,110
+383,ABCD,false,110
+384,True,false,111
+385,False,true,111
+386,True,true,112
+387,False,false,112
+388,A,false,113
+389,AB,false,113
+390,ABC,false,113
+391,ABCD,true,113
+392,True,true,114
+393,False,false,114
+394,True,true,115
+395,False,false,115
+396,True,false,116
+397,False,true,116
+398,True,true,117
+399,False,false,117
+400,True,false,118
+401,False,true,118
+402,True,false,119
+403,False,true,119
+404,True,true,120
+405,False,false,120
+406,True,false,121
+407,False,true,121
+408,True,true,122
+409,False,false,122
+410,True,true,123
+411,False,false,123
+412,True,false,124
+413,False,true,124
+414,True,true,125
+415,False,false,125
+416,True,false,126
+417,False,true,126
+418,True,true,127
+419,False,false,127
+420,True,true,128
+421,False,false,128
+422,True,false,129
+423,False,true,129
+352,N:N  ,true,100
+364,"Model ""speciality"" as an entity type",false,106
+367,"Model ""trainer"" as an entity type and model ""speciality"" as a weak entity type that is related to the entity type ""trainer""",false,106
+436,"A relation schema R is in BCNF if whenever a non-trivial FD X→ A holds in R, then A is a prime attribute.",false,133
+437,"A relation schema R is in 3NF if whenever a non-trivial FD X→ A holds in R, then X is a superkey.",false,133
+438,"A relation schema R is in BCNF if whenever a non-trivial FD X→ A holds in R, then X is a superkey.",true,133
+439,"A relation schema R is in 3NF if whenever a non-trivial FD X→ A holds in R, then A is a prime attribute.",false,133
+440,R is in 3NF and R is in BCNF.,true,134
+441,R is in 3NF and R is not in BCNF.,false,134
+442,R is not in 3NF and R is not in BCNF.,false,134
+443,R is not in 3NF and R is in BCNF.,false,134
+444,R is in 3NF and R is in BCNF.,true,135
+445,R is in 3NF and R is not in BCNF.,false,135
+446,R is not in 3NF and R is not in BCNF.,false,135
+447,R is not in 3NF and R is in BCNF.,false,135
+448,R is in 3NF and R is in BCNF.,false,136
+449,R is in 3NF and R is not in BCNF.,false,136
+450,R is not in 3NF and R is not in BCNF.,true,136
+451,R is not in 3NF and R is in BCNF.,false,136
+452,R is in 3NF and R is in BCNF.,true,137
+453,R is in 3NF and R is not in BCNF.,false,137
+454,R is not in 3NF and R is not in BCNF.,false,137
+455,R is not in 3NF and R is in BCNF.,false,137
+456,R is in 3NF and R is in BCNF.,false,138
+457,R is in 3NF and R is not in BCNF.,true,138
+458,R is not in 3NF and R is not in BCNF.,false,138
+459,R is not in 3NF and R is in BCNF.,false,138
+460,BCNF is a a less restrictive normal form compared to 3NF.,false,139
+461,BCNF can only minimise (not necessarily eliminate) redundancy.,false,139
+462,BCNF eliminates redundancy. ,true,139
+463,"3NF is a a more restrictive normal form compared to BCNF.",false,140
+464,"3NF can only minimise (not necessarily eliminate) redundancy.",true,140
+465,"3NF eliminates redundancy. ",false,140
+466,"If R is in BCNF, then R must be in 3NF.",true,141
+467,"If R is in 3NF, then R must be in BCNF.",false,141
+468,"If R is in BCNF, then R cannot be in 3NF.",false,141
+469,"If R is in 3NF, then R cannot be in BCNF.",false,141
+470,BCNF decomposition is always a dependency-preserving decomposition.,false,142
+471,"3NF decomposition is always a dependency-preserving decomposition.",true,142
+472,BCNF decomposition cannot be a dependency-preserving decomposition.,false,142
+473,"3NF decomposition cannot be a dependency-preserving decomposition.",false,142
+474,The BCNF decomposition is always unique for any R and Σ.,false,143
+475,The 3NF decomposition is always unique for any R and Σ.,false,143
+476,There exists an algorithm that can always generate a lossless and dependency-preserving decomposition into 3NF.,true,143
+477,There exists an algorithm that can always generate a lossless and dependency-preserving decomposition into BCNF.,false,143
+426,Does not fulfil the lossless join property but fulfils the dependency preserving property.,false,130
+424,Fulfils both lossless join and dependency preserving properties.,true,130
+427,Fulfils neither the lossless join property nor the dependency preserving property.,false,130
+425,Fulfils the lossless join property but does not fulfil the dependency preserving property.,false,130
+430,Does not fulfil the lossless join property but fulfils the dependency preserving property.,false,131
+428,Fulfils both lossless join and dependency preserving properties.,false,131
+431,Fulfils neither the lossless join property nor the dependency preserving property.,false,131
+429,Fulfils the lossless join property but does not fulfil the dependency preserving property.,true,131
+434,Does not fulfil the lossless join property but fulfils the dependency preserving property.,false,132
+432,Fulfils both lossless join and dependency preserving properties.,true,132
+435,Fulfils neither the lossless join property nor the dependency preserving property.,false,132
+433,Fulfils the lossless join property but does not fulfil the dependency preserving property.,false,132
+478,"6",false,146
+479,"4",true,146
+480,"2",false,146
+481,"0",false,146
+482,"3",false,147
+483,"2",true,147
+484,"1",false,147
+485,"0",false,147
+486,"4",false,148
+487,"3",true,148
+488,"2",false,148
+489,"1",false,148
+490,"4",false,149
+491,"3",true,149
+492,"2",false,149
+493,"1",false,149
+494,"6",false,150
+495,"5",false,150
+496,"4",true,150
+497,"3",false,150
+498,"4",false,151
+499,"3",false,151
+500,"2",false,151
+501,"1",true,151
+502,"4",false,152
+503,"3",false,152
+504,"2",true,152
+505,"1",false,152
+506,"28",true,153
+507,"12",false,153
+508,"7",false,153
+509,"4",false,153
+510,"28",false,154
+511,"12",true,154
+512,"7",false,154
+513,"4",false,154
+514,"28",false,155
+515,"12",false,155
+516,"7",true,155
+517,"4",false,155
+518,"28",false,156
+519,"12",false,156
+520,"7",true,156
+521,"4",false,156
+522,"16",false,157
+523,"12",false,157
+524,"8",false,157
+525,"4",true,157
+526,"12",false,158
+527,"9",false,158
+528,"7",false,158
+529,"3",true,158
+530,"28",false,159
+531,"21",true,159
+532,"12",false,159
+533,"7",false,159
+534,"16",true,160
+535,"8",false,160
+536,"4",false,160
+537,"0",false,160
+538,"28",false,161
+539,"17",true,161
+540,"12",false,161
+541,"7",false,161
+542,"16",false,162
+544,"8",false,162
+545,"5",false,162
+546,Yes,true,163
+547,No,false,163
+548,Yes,false,164
+549,No,true,164
+550,Yes,false,165
+551,No,true,165
+552,Yes,false,166
+553,No,true,166
+554,Yes,true,167
+555,No,false,167
+557,only B,false,168
+559,neither A nor B,false,168
+560,only A,false,169
+561,only B,false,169
+562,both A and B,true,169
+563,neither A nor B,false,169
+564,only A,false,170
+565,only B,false,170
+566,both A and B,false,170
+567,neither A nor B,true,170
+568,only A,false,171
+569,only B,true,171
+570,both A and B,false,171
+571,neither A nor B,false,171
+572,only A,false,172
+573,only B,false,172
+574,both A and B,false,172
+575,neither A nor B,true,172
+576,only A,false,173
+577,only B,true,173
+578,both A and B,false,173
+579,neither A nor B,false,173
+580,only A,false,174
+581,only B,false,174
+582,both A and B,false,174
+583,neither A nor B,true,174
+584,only A,false,175
+585,only B,false,175
+586,both A and B,true,175
+587,neither A nor B,false,175
+588,only A,false,176
+589,only B,false,176
+590,both A and B,true,176
+591,neither A nor B,false,176
+592,only A,false,177
+593,only B,false,177
+594,both A and B,true,177
+595,neither A nor B,false,177
+596,only A,true,178
+597,only B,false,178
+598,both A and B,false,178
+599,neither A nor B,false,178
+600,A specified attribute,false,179
+601,A specified tuple,true,179
+602,An entire relation,false,179
+603,None of the above,false,179
+604,Data encryption,false,180
+605,Access controls,false,180
+606,Auditing,true,180
+607,Authentication,false,180
+608,With grant privilege,false,181
+609,Allow grant privilege,false,181
+610,Allow grant option,false,181
+611,With grant option,true,181
+612,Use different levels of security to classify users and data.,true,182
+613,Allow owners of objects to determine who has access to their objects,false,182
+614,Control a list of authorized users using the GRANT and REVOKE commands,false,182
+615,Manage access control lists by assigning roles to users,false,182
+616,SQL injection may occur when an input is used in the construction of an SQL query without being adequately constrained or sanitized,false,183
+617,SQL injection allows an attacker to access a SQL database and execute SQL commands under the privileges of a user who connects to the database,false,183
+620,GRANT select ON salary TO Tom no cascade;,false,184
+621,REVOKE select ON salary FROM Tom restrict;,true,184
+622,GRANT select ON salary TO Tom no restrict;,false,184
+623,REVOKE select ON salary FROM Tom cascade;,false,184
+624,A user who creates a view can always receive the select and update privileges on that view.,false,185
+625,A user who creates a view can always receive the update privilege on that view if the user has the update privilege on the underlying tables/views used to define the view.,false,185
+626,A user who creates a view does not necessarily receive all privileges on that view.,true,185
+627,A user who creates a view receives all privileges on that view.,false,185
+628,Objects that do not have an owner cannot be modified.,false,186
+629,The database administrator is an owner of each object.,false,186
+630,"For each object, the database administrator can grant privileges to other users at their own discretion.",false,186
+631,Each object has an owner who has full control on managing the privileges to the object.,true,186
+632,"DAC relies only on the identity of a user, leaving room for Trojan Horse attacks.",true,187
+633,"DAC relies on certificates of a user, leaving room for attackers to use those certificates.",false,187
+634,"DAC does not rely on the identity of a user, leaving room for Trojan Horse attacks.",false,187
+635,"DAC does not regulate the role of a user, leaving room for Trojan Horse attacks.",false,187
+642,"var City; City = Request.form (""City""); var SQL = ""select * from OrdersTable where City = '"" + City + ""'"";",true,189
+643,"var SQL = ""select * from OrdersTable where City = ‘Canberra’"";",false,189
+644,"var City; City =‘Canberra’; var SQL = ""select * from OrdersTable where City = '"" + City + “'"";",false,189
+645,None of the above,false,189
+646,"File, printer, and mailbox roles.",false,190
+647,"Sales, marketing, management, and production roles.",true,190
+648,User and workstation roles.,false,190
+649,Resource and department roles.,false,190
+650,A method of restricting user access to a database system,true,191
+651,A method of restricting user access to data in a database system,false,191
+652,A method of restricting operations on data stored in a database system,false,191
+653,All of the above,false,191
+654,Both Amy and Peter have the select privilege on Event,false,192
+636,Access control list and Ownership,false,188
+638,Group membership and Role,false,188
+639,User security clearance and Data classification,true,188
+543,"4",true,162
+558,both A and B,true,168
+556, only A,false,168
+655,"Amy has the select privilege on Event, but Peter does not have this privilege",true,192
+656,"Peter has the select privilege on Event, but Amy does not have this privilege",false,192
+657,None of Amy and Peter have the select privilege on Event,false,192
+658,Both Amy and Peter have the select privilege on Event,false,193
+659,"Amy has the select privilege on Event, but Peter does not have this privilege",false,193
+660,"Peter has the select privilege on Event, but Amy does not have this privilege",true,193
+661,None of Amy and Peter have the select privilege on Event,false,193
+662,Confidentiality,false,194
+663,Availability,false,194
+664,Integrity,true,194
+665,Accountability,false,194
+666,Write down rule,false,195
+667,Write up rule,false,195
+668,Read down rule,true,195
+669,Read up rule,false,195
+670,A Trojan is a small malicious program that runs hidden on the infected system.,false,196
+671,A Trojan is created with the intent and it can infect the system by misleading a user.,false,196
+672,A Trojan works in the background and steals sensitive data.,false,196
+673,"A Trojan can self-replicate, as a virus does.",true,196
+674,A method that is used to secretly pass information and not normally used for communication,true,197
+675,A method that is used to transmit secret or top secret data,false,197
+676,A trusted channel that is used for communication,false,197
+677,Any channel that crosses the security perimeter,false,197
+678,Authentication by what you have,false,198
+679,Authentication by what you know,false,198
+680,Authentication by what you are,false,198
+681,Two-factor authentication,true,198
+618,SQL injection can be prevented by removing the privileges of a user who connects to the database,true,183
+682,None of the above,false,183
+683,Recover manager,false,199
+684,Concurrency control,true,199
+685,Storage manager,false,199
+686,File manager,false,199
+688,T1 and T2 produce correct results if T1 is executed after T2 commits,false,200
+689,T1 and T2 produce correct results if T1 and T2 are executed concurrently but do not access any common data items,false,200
+690,All of the above,true,200
+691,Read committed,true,201
+692,Read uncommitted,false,201
+693,Serializable,false,201
+694,Repeatable read,false,201
+695,Consistency,false,202
+696,Serializability,true,202
+697,Atomicity,false,202
+698,All of the above,false,202
+699,Read,false,203
+700,Write,false,203
+701,Read and write,true,203
+702,Update,false,203
+703,"Once a transaction has released a lock, this transaction can not acquire any more locks",false,204
+704,A transaction can release all its locks when this transaction commits,false,204
+705,A transaction can acquire all the locks which it needs when this transaction begins,false,204
+706,All of the above,true,204
+707,Unrepeatable read,false,205
+708,Phantom read,true,205
+709,Dirty read,false,205
+710,Lost update,false,205
+711,Increase throughput,false,206
+712,Reduce average response time,false,206
+713,Increase utilisation,false,206
+714,All of the above,true,206
+715,Atomicity and integrity,false,207
+716,Atomicity and durability,true,207
+717,Atomicity and isolation,false,207
+718,Durability and isolation,false,207
+719,Lost update,false,208
+720,Dirty read,true,208
+721,Unrepeatable read,false,208
+722,Phantom read,false,208
+723,Lost update,false,209
+726,Phantom read,false,209
+727,Lost update,true,210
+728,Dirty read,false,210
+729,Unrepeatable read,false,210
+730,Phantom read,false,210
+731,"66 and 82",false,211
+732,"81 and 90",false,211
+733,"66 and 90",true,211
+734,None of the above,false,211
+735,"66 and 82",false,212
+736,"81 and 90",false,212
+737,"66 and 90",true,212
+738,None of the above,false,212
+739,"66, 81, 82 and 90",false,213
+740,"66, 76, 81, 82, 87, and 90",true,213
+741,"66, 78, 81, 82, 88, and 90",false,213
+742,"66 and 90",false,213
+743,None of the above,false,213
+744,Undo the changes before commit,false,214
+745,Clear all changes,false,214
+746,Redo the changes before commit,false,214
+747,Nothing,true,214
+752,Schedule 1and Schedule 2,false,216
+753,Schedule 2 and Schedule 3,false,216
+754,Schedule 3 and Schedule 4,false,216
+759,"None of 1, 2 and 3",false,217
+760,"Redo the operations that have not been committed, i.e., write(A) and write(B) from T1",false,218
+761,"Undo the operations that have not been committed, i.e., write(A) and write(B) from T1",true,218
+762,"Redo the operations that have not been committed, i.e., write(B) from T1",false,218
+763,"Undo the operations that have not been committed, i.e., write(B) from T1",false,218
+764,"Redo the operations that have been committed, i.e., write(D) from T2 and write(A) from T1",false,219
+765,"Undo the operations that have been committed, i.e., write(D) from T2 and write(A) from T1",false,219
+766,"Redo the operations that have been committed, i.e., write(D) from T2",true,219
+767,"Undo the operations that have been committed, i.e., write(D) from T2",false,219
+756,Schedule 1,false,217
+757,Schedule 2,false,217
+724,Dirty read,false,209
+725,Unrepeatable read,true,209
+758,Schedule 3,true,217
+687,A schedule of T1 and T2 can be serialized if T1 and T2 are executed under the two phase locking protocol,false,200
+755,Schedule 1 and Schedule 4,false,216
+768,Schedule 2 and Schedule 4,true,216
