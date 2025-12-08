@@ -207,7 +207,7 @@ class KTDataProcessor:
         return result
 
     def preprocess_data(self):
-        datasets_treatable = self.file_manager.builtin_datasets
+        datasets_treatable = self.file_manager.builtin_datasets + ["DBE-KT22"]
         dataset_name = self.params["dataset_name"]
         assert dataset_name in datasets_treatable, f"DataProcessor can't handle {dataset_name}"
 
@@ -234,6 +234,8 @@ class KTDataProcessor:
             self.process_ednet_kt1()
         elif dataset_name == "xes3g5m":
             self.process_xes3g5m()
+        elif dataset_name == "DBE-KT22":
+            self.process_dbe_kt22()
         # elif dataset_name in ["algebra2005", "algebra2006", "algebra2008", "bridge2algebra2006", "bridge2algebra2008"]:
         #     self.process_kdd_cup2010()
         elif dataset_name in ["SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy"]:
@@ -259,6 +261,9 @@ class KTDataProcessor:
             self.uniform_edi2020()
         elif dataset_name == "xes3g5m":
             # 直接在process_xes3g5m里一起处理了
+            pass
+        elif dataset_name == "DBE-KT22":
+            # 在process_dbe_kt22里已经构造好统一格式
             pass
         elif dataset_name in ["assist2009-full", "ednet-kt1", "algebra2005", "algebra2006", "algebra2008",
                               "bridge2algebra2006", "bridge2algebra2008", "slepemapy-anatomy"]:
@@ -359,6 +364,163 @@ class KTDataProcessor:
             object_data["seq_len"] = len(object_data["correctness_seq"])
             seqs.append(object_data)
         self.data_uniformed = list(filter(lambda item: 2 <= item["seq_len"], seqs))
+        self.user_id_map = pd.DataFrame({
+            "original_id": user_id_map.keys(),
+            "mapped_id": user_id_map.values()
+        })
+
+    def process_dbe_kt22(self):
+        data_dir = self.params["data_path"]
+
+        trans_path = os.path.join(data_dir, "Transaction.csv")
+        df = read_csv(trans_path)
+
+        if "is_hidden" in df.columns:
+            df = df[df["is_hidden"] == False]
+
+        def time_str2timestamp(time_str):
+            time_str = str(time_str)
+            if time_str == "nan" or len(time_str) == 0:
+                return None
+            match = re.search(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", time_str)
+            if not match:
+                return None
+            time_str_ = match.group()
+            return int(time.mktime(time.strptime(time_str_, "%Y-%m-%d %H:%M:%S")))
+
+        df["timestamp"] = df["end_time"].map(time_str2timestamp)
+
+        choices_path = os.path.join(data_dir, "Question_Choices.csv")
+        choices_df = read_csv(choices_path)
+        if "id" in choices_df.columns:
+            choices_df.rename(columns={"id": "answer_choice_id"}, inplace=True)
+
+        choices_df["is_correct_flag"] = choices_df["is_correct"].map(
+            lambda x: str(x).lower() in ["true", "1"]
+        )
+
+        correct_answer_map = {}
+        if "question_id" in choices_df.columns and "choice_text" in choices_df.columns:
+            for q_id, group in choices_df.groupby("question_id"):
+                texts = group[group["is_correct_flag"]]["choice_text"].tolist()
+                if len(texts) > 0:
+                    correct_answer_map[int(q_id)] = " | ".join(map(str, texts))
+
+        df = df.merge(choices_df[["answer_choice_id", "is_correct"]], how="left", on="answer_choice_id")
+
+        def map_correct(row):
+            is_correct = row.get("is_correct")
+            if str(is_correct).lower() in ["true", "1"]:
+                return 1
+            if str(is_correct).lower() in ["false", "0"]:
+                return 0
+            answer_state = row.get("answer_state")
+            if str(answer_state).lower() in ["true", "1"]:
+                return 1
+            if str(answer_state).lower() in ["false", "0"]:
+                return 0
+            return None
+
+        df["correctness"] = df.apply(map_correct, axis=1)
+
+        # 清洗缺失值
+        df.dropna(subset=["student_id", "question_id", "timestamp", "correctness"], inplace=True)
+        df["student_id"] = df["student_id"].map(int)
+        df["question_id"] = df["question_id"].map(int)
+        df["correctness"] = df["correctness"].map(int)
+
+        questions_path = os.path.join(data_dir, "Questions.csv")
+        questions_df = read_csv(questions_path)
+        questions_df["id"] = questions_df["id"].map(int)
+
+        kcs_path = os.path.join(data_dir, "KCs.csv")
+        kcs_df = read_csv(kcs_path)
+        kcs_df["id"] = kcs_df["id"].map(int)
+
+        qkc_path = os.path.join(data_dir, "Question_KC_Relationships.csv")
+        qkc_df = read_csv(qkc_path)
+        qkc_df["question_id"] = qkc_df["question_id"].map(int)
+        qkc_df["knowledgecomponent_id"] = qkc_df["knowledgecomponent_id"].map(int)
+        qkc_df = qkc_df[qkc_df["question_id"].isin(questions_df["id"])]
+        qkc_df = qkc_df[qkc_df["knowledgecomponent_id"].isin(kcs_df["id"])]
+
+        question_ids = sorted(pd.unique(qkc_df["question_id"]))
+        concept_ids = sorted(pd.unique(qkc_df["knowledgecomponent_id"]))
+        qid2idx = {q_id: i for i, q_id in enumerate(question_ids)}
+        cid2idx = {c_id: i for i, c_id in enumerate(concept_ids)}
+
+        questions_df = questions_df[questions_df["id"].isin(question_ids)]
+        kcs_df = kcs_df[kcs_df["id"].isin(concept_ids)]
+
+        q_meta = questions_df.set_index("id")
+        q_text, q_type, q_answer, q_analysis, q_diff, q_hint, q_title = [], [], [], [], [], [], []
+        for q_id in question_ids:
+            row = q_meta.loc[q_id]
+            q_text.append(str(row.get("question_text", "")).strip())
+            q_title.append(str(row.get("question_title", "")).strip())
+            q_analysis.append(str(row.get("explanation", "")).strip())
+            q_hint.append(str(row.get("hint_text", "")).strip())
+            q_diff.append(row.get("difficulty"))
+            q_type.append("choice")
+            q_answer.append(correct_answer_map.get(q_id, ""))
+
+        self.question_id_map = pd.DataFrame({
+            "original_id": question_ids,
+            "mapped_id": range(len(question_ids)),
+            "text": q_text,
+            "type": q_type,
+            "answer": q_answer,
+            "analysis": q_analysis,
+            "difficulty": q_diff,
+            "hint": q_hint,
+            "title": q_title
+        })
+
+        kc_meta = kcs_df.set_index("id")
+        c_name, c_desc = [], []
+        for c_id in concept_ids:
+            row = kc_meta.loc[c_id]
+            c_name.append(str(row.get("name", "")).strip())
+            c_desc.append(str(row.get("description", "")).strip())
+        self.concept_id_map = pd.DataFrame({
+            "original_id": concept_ids,
+            "mapped_id": range(len(concept_ids)),
+            "name": c_name,
+            "text": c_desc
+        })
+
+        Q_table = np.zeros((len(question_ids), len(concept_ids)), dtype=int)
+        for _, row in qkc_df.iterrows():
+            q_idx = qid2idx[row["question_id"]]
+            c_idx = cid2idx[row["knowledgecomponent_id"]]
+            Q_table[q_idx, c_idx] = 1
+        self.Q_table = Q_table
+
+        df = df[df["question_id"].isin(question_ids)]
+        df["question_id_mapped"] = df["question_id"].map(qid2idx)
+
+        user_ids = list(pd.unique(df["student_id"]))
+        user_id_map = {u_id: i for i, u_id in enumerate(user_ids)}
+
+        data_uniformed = []
+        for u_id in user_ids:
+            u_idx = user_id_map[u_id]
+            user_data = df[df["student_id"] == u_id]
+            user_data = user_data.sort_values(by=["timestamp"])
+            q_seq = list(map(int, user_data["question_id_mapped"].tolist()))
+            c_seq = list(map(int, user_data["correctness"].tolist()))
+            t_seq = list(map(int, user_data["timestamp"].tolist()))
+            if len(c_seq) < 2:
+                continue
+            data_uniformed.append({
+                "user_id": u_idx,
+                "question_seq": q_seq,
+                "correctness_seq": c_seq,
+                "time_seq": t_seq,
+                "seq_len": len(c_seq)
+            })
+
+        self.data_uniformed = data_uniformed
         self.user_id_map = pd.DataFrame({
             "original_id": user_id_map.keys(),
             "mapped_id": user_id_map.values()
