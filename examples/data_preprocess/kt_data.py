@@ -22,7 +22,8 @@ if __name__ == "__main__":
                                  "bridge2algebra2006", "bridge2algebra2008",
                                  "edi2020-task1", "edi2020-task34",
                                  "SLP-bio", "SLP-chi", "SLP-eng", "SLP-geo", "SLP-his", "SLP-mat", "SLP-phy",
-                                 "ednet-kt1", "slepemapy-anatomy", "xes3g5m", "statics2011", "junyi2015", "poj"))
+                                 "ednet-kt1", "slepemapy-anatomy", "xes3g5m", "statics2011", "junyi2015", "poj",
+                                 "DBE-KT22"))
 
     args = parser.parse_args()
     params = vars(args)
