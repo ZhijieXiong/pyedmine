@@ -16,7 +16,7 @@ FILE_MANAGER_ROOT = settings["FILE_MANAGER_ROOT"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_name", type=str, default="assist2009",
+    parser.add_argument("--dataset_name", type=str, default="DBE-KT22",
                         choices=("assist2009", "assist2009-full", "assist2012", "assist2015", "assist2017",
                                  "algebra2005", "algebra2006", "algebra2008",
                                  "bridge2algebra2006", "bridge2algebra2008",

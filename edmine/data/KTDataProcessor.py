@@ -207,7 +207,7 @@ class KTDataProcessor:
         return result
 
     def preprocess_data(self):
-        datasets_treatable = self.file_manager.builtin_datasets + ["DBE-KT22"]
+        datasets_treatable = self.file_manager.builtin_datasets
         dataset_name = self.params["dataset_name"]
         assert dataset_name in datasets_treatable, f"DataProcessor can't handle {dataset_name}"
 

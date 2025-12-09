@@ -28,7 +28,7 @@ class FileManager:
         "statics2011": "dataset/dataset_raw/statics2011/AllData_student_step_2011F.csv",
         "ednet-kt1": "dataset/dataset_raw/ednet-kt1",
         "xes3g5m": "dataset/dataset_raw/xes3g5m",
-        "DBE-KT22": "dataset_raw/DBE-KT22",
+        "DBE-KT22": "dataset/dataset_raw/DBE-KT22",
         "algebra2005": "dataset/dataset_raw/kdd_cup2010",
         "algebra2006": "dataset/dataset_raw/kdd_cup2010",
         "algebra2008": "dataset/dataset_raw/kdd_cup2010",
@@ -101,6 +101,7 @@ class FileManager:
             os.path.join(self.root_dir, "dataset", "dataset_raw", "slepemapy-anatomy"),
             os.path.join(self.root_dir, "dataset", "dataset_raw", "xes3g5m"),
             os.path.join(self.root_dir, "dataset", "dataset_raw", "poj"),
+            os.path.join(self.root_dir, "dataset", "dataset_raw", "DBE-KT22"),
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed"),
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "assist2009"),
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "assist2009-full"),
@@ -127,6 +128,7 @@ class FileManager:
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "bridge2algebra2006"),
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "bridge2algebra2008"),
             os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "poj"),
+            os.path.join(self.root_dir, "dataset", "dataset_preprocessed", "DBE-KT22"),
             os.path.join(self.root_dir, "dataset", "settings"),
             os.path.join(self.root_dir, "dataset", "saved_models"),
         ]
@@ -147,14 +149,9 @@ class FileManager:
     # ==================================================================================================================
     def get_preprocessed_dir(self, dataset_name):
         if not FileManager.data_preprocessed_dir.get(dataset_name, False):
-            preprocessed_dir = os.path.join(self.root_dir, f"dataset/dataset_preprocessed/{dataset_name}")
+            return os.path.join(self.root_dir, f"dataset/dataset_preprocessed/{dataset_name}")
         else:
-            preprocessed_dir = os.path.join(self.root_dir, FileManager.data_preprocessed_dir[dataset_name])
-
-        if not os.path.exists(preprocessed_dir):
-            os.makedirs(preprocessed_dir, exist_ok=True)
-
-        return preprocessed_dir
+            return os.path.join(self.root_dir, FileManager.data_preprocessed_dir[dataset_name])
 
     def save_q_table(self, Q_table, dataset_name):
         preprocessed_dir = self.get_preprocessed_dir(dataset_name)
