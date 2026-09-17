@@ -1,6 +1,6 @@
 [![](./asset/img/pypi_icon.png)](https://pypi.org/project/edmine/)
 
-[中文 README](README_zh.md) | [Documentation] | [Related Papers] | [Dataset Information] | [Model Leaderboard] | [Contributing](CONTRIBUTING.md)
+[中文](README_zh.md) | [Documentation] | [Related Papers] | [Dataset Information] | [Model Leaderboard]
 
 [Documentation]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
 [Dataset Information]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
@@ -56,6 +56,16 @@ For the experimental settings of each task, see the [Model Leaderboard](https://
   - [Plotting changes in students' knowledge states](#plotting-changes-in-students-knowledge-states)
 - [Dataset extensions](#dataset-extensions)
 - [Referenced codebases](#referenced-codebases)
+- [Contributing](#contributing)
+  - [Before you begin](#before-you-begin)
+  - [Report bugs or suggestions](#report-bugs-or-suggestions)
+  - [Recommend papers](#recommend-papers)
+  - [Contribute code](#contribute-code)
+    - [Submit a pull request directly](#submit-a-pull-request-directly)
+    - [Discuss before contributing](#discuss-before-contributing)
+  - [Share pretrained model weights](#share-pretrained-model-weights)
+  - [Code style and testing](#code-style-and-testing)
+  - [Community code of conduct](#community-code-of-conduct)
 - [Disclaimer](#disclaimer)
 
 
@@ -370,5 +380,79 @@ Although the text information is generally highly accurate, individual extractio
 - [More_Simple_Reinforcement_Learning](https://github.com/lansinuote/More_Simple_Reinforcement_Learning)
 - [Other paper code repositories](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
 
+## Contributing
+
+Thank you for your interest in and support for PyEdmine. We welcome all forms of community contribution, including reporting issues, suggesting improvements, submitting code enhancements, and sharing training results.
+
+### Before you begin
+
+Please read this README and the [project documentation](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html) to understand the project's goals, structure, and core workflow.
+
+### Report bugs or suggestions
+
+If you find a bug or have a suggestion, please open a GitHub **Issue**. Include the following information in the issue—the more detail, the better:
+
+- The PyEdmine version you used (for example, `v1.0.0`)
+- A description of the issue and steps to reproduce it
+- Error messages, logs, screenshots, or other relevant information
+
+### Recommend papers
+
+We welcome recommendations for educational data mining papers to be included among the models supported by this project. Please post your recommendation in the **[Feature Request Thread](https://github.com/ZhijieXiong/pyedmine/discussions/8)**.
+
+### Contribute code
+
+You can contribute code in either of the following ways:
+
+#### Submit a pull request directly
+
+This is suitable for small fixes or updates with no expected conflicts, such as:
+
+- Documentation updates
+- Simple bug fixes
+- Small feature enhancements that do not affect existing functionality
+
+Please ensure that your pull request includes:
+
+- A clear description and purpose of the change
+- Appropriate unit tests, when applicable
+- Clean formatting that follows the project's code conventions
+
+#### Discuss before contributing
+
+For larger changes, such as adding a model or modifying framework logic, we recommend that you:
+
+1. Describe your plan and design in an Issue.
+2. Reach agreement with the maintainers through discussion.
+3. Submit a pull request to facilitate review and collaboration.
+
+### Share pretrained model weights
+
+To share pretrained model weights, email 18800118477@163.com.
+
+Please include:
+
+- The model-weight file or a download link
+- The corresponding training script or documentation
+- Relevant parameter configuration and dependency information
+
+We will review the submission and consider integrating the weights.
+
+If you are submitting a new model that PyEdmine does not yet implement, first submit its implementation in a pull request, then notify us by email.
+
+### Code style and testing
+
+Please follow the code style used in this project. Good practices include, but are not limited to:
+
+- Maintaining consistent indentation and code structure
+- Adding or updating documentation comments and README content
+
+### Community code of conduct
+
+- Be friendly and respectful to others
+- State questions and ideas clearly
+- Welcome questions and help others
+
 ## Disclaimer
+
 PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project may be used only for academic purposes.
