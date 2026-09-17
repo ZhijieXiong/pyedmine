@@ -1,115 +1,114 @@
 [![](./asset/img/pypi_icon.png)](https://pypi.org/project/edmine/)
 
-[文档] | [相关论文列表] | [数据集信息] | [模型榜单] | [参与贡献]
+[中文 README](README_zh.md) | [Documentation] | [Related Papers] | [Dataset Information] | [Model Leaderboard] | [Contributing](CONTRIBUTING.md)
 
-[文档]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
-[数据集信息]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
-[相关论文列表]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
-[模型榜单]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
-[参与贡献]: https://github.com/ZhijieXiong/pyedmine/blob/main/CONTRIBUTING.md
+[Documentation]: https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html
+[Dataset Information]: https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html
+[Related Papers]: https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html
+[Model Leaderboard]: https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html
 
-PyEdmine是一个面向研究者的，易于开发与复现的**教育数据挖掘**代码库
+PyEdmine is an **educational data mining** codebase designed for researchers, with an emphasis on ease of development and reproducibility.
 
-PyEdmine提出了一个统一的实验流程，用于进行***知识追踪***、***认知诊断***、***习题推荐***和***学习路径推荐***的实验
+PyEdmine provides a unified experimental workflow for ***knowledge tracing***, ***cognitive diagnosis***, ***exercise recommendation***, and ***learning path recommendation***.
 
-PyEdmine约定了一个统一、易用的数据文件格式用于数据集处理，并已支持***14个教育数据挖掘数据集***
+PyEdmine defines a unified, easy-to-use data-file format for dataset processing and already supports ***14 educational data mining datasets***.
 
-PyEdmine设计了一套代码框架用于训练和评估模型，并且基于该代码框架已经实现了***28个知识追踪模型、7个认知诊断模型、3个习题推荐模型、4个学习路径推荐模型***
+PyEdmine provides a code framework for training and evaluating models. Based on this framework, it implements ***28 knowledge tracing models, 7 cognitive diagnosis models, 3 exercise recommendation models, and 4 learning path recommendation models***.
 
 <p align="center">
-  <img src="asset/img/ExperimentalFlowChart.jpg" alt="PeEdmine 实验流程图" width="600">
+  <img src="asset/img/ExperimentalFlowChart.jpg" alt="PyEdmine experimental workflow" width="600">
   <br>
-  <b>图片</b>: PyEdmine 实验流程图
+  <b>Figure</b>: PyEdmine experimental workflow
 </p>
 
-各任务的具体实验设置请查阅[模型榜单](https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html)上的说明，以下是PyEdmine各版本发布的说明
+For the experimental settings of each task, see the [Model Leaderboard](https://zhijiexiong.github.io/sub-page/pyedmine/rankingList.html). The following describes each PyEdmine release.
 
 | Releases | Date      |Description|
 |----------|-----------|-----------|
-| v0.1.0   | 3/26/2025 |初始发布版本|
-| v0.1.1   | 3/31/2025 |修复了一些bug，新增ATDKT、CLKT、DTransformer、GRKT、HDLPKT模型|
-| v0.2.0   | 4/9/2025  |beta版本，但是GRKT模型训练会报错（NaN），尚未解决|
-| v0.2.1   | 8/1/2025  |修复了一些bug，集成了学习路径推荐任务|
-| v0.2.2   | 8/3/2025  |修复了学习路径推荐的一些bug|
-| v0.2.3   | 8/3/2025  |使用基于装饰器的模型注册机制，移除手动维护的 model_table|
-| v1.0.0   | 8/15/2025 |稳定版（长期支持），新增qDKT_CORE、AKT_CORE和DisKT模型和一些新的KT指标
+| v0.1.0   | 3/26/2025 |Initial release|
+| v0.1.1   | 3/31/2025 |Fixed several bugs and added ATDKT, CLKT, DTransformer, GRKT, and HDLPKT|
+| v0.2.0   | 4/9/2025  |Beta release. Training GRKT raises an unresolved NaN error|
+| v0.2.1   | 8/1/2025  |Fixed several bugs and integrated learning path recommendation|
+| v0.2.2   | 8/3/2025  |Fixed several learning path recommendation bugs|
+| v0.2.3   | 8/3/2025  |Adopted decorator-based model registration and removed the manually maintained `model_table`|
+| v1.0.0   | 8/15/2025 |Stable long-term-support release; added qDKT_CORE, AKT_CORE, DisKT, and new KT metrics|
 
 
-`v1.0.0`是项目的第一个长期支持版本（LTS），并且与之前所有已发布版本完全向后兼容。未来更新仅会添加新模型，不会破坏现有接口或功能。**建议新用户直接使用此版本，老用户直接升级到此版本**
+`v1.0.0` is the project's first long-term support (LTS) release and is fully backward compatible with every previously released version. Future updates will only add new models and will not break existing interfaces or functionality. **New users are recommended to use this release directly, and existing users are recommended to upgrade to it.**
 
 
-- [安装](#安装)
-  - [从pip安装](#从pip安装)
-  - [从源文件安装（推荐）](#从源文件安装推荐)
-  - [主要依赖](#主要依赖)
-- [快速开始](#快速开始)
-  - [概览](#概览)
-  - [目录配置](#目录配置)
-  - [数据预处理](#数据预处理)
-  - [数据集划分](#数据集划分)
-  - [模型训练](#模型训练)
-  - [模型评估](#模型评估)
-    - [知识追踪](#知识追踪)
-    - [认知诊断](#认知诊断)
-    - [习题推荐](#习题推荐)
-    - [学习路径推荐](#学习路径推荐)
-  - [模型自动调参](#模型自动调参)
-  - [绘制学生知识状态变化图](#绘制学生知识状态变化图)
-- [数据集扩展](#数据集扩展)
-- [参考代码库](#参考代码库)
-- [免责声明](#免责声明)
+- [Installation](#installation)
+  - [Install from PyPI](#install-from-pypi)
+  - [Install from source (recommended)](#install-from-source-recommended)
+  - [Main dependencies](#main-dependencies)
+- [Quick Start](#quick-start)
+  - [Overview](#overview)
+  - [Directory configuration](#directory-configuration)
+  - [Data preprocessing](#data-preprocessing)
+  - [Dataset splitting](#dataset-splitting)
+  - [Model training](#model-training)
+  - [Model evaluation](#model-evaluation)
+    - [Knowledge tracing](#knowledge-tracing)
+    - [Cognitive diagnosis](#cognitive-diagnosis)
+    - [Exercise recommendation](#exercise-recommendation)
+    - [Learning path recommendation](#learning-path-recommendation)
+  - [Automatic hyperparameter tuning](#automatic-hyperparameter-tuning)
+  - [Plotting changes in students' knowledge states](#plotting-changes-in-students-knowledge-states)
+- [Dataset extensions](#dataset-extensions)
+- [Referenced codebases](#referenced-codebases)
+- [Disclaimer](#disclaimer)
 
 
-## 安装
+## Installation
 
-### 从pip安装
+### Install from PyPI
 
 ```bash
 pip install edmine
 ```
 
-### 从源文件安装（推荐）
+### Install from source (recommended)
 ```bash
 git clone git@github.com:ZhijieXiong/pyedmine.git && cd pyedmine
 pip install -e .
 ```
 
-### 主要依赖
-必须依赖：pandas、numpy、sklearn、torch
+### Main dependencies
+Required dependencies: pandas, numpy, sklearn, and torch.
 
-非必需依赖：dgl 是部分认知诊断模型所需的；hyperopt 用于自动化参数调优；wandb 用于记录实验数据；tqdm 用于模型评估阶段。
+Optional dependencies: dgl is required by some cognitive diagnosis models; hyperopt is used for automated hyperparameter tuning; wandb is used to log experimental data; and tqdm is used during model evaluation.
 
-## 快速开始
-### 概览
-请从 GitHub 下载 PyEdmine 的源代码，然后使用 `examples` 目录中提供的脚本完成数据预处理、数据集划分、模型训练与模型评估。PyEdmine 框架的基本流程如下，请按顺序执行：
+## Quick Start
+### Overview
+Download the PyEdmine source code from GitHub, then use the scripts in `examples` for data preprocessing, dataset splitting, model training, and model evaluation. The basic PyEdmine workflow is below; run the steps in order:
 
-1、目录配置：通过 `settings.json` 文件配置数据与模型的存放路径，然后运行`set_up.py`以生成必要的目录；
+1. Directory configuration: configure the storage paths for data and models in `settings.json`, then run `set_up.py` to create the required directories.
 
-2、数据预处理：下载原始数据集并放置到指定位置，然后使用 `examples` 中提供的脚本进行数据预处理，以获得统一格式的数据文件。数据集信息可在 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html) 查看；
+2. Data preprocessing: download the raw datasets and place them in the specified locations, then use the scripts in `examples` to preprocess the data into unified-format files. Dataset information is available [here](https://zhijiexiong.github.io/sub-page/pyedmine/datasetInfo.html).
 
-3、数据集划分：对执行了统一格式处理后的数据，基于特定实验设置进行数据集划分。PyEdmine 提供了五种实验设置：两种知识追踪任务的设置（分别借鉴 [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) 与 [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988)）、一种认知诊断任务的设置（借鉴 [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)）、一种离线习题推荐任务和一种离线学习路径推荐任务的设置；
+3. Dataset splitting: split the unified-format data according to a specific experimental setting. PyEdmine provides five settings: two for knowledge tracing (inspired by [PYKT](https://dl.acm.org/doi/abs/10.5555/3600270.3601617) and [SFKT](https://dl.acm.org/doi/10.1145/3583780.3614988), respectively), one for cognitive diagnosis (inspired by [NCD](https://ojs.aaai.org/index.php/AAAI/article/view/6080)), one for offline exercise recommendation, and one for offline learning path recommendation.
 
-4、模型训练：`examples` 中提供了每个模型的训练启动脚本，更多信息可参考 [这里](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html)；
+4. Model training: `examples` provides a training script for each model. For more information, see [here](https://zhijiexiong.github.io/sub-page/pyedmine/document/site/index.html).
 
-5、模型评估：`examples` 中也提供了每个模型的评估脚本，并根据不同任务实现了不同维度与粒度的评估指标，包括冷启动评估、无偏评估等；
+5. Model evaluation: `examples` also provides an evaluation script for each model, and implements evaluation metrics at different dimensions and granularities for different tasks, including cold-start evaluation and unbiased evaluation.
 
-6、其它特性：（1）PyEdmine 针对部分模型实现了基于贝叶斯优化的自动参数调整方法；（2）PyEdmine 可通过参数设置启用 wandb 功能；（3）绘制学生知识状态变化图。
+6. Other features: (1) PyEdmine implements Bayesian-optimization-based automatic hyperparameter tuning for selected models; (2) PyEdmine can enable wandb through configuration; and (3) it can plot changes in students' knowledge states.
 
-每一步的具体操作说明，请参阅下文。
+For detailed instructions for each step, see below.
 
-### 目录配置
-在`examples`目录下创建`settings.json`文件，在该文件中配置数据目录和模型目录，格式如下
+### Directory configuration
+Create `settings.json` in the `examples` directory. Configure the data and model directories in this file as follows:
 ```json
 {
   "FILE_MANAGER_ROOT": "/path/to/save/data",
   "MODELS_DIR": "/path/to/save/model"
 }
 ```
-然后运行脚本
+Then run the script:
 ```bash
 python examples/set_up.py
 ```
-则会自动生成（内置处理代码的）数据集的原始文件存放目录和经过统一处理的文件的存放目录 ，其中各数据集的原始存放目录（位于`/path/to/save/data/dataset_raw`）如下
+This automatically creates the raw-data and unified-format-data directories for datasets with built-in processing code. The raw-data directory for each dataset (under `/path/to/save/data/dataset_raw`) is as follows:
 ```
 .
 ├── SLP
@@ -192,45 +191,45 @@ python examples/set_up.py
         └── train_valid_sequences_quelevel.csv
 ```
 
-### 数据预处理
-你可以选择使用我们的数据集预处理脚本
+### Data preprocessing
+You can use our dataset preprocessing script:
 ```bash
 python data_preprocess/kt_data.py
 ```
-该脚本会生成数据集经过统一格式处理后的文件（位于`/path/to/save/data/dataset/dataset_preprocessed`）
+This script generates the unified-format dataset files (under `/path/to/save/data/dataset/dataset_preprocessed`).
 
-注意：`Ednet-kt1`数据集由于原始数据文件数量太多，需要首先使用脚本`examples/data_preprocess/generate_ednet_raw.py`对用户的数据按照5000为单位进行聚合，并且因为该数据集过于庞大，所以预处理默认是只使用交互序列最长5000名用户的数据
+Note: because the `Ednet-kt1` dataset contains too many raw data files, first use `examples/data_preprocess/generate_ednet_raw.py` to aggregate user data in units of 5,000. Because this dataset is very large, preprocessing uses only the 5,000 users with the longest interaction sequences by default.
 
-或者你可以直接下载已处理好的[数据集文件](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing)（位于dataset/dataset_preprocessed下）
+Alternatively, you can directly download the preprocessed [dataset files](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing) (under `dataset/dataset_preprocessed`).
 
-### 数据集划分
-你可以选择使用我们提供的数据集划分脚本，划分好的数据集文件将存放在`/path/to/save/data/dataset/settings/[setting_name]`下
+### Dataset splitting
+You can use the dataset-splitting scripts we provide. The resulting dataset files will be stored under `/path/to/save/data/dataset/settings/[setting_name]`.
 ```bash
-python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # 知识追踪
-python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # 认知诊断
-python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # 习题推荐
+python examples/knowledge_tracing/prepare_dataset/pykt_setting.py  # knowledge tracing
+python examples/cognitive_diagnosis/prepare_dataset/ncd_setting.py  # cognitive diagnosis
+python examples/exercise_recommendation/preprare_dataset/offline_setting.py  # exercise recommendation
 
 ```
 
-你也可以直接下载[划分后的数据集文件](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing)（位于dataset/settings下），然后将其存放在`/path/to/save/data/dataset/settings`目录下
+You can also directly download the [split dataset files](https://drive.google.com/drive/folders/14ZLY7B_Tgs8k82qW3eQD7ufcHh0Bq50W?usp=sharing) (under `dataset/settings`) and place them in `/path/to/save/data/dataset/settings`.
 
-或者你也可以参照我们提供的数据集划分脚本来设计自己的实验处理流程
+Or, you can use the provided dataset-splitting scripts as a reference to design your own experimental workflow.
 
-### 模型训练
-对于无需生成包含额外信息的模型，直接运行训练代码即可，如
+### Model training
+For models that do not require additional information to be generated, run the training code directly, for example:
 ```bash
-python examples/knowledge_tracing/train/dkt.py  # 使用默认参数训练DKT模型
-python examples/cognitive_diagnosis/train/ncd.py  # 使用默认参数训练NCD模型
+python examples/knowledge_tracing/train/dkt.py  # train DKT with default parameters
+python examples/cognitive_diagnosis/train/ncd.py  # train NCD with default parameters
 ```
-对于需要预先生成额外信息的模型，例如DIMKT需要预先计算难度信息、HyperCD需要预先构造知识点超图信息，则需要先运行模型对应的额外信息生成脚本，如
+For models that require additional information to be generated in advance—for example, DIMKT requires difficulty information and HyperCD requires knowledge-concept hypergraph information—run the corresponding generation script first, for example:
 ```bash
-python examples/knowledge_tracing/dimkt/get_difficulty.py  # 生成DIMKT需要的难度信息
-python examples/cognitive_diagnosis/hyper_cd/construct_hyper_graph.py  # 生成HyperCD需要的图信息
+python examples/knowledge_tracing/dimkt/get_difficulty.py  # generate difficulty information required by DIMKT
+python examples/cognitive_diagnosis/hyper_cd/construct_hyper_graph.py  # generate graph information required by HyperCD
 ```
 
-学习路径推荐任务需要知识追踪模型作为环境模拟器，因此需要先训练好一个知识追踪模型，PyEdmine目前实现了基于qDKT和LPKT4LPR的环境模拟器
+Learning path recommendation requires a knowledge tracing model as an environment simulator. Therefore, train a knowledge tracing model first. PyEdmine currently implements environment simulators based on qDKT and LPKT4LPR.
 
-基于Epoch的训练器，训练时会得到类似如下的输出
+The epoch-based trainer produces output similar to the following during training:
 ```bash
 2025-06-19 10:59:21 start loading and processing dataset
 2025-06-19 10:59:38 start training
@@ -250,7 +249,7 @@ python examples/cognitive_diagnosis/hyper_cd/construct_hyper_graph.py  # 生成H
 best valid epoch: 21  , train performances in best epoch by valid are main metric: 0.79207  , AUC: 0.79207  , ACC: 0.85297  , MAE: 0.22056  , RMSE: 0.33278  , main_metric: 0.79207  , 
 valid performances in best epoch by valid are main metric: 0.7898   , AUC: 0.7898   , ACC: 0.85434  , MAE: 0.21901  , RMSE: 0.33197  , main_metric: 0.7898   , 
 ```
-基于Step的训练器，训练时会得到类似如下的输出
+The step-based trainer produces output similar to the following during training:
 ```bash
 2025-08-01 19:16:44 start loading and processing dataset
 2025-08-01 19:17:08 start training
@@ -281,45 +280,45 @@ step20, AP: -0.083493, APR: -0.0039493, RP: -0.083493, RPR: -0.0039493, NRP: -0.
 best valid step: 500      
 valid performance by best valid epoch is {"5": {"AP": -0.03330377663327104, "APR": -0.00633306784213987, "RP": -0.03330377663327104, "RPR": -0.00633306784213987, "NRP": -0.061017051242375234, "NRPR": -0.011473998633936285}, "10": {"AP": -0.04646934891696771, "APR": -0.004184800090990535, "RP": -0.04646934891696771, "RPR": -0.004184800090990535, "NRP": -0.08442007529036973, "NRPR": -0.007501426604322975}, "20": {"AP": -0.06767395292607752, "APR": -0.0033046125319343496, "RP": -0.06767395292607752, "RPR": -0.0033046125319343496, "NRP": -0.12283069568440122, "NRPR": -0.005990523283613981}}
 ```
-如果训练模型时*use_wandb*参数为True，则可以在[wandb](https://wandb.ai/)上查看模型的损失变化和指标变化
+If the `use_wandb` parameter is `True` when training a model, you can view changes in its loss and metrics on [wandb](https://wandb.ai/).
 
-### 模型评估
-如果训练模型时*save_model*参数为True，则会将模型参数文件保存至`/path/to/save/model`目录下，那么可以使用测试集对模型进行评估，如
+### Model evaluation
+If the `save_model` parameter is `True` during training, the model parameter file is saved under `/path/to/save/model`. You can then evaluate the model using the test set, for example:
 ```bash
 python examples/knowledge_tracing/evaluate/sequential_dlkt.py --model_dir_name [model_dir_name] --dataset_name [dataset_name] --test_file_name [test_file_name]
 ```
-其中知识追踪和认知诊断模型除了常规的指标评估外，还可以进行一些细粒度的指标评估，例如冷启动评估，知识追踪的多步预测等，这些评估都可以通过设置对应的参数开启。
+In addition to conventional metric evaluation, knowledge tracing and cognitive diagnosis models can perform fine-grained evaluations, such as cold-start evaluation and multi-step prediction for knowledge tracing. Enable these evaluations by setting the corresponding parameters.
 
-以下是不同指标的含义，
+The meanings of the different metrics are as follows:
 
-#### 知识追踪
-- overall 从序列的第2个交互开始预测
-- core 论文[Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779)提出的指标
-- double warm start, seqStart5QueNum5 从序列的第5个交互开始预测，并且只预测训练中出现次数大于等于5的习题
-- user cold start, seqEnd5 只预测序列的前5个交互
-- question cold start, queNum5 只预测训练集中出现次数小于等于5的习题
-- double cold start, seqEnd5queNum5 只预测序列的前5个交互中训练集中出现次数小于等于5的习题
-- user warm start, seqStart50 只预测序列第50个之后的交互
-- multi step 论文[pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617)中提到的两种多步预测
-- first trans 只预测每个学生交互序列中第一次接触到的知识点
-- hard sample metric, question hard sample-th0.05 记习题在训练集中的正确率为acc_q，对于一次交互，若acc_q >= (0.5 + 0.05)且做对当前习题，或者acc_h <= (0.5 - 0.05)且做错当前习题，则将其视为一个hard sample (from question)
-- hard sample metric, concept hard sample-th0.05 类似question hard sample
-- hard sample metric, history hard sample-th0.05 类似question hard sample，使用学生的历史正确率作为参照 
-- BES 偏差曝光分数，即Bias Exposure Score，用于衡量模型受数据偏差影响的程度——其中偏差来自历史、知识点和习题，该值越小，模型受数据偏差影响越大
-  - 请注意，该指标未经过验证！！！
+#### Knowledge tracing
+- overall: predicts from the second interaction in a sequence onward.
+- core: the metric proposed in [Do We Fully Understand Students’ Knowledge States? Identifying and Mitigating Answer Bias in Knowledge Tracing](https://arxiv.org/abs/2308.07779).
+- double warm start, seqStart5QueNum5: predicts from the fifth interaction onward, and only for exercises that appear at least five times in training.
+- user cold start, seqEnd5: predicts only the first five interactions of a sequence.
+- question cold start, queNum5: predicts only exercises that appear at most five times in the training set.
+- double cold start, seqEnd5queNum5: predicts only exercises that appear at most five times in the training set among the first five interactions of a sequence.
+- user warm start, seqStart50: predicts only interactions after the 50th interaction in a sequence.
+- multi step: the two multi-step prediction settings described in [pyKT: A Python Library to Benchmark Deep Learning based Knowledge Tracing Models](https://dl.acm.org/doi/abs/10.5555/3600270.3601617).
+- first trans: predicts only the first time each knowledge concept is encountered in each student's interaction sequence.
+- hard sample metric, question hard sample-th0.05: let the exercise accuracy in the training set be `acc_q`. For an interaction, if `acc_q >= (0.5 + 0.05)` and the current exercise is answered correctly, or `acc_q <= (0.5 - 0.05)` and it is answered incorrectly, it is considered a hard sample (from question).
+- hard sample metric, concept hard sample-th0.05: similar to question hard sample.
+- hard sample metric, history hard sample-th0.05: similar to question hard sample, using the student's historical accuracy as the reference.
+- BES: Bias Exposure Score, which measures how much a model is affected by data bias. The bias comes from history, knowledge concepts, and exercises; a smaller value means the model is more affected by data bias.
+  - Note: this metric has not been validated.
   
-#### 认知诊断
-- overall 预测全部测试集
-- user cold start, userNum5 只预测训练集中出现次数小于等于5的学生
-- question cold start, questionNum5 只预测训练集中出现次数小于等于5的习题
-#### 习题推荐
-- KG4EX_ACC 论文[KG4Ex: An Explainable Knowledge Graph-Based Approach for Exercise Recommendation](https://dl.acm.org/doi/10.1145/3583780.3614943)中提出的指标，本榜单公布的结果基于DKT计算
-- KG4EX_NOV 同KG4EX_ACC
-- OFFLINE_ACC 将学生未来练习的习题作为标签，计算准确率
-- OFFLINE_NDCG 将学生未来练习的习题作为标签，计算NDCG
-- PERSONALIZATION_INDEX 计算给不同学生推荐习题的差异度，作为个性化的指标
-#### 学习路径推荐
-$m_{start}$ 和 $m_{end}$ 分别是目标知识点的初始分数和最终分数，$m_{full}$ 是知识点的满分，$l$ 是路径长度
+#### Cognitive diagnosis
+- overall: predicts the entire test set.
+- user cold start, userNum5: predicts only students who appear at most five times in the training set.
+- question cold start, questionNum5: predicts only exercises that appear at most five times in the training set.
+#### Exercise recommendation
+- KG4EX_ACC: a metric proposed in [KG4Ex: An Explainable Knowledge Graph-Based Approach for Exercise Recommendation](https://dl.acm.org/doi/10.1145/3583780.3614943). Results published on this leaderboard are calculated with DKT.
+- KG4EX_NOV: the same as KG4EX_ACC.
+- OFFLINE_ACC: uses exercises a student will practice in the future as labels and calculates accuracy.
+- OFFLINE_NDCG: uses exercises a student will practice in the future as labels and calculates NDCG.
+- PERSONALIZATION_INDEX: calculates the diversity of recommended exercises across students as a personalization metric.
+#### Learning path recommendation
+$m_{start}$ and $m_{end}$ are the initial and final scores for the target knowledge concept, respectively; $m_{full}$ is the full score for the knowledge concept; and $l$ is the path length.
 - AP = $m_{end} - m_{start}$
 - APR = $\frac{m_{end} - m_{start}}{l}$
 - RP = $\frac{AP}{m_{full}}$
@@ -327,49 +326,49 @@ $m_{start}$ 和 $m_{end}$ 分别是目标知识点的初始分数和最终分数
 - NRP = $\frac{AP}{m_{full} - m_{start}}$
 - NRPR = $\frac{NRP}{l}$
 
-你也可以下载已经[训练好的模型](https://huggingface.co/dreamxzj123/pyedmine)（所有KT、CD、ER和LPR模型均在）在我们提供的实验设置上进行模型评估
+You can also download [pretrained models](https://huggingface.co/dreamxzj123/pyedmine) (including all KT, CD, ER, and LPR models) and evaluate them using the experimental settings we provide.
 
-### 模型自动调参
-PyEdmine还支持基于贝叶斯网络的自动调参功能，如
+### Automatic hyperparameter tuning
+PyEdmine also supports automatic hyperparameter tuning based on Bayesian optimization, for example:
 ```bash
 python examples/cognitive_diagnosis/train/ncd_search_params.py
 ```
-该脚本基于代码中的*parameters_space*变量设置搜参空间
+This script sets the search space using the `parameters_space` variable in the code.
 
-### 绘制学生知识状态变化图
-PyEdmine支持使用热力图展示学生知识状态变化过程，对应代码在
+### Plotting changes in students' knowledge states
+PyEdmine supports visualizing changes in students' knowledge states with heatmaps. The corresponding code is:
 
 ```bash
 python examples/roster/kt_plot.py
 ```
 
-效果如下图所示
+The result is shown below:
 
 <img src="asset/img/trace_related_cs_change.png" alt="trace_related_cs_change" width="600">
 <img src="asset/img/trace_selected_cs_change.png" alt="trace_selected_cs_change" width="600">
 <img src="asset/img/trace_single_concept_change.png" alt="trace_single_concept_change" width="600">
 
-## 数据集扩展
-[edi2020-task-34-question.json](./edi2020-task34-question.json)是在 **EDi2020 Task 3&4** 提供的数学题目图像数据基础上，进行的非正式扩展版本。原始数据集中仅包含题目图像，未提供对应的文本信息。为增强其在知识追踪与文本建模任务中的适用性，我补充提取了题目的文本内容，并参考了 [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) 的数据格式进行组织，以便于后续使用。
+## Dataset extensions
+[edi2020-task-34-question.json](./edi2020-task34-question.json) is an unofficial extension based on the mathematical-question image data provided by **EDi2020 Task 3&4**. The original dataset contains only question images and does not provide the corresponding text. To improve its applicability to knowledge tracing and text modeling tasks, I extracted the question text and organized it with reference to the data format of [Kaggle Eedi: Mining Misconceptions in Mathematics](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics) for subsequent use.
 
-文本提取流程相对简化，主要包括：
+The text-extraction process is relatively simple and mainly includes:
 
-使用 OCR 工具识别图像中的文字；
+Recognizing text in images with OCR tools;
 
-对于 OCR 无法有效识别的题目，使用多模态大模型生成文本描述；
+Generating textual descriptions with multimodal large language models for questions that OCR cannot recognize effectively;
 
-结合人工进行了简单核对与修正。
+Performing simple manual checking and corrections.
 
-尽管整体文本信息具有较高准确性，但仍可能存在个别提取错误。这是一个**非官方的扩展版本**，欢迎社区参考与使用，但建议在具体研究中结合自身需求进行验证与清洗。
+Although the text information is generally highly accurate, individual extraction errors may remain. This is an **unofficial extension**. The community is welcome to use it as a reference, but validation and cleaning based on the needs of specific research are recommended.
 
-## 参考代码库
+## Referenced codebases
 
 - [PYKT](https://github.com/pykt-team/pykt-toolkit)
 - [EduKTM](https://github.com/bigdata-ustc/EduKTM)
 - [EduCDM](https://github.com/bigdata-ustc/EduCDM)
 - [RecBole](https://github.com/RUCAIBox/RecBole)
 - [More_Simple_Reinforcement_Learning](https://github.com/lansinuote/More_Simple_Reinforcement_Learning)
-- [其它论文代码仓库](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
+- [Other paper code repositories](https://zhijiexiong.github.io/sub-page/pyedmine/paperCollection.html)
 
-## 免责声明
-PyEdmine 基于 [MIT License](./LICENSE) 进行开发，本项目的所有数据和代码只能被用于学术目的
+## Disclaimer
+PyEdmine is developed under the [MIT License](./LICENSE). All data and code in this project may be used only for academic purposes.
