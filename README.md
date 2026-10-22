@@ -16,7 +16,7 @@ PyEdmine defines a unified, easy-to-use data-file format for dataset processing 
 PyEdmine provides a code framework for training and evaluating models. Based on this framework, it implements ***28 knowledge tracing models, 7 cognitive diagnosis models, 3 exercise recommendation models, and 4 learning path recommendation models***.
 
 <p align="center">
-  <img src="asset/img/ExperimentalFlowChart.jpg" alt="PyEdmine experimental workflow" width="600">
+  <img src="asset/img/ExperimentalFlowChart.png" alt="PyEdmine experimental workflow" width="600">
   <br>
   <b>Figure</b>: PyEdmine experimental workflow
 </p>
